@@ -1,0 +1,7 @@
+.idea/
+.vscode/
+obj/
+bin/
+build/
+*.user
+TestResults/
