@@ -1,4 +1,4 @@
-namespace src
+namespace src.Models
 {
     public enum UpdateMode
     {

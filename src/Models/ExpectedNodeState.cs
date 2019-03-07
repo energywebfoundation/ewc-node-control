@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace src
+namespace src.Models
 {
     public class ExpectedNodeState
     {

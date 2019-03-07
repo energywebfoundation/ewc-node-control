@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Nethereum.Contracts.ContractHandlers;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
+using src.Interfaces;
+using src.Models;
 
 namespace src.Contract
 {

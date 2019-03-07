@@ -1,4 +1,6 @@
-namespace src
+using src.Models;
+
+namespace src.Interfaces
 {
     public interface IConfigurationProvider
     {

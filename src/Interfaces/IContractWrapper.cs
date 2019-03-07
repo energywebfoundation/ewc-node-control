@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
+using src.Models;
 
-namespace src.Contract
+namespace src.Interfaces
 {
     public interface IContractWrapper
     {

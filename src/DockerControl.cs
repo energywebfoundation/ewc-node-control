@@ -4,11 +4,15 @@ using System.IO;
 
 namespace src
 {
-    public static class DockerControl
+    public interface IDockerComposeControl
+    {
+        void ApplyChangesToStack(string pathToStack, bool restartOnly);
+    }
+    
+    public class LinuxComposeControl : IDockerComposeControl
     {
 
- 
-        public static void ApplyChangesToStack(string pathToStack, bool restartOnly)
+        public void ApplyChangesToStack(string pathToStack, bool restartOnly)
         {
 
             if (!Directory.Exists(pathToStack))

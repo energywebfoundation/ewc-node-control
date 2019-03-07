@@ -5,3 +5,5 @@ bin/
 build/
 *.user
 TestResults/
+node_modules/
+js/
