@@ -5,15 +5,7 @@ namespace src
 {
     public class ConfigurationFileHandler : IConfigurationProvider
     {
-        /*
-         * VALIDATOR_ADDRESS=$ADDR
-         * PARITY_VERSION=$PARITY_VERSION
-         * TELEMETRY_INGRESS_HOST=$INGRESS_IP
-         * TELEMETRY_INGRESS_FINGERPRINT=$INGRESS_FP
-         * NODECONTROL_VERSION=$NODECONTROL_VERSION
-         * EXTERNAL_IP=$EXTERNAL_IP
-         * SIGNER_VERSION=$SIGNER_VERSION
-         */
+
         private readonly string _envFile;
 
         public ConfigurationFileHandler(string pathToEnvFile)

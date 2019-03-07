@@ -8,22 +8,23 @@ namespace src
     {
 
  
-        public static void ApplyChangesToStack(string pathToStack)
+        public static void ApplyChangesToStack(string pathToStack, bool restartOnly)
         {
 
             if (!Directory.Exists(pathToStack))
             {
                 throw new DirectoryNotFoundException("docker stack directory not found.");
             }
+
+            string cmd = restartOnly ? "restart" : "up -d";
             
             Console.WriteLine("Apply changes to compose stack...");
             using (Process myProcess = new Process())
             {
                 myProcess.StartInfo.UseShellExecute = false;
-                // You can start any process, HelloWorld is a do-nothing example.
                 myProcess.StartInfo.FileName = "/usr/bin/docker-compose";
                 myProcess.StartInfo.WorkingDirectory = pathToStack;
-                myProcess.StartInfo.Arguments = "up -d";
+                myProcess.StartInfo.Arguments = cmd;
                 myProcess.StartInfo.CreateNoWindow = true;
                 myProcess.StartInfo.RedirectStandardOutput = true;
                 myProcess.Start();

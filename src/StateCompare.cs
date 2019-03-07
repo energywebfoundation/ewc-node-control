@@ -14,7 +14,7 @@ namespace src
 
         public List<StateChangeAction> ComputeActionsFromState(ExpectedNodeState newState)
         {
-            var curState = _configProvider.ReadCurrentState();
+            ExpectedNodeState curState = _configProvider.ReadCurrentState();
             List<StateChangeAction> actions = new List<StateChangeAction>();
 
             // compare states and create according actions
@@ -26,7 +26,7 @@ namespace src
                 {
                     Mode = UpdateMode.Docker,
                     Payload = newState.DockerImage,
-                    PaylodSignature = newState.DockerChecksum
+                    PayloadHash = newState.DockerChecksum
                 });
             }
             
@@ -36,7 +36,7 @@ namespace src
                 {
                     Mode = UpdateMode.ChainSpec,
                     Payload = newState.ChainspecUrl,
-                    PaylodSignature = newState.ChainspecChecksum
+                    PayloadHash = newState.ChainspecChecksum
                 });
             }
             

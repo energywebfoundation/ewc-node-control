@@ -1,46 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using Docker.DotNet;
 using Docker.DotNet.Models;
-using Newtonsoft.Json.Converters;
+using src.Contract;
 
 namespace src
 {
-    class Program
+    internal static class Program
     {
         private static string _contractAddresss;
-        private static string _pathToEnvFile;
         private static string _stackPath;
+        private static string _rpcEndpoint;
+        private static string _validatorAddress;
+        private static IConfigurationProvider _configHandler;
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.WriteLine("EWF NodeControl");
 
             // config stuff
             _contractAddresss = "0x";
-            _pathToEnvFile = "demo-env.txt";
             _stackPath = "./demo-stack";
+            _rpcEndpoint = "http://localhost:8545";
+            _validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
 
             // Instantiate the contract
-            
+            _configHandler = new ConfigurationFileHandler(Path.Combine(_stackPath, ".env"));
             
             // test
-            UpdateDocker(new StateChangeAction
-            {
-                Mode = UpdateMode.Docker,
-                Payload = "parity/parity:v2.3.4",
-                PaylodSignature = "sha256:d7b09226f45f9d267006c43fe25ba8f20e518b8dcf5df0b93a6e7c310bb28e6c"
-                
-            }, new ExpectedNodeState
-            {
-                IsSigning = true,
-                DockerImage = "parity/parity:v2.3.4",
-                DockerChecksum = "sha256:d7b09226f45f9d267006c43fe25ba8f20e518b8dcf5df0b93a6e7c310bb28e6c"
-            });
-            return;
-            
+          
            Timer checkTimer = new Timer(CheckForUpdates);
            checkTimer.Change(10000, 10000);
 
@@ -53,9 +46,9 @@ namespace src
         {
             Console.WriteLine("Checking On-Chain for updates...");
 
-            ContractWrapper cw = new ContractWrapper(_contractAddresss);
-            StateCompare sc = new StateCompare(new ConfigurationFileHandler(_pathToEnvFile));
-            ExpectedNodeState expectedState = cw.GetExpectedState(); 
+            IContractWrapper cw = new ContractWrapper(_contractAddresss,_rpcEndpoint,_validatorAddress);
+            StateCompare sc = new StateCompare(_configHandler);
+            ExpectedNodeState expectedState = cw.GetExpectedState().Result; 
 
             // calculate action to 
 
@@ -66,35 +59,114 @@ namespace src
                 // No actions. Sleep.
                 return;
             }
-                
+
             // Process actions
             foreach(StateChangeAction act in actions)
             {
-                if (act.Mode == UpdateMode.Docker)
+                try
                 {
-                    UpdateDocker(act, expectedState);
-                } 
-                else if (act.Mode == UpdateMode.ChainSpec)
+                    switch (act.Mode)
+                    {
+                        case UpdateMode.Docker:
+                            UpdateDocker(act, expectedState);
+                            break;
+                        case UpdateMode.ChainSpec:
+                            UpdateChainSpec(act);
+                            break;
+                        default:
+                            throw new UpdateVerificationException("Unsupported update mode.");
+                    }
+                }
+                catch (UpdateVerificationException uve)
                 {
-                    // download chainspec
-                        
-                    // verify siganture
-                        
-                    // copy to final location
-                        
-                    // restart parity
-                        
-                        
+                    SendMail("Unable to verify update", uve.Message, expectedState);
+                }
+                catch (Exception ex)
+                {
+                    SendMail("Unknown error during update", ex.Message, expectedState);
                 }
             }
-                
+
             // wait until parity is back online
-                
+            Console.WriteLine("Waiting for updates to settle...");
+            Thread.Sleep(20000);
+            
             // Confirm update with tx through local parity
-                
+            cw.ConfirmUpdate().Wait();
+
         }
 
-        public static void UpdateDocker(StateChangeAction act, ExpectedNodeState expectedState)
+        private static void SendMail(string subject, string verifyErrorMessage, ExpectedNodeState expectedState)
+        {
+            // TODO: Send a message to the tech contact
+        }
+
+        private static void UpdateChainSpec(StateChangeAction act)
+        {
+            // verify https
+            if (!act.Payload.StartsWith("https://"))
+            {
+                throw new UpdateVerificationException("Won't download chainspec from unencrypted URL");
+            }
+
+            string newChainSpec;
+
+            // download chainspec
+            using (HttpClient hc = new HttpClient())
+            {
+                newChainSpec = hc.GetStringAsync(act.Payload).Result;
+            }
+
+
+            // verify hash
+            string newHash = HashString(newChainSpec);
+            if (newHash != act.PayloadHash)
+            {
+                throw new UpdateVerificationException(
+                    "Downloaded chainspec don't matches hash from chain");
+            }
+
+            // copy to final location
+            string chainSpecPath = Path.Combine(_stackPath, "config/chainspec.json");
+
+            if (!File.Exists(chainSpecPath))
+            {
+                throw new UpdateVerificationException("Unable to read current chainspec");
+            }
+
+            string fileTimestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString();
+
+            // Backup current chainspec
+
+            File.Move(chainSpecPath,
+                Path.Combine(_stackPath, $"config/chainspec.json.{fileTimestamp}"));
+
+            // write new
+            File.WriteAllText(chainSpecPath, newChainSpec);
+
+            // restart parity
+            DockerControl.ApplyChangesToStack(_stackPath, true);
+        }
+
+        private static string HashString(string newChainSpec)
+        {
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())  
+            {  
+                // ComputeHash - returns byte array  
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(newChainSpec));  
+  
+                // Convert byte array to a string   
+                StringBuilder builder = new StringBuilder();  
+                foreach (byte t in bytes)
+                {
+                    builder.Append(t.ToString("x2"));
+                }  
+                return builder.ToString();  
+            }  
+        }
+
+        private static void UpdateDocker(StateChangeAction act, ExpectedNodeState expectedState)
         {
             // pull docker image
             DockerClient client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock"))
@@ -105,8 +177,8 @@ namespace src
 
             // TODO: verify its a proper docker image tag
 
-            var progress = new Progress<JSONMessage>();
-            string msg = String.Empty;
+            Progress<JSONMessage> progress = new Progress<JSONMessage>();
+            string msg = string.Empty;
             progress.ProgressChanged += (sender, message) =>
             {
                 string newMsg = $"[DOCKER IMAGE PULL | {message.ID}] {message.Status}...";
@@ -121,14 +193,14 @@ namespace src
             client.Images.CreateImageAsync(new ImagesCreateParameters
             {
                 FromImage = act.Payload.Split(':')[0],
-                Tag = act.Payload.Split(':')[1],
+                Tag = act.Payload.Split(':')[1]
             }, null, progress).Wait();
 
             // verify hash
-            var inspectResult = client.Images.InspectImageAsync(act.Payload).Result;
-            if (inspectResult.ID != act.PaylodSignature)
+            ImageInspectResponse inspectResult = client.Images.InspectImageAsync(act.Payload).Result;
+            if (inspectResult.ID != act.PayloadHash)
             {
-                Console.WriteLine("Image signature don't match. Cancel update.");
+                Console.WriteLine("Image hashes don't match. Cancel update.");
                 client.Images.DeleteImageAsync(act.Payload, new ImageDeleteParameters()).Wait();
                 Console.WriteLine("Pulled imaged removed.");
                 return;
@@ -137,14 +209,11 @@ namespace src
             // Image is legit. update docker compose
             Console.WriteLine("Image valid. Updating stack...");
             
-
-
-            // modify docker-compse env file
-            ConfigurationFileHandler cfh = new ConfigurationFileHandler(_pathToEnvFile);
-            cfh.WriteNewState(expectedState);
+            // modify docker-compose env file
+            _configHandler.WriteNewState(expectedState);
 
             // restart/upgrade stack
-            DockerControl.ApplyChangesToStack(_stackPath);
+            DockerControl.ApplyChangesToStack(_stackPath, false);
         }
     }
 }

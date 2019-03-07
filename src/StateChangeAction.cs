@@ -4,6 +4,6 @@ namespace src
     {
         public UpdateMode Mode { get; set; }
         public string Payload { get; set; }
-        public string PaylodSignature { get; set; }
+        public string PayloadHash { get; set; }
     }
 }
