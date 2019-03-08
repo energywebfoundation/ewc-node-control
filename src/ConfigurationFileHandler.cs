@@ -14,8 +14,9 @@ namespace src
         private const string ParityVersion = "PARITY_VERSION";
         private const string ParityChksum = "PARITY_CHKSUM";
         private const string ChainspecChksum = "CHAINSPEC_CHKSUM";
+        private const string ChainspecUrl = "CHAINSPEC_URL";
         private const string IsSigning = "IS_SIGNING";
-
+        
         public ConfigurationFileHandler(string pathToEnvFile)
         {
             if (string.IsNullOrWhiteSpace(pathToEnvFile))
@@ -59,6 +60,9 @@ namespace src
                     case ChainspecChksum:
                         state.ChainspecChecksum = kv[1];
                         break;
+                    case ChainspecUrl:
+                        state.ChainspecUrl = kv[1];
+                        break;
                     case IsSigning:
                         state.IsSigning = kv[1] == "1";
                         break;
@@ -80,17 +84,21 @@ namespace src
             foreach (string line in File.ReadAllLines(_envFile))
             {
                 // replace any value we have authority over with the state value
-                if (line.StartsWith(ParityVersion))
+                if (line.StartsWith(ParityVersion) && !string.IsNullOrWhiteSpace(newState.DockerImage))
                 {
                     newFileContents.Add($"{ParityVersion}={newState.DockerImage}");
                 }
-                else if (line.StartsWith(ParityChksum))
+                else if (line.StartsWith(ParityChksum)&& !string.IsNullOrWhiteSpace(newState.DockerChecksum))
                 {
                     newFileContents.Add($"{ParityChksum}={newState.DockerChecksum}");
                 }
-                else if (line.StartsWith(ChainspecChksum))
+                else if (line.StartsWith(ChainspecChksum)&& !string.IsNullOrWhiteSpace(newState.ChainspecChecksum))
                 {
                     newFileContents.Add($"{ChainspecChksum}={newState.ChainspecChecksum}");
+                }
+                else if (line.StartsWith(ChainspecUrl)&& !string.IsNullOrWhiteSpace(newState.ChainspecUrl))
+                {
+                    newFileContents.Add($"{ChainspecUrl}={newState.ChainspecUrl}");
                 }
                 else if (line.StartsWith(IsSigning))
                 {
