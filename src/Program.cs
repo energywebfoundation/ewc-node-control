@@ -3,6 +3,7 @@ using System.IO;
 using Nethereum.Contracts;
 using src;
 using src.Interfaces;
+using src.Models;
 
 namespace src
 {

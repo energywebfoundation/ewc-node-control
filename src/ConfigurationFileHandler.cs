@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using src.Interfaces;
@@ -7,40 +8,66 @@ namespace src
 {
     public class ConfigurationFileHandler : IConfigurationProvider
     {
-
         private readonly string _envFile;
+
+        // environment variable mapping
+        private const string ParityVersion = "PARITY_VERSION";
+        private const string ParityChksum = "PARITY_CHKSUM";
+        private const string ChainspecChksum = "CHAINSPEC_CHKSUM";
+        private const string IsSigning = "IS_SIGNING";
 
         public ConfigurationFileHandler(string pathToEnvFile)
         {
+            if (string.IsNullOrWhiteSpace(pathToEnvFile))
+            {
+                throw new ArgumentException("No path given.");
+            }
+
+            if (!File.Exists(pathToEnvFile))
+            {
+                throw new FileNotFoundException("No file found at path.");
+            }
+
             _envFile = pathToEnvFile;
         }
 
         public ExpectedNodeState ReadCurrentState()
         {
+            if (!File.Exists(_envFile))
+            {
+                throw new FileNotFoundException("Settings file disappeared");
+            }
+
             ExpectedNodeState state = new ExpectedNodeState();
             foreach (string line in File.ReadAllLines(_envFile))
             {
                 string[] kv = line.Split('=');
+                if (kv.Length != 2)
+                {
+                    // Not a line we can parse. Skip
+                    continue;
+                }
+
                 switch (kv[0])
                 {
-                    case "PARITY_VERSION":
+                    case ParityVersion:
                         state.DockerImage = kv[1];
                         break;
-                    case "PARITY_CHKSUM":
+                    case ParityChksum:
                         state.DockerChecksum = kv[1];
                         break;
-                    case "CHAINSPEC_CHKSUM":
+                    case ChainspecChksum:
                         state.ChainspecChecksum = kv[1];
                         break;
-                    case "IS_SIGNING":
-                        state.IsSigning= kv[1] == "1";
+                    case IsSigning:
+                        state.IsSigning = kv[1] == "1";
                         break;
                 }
             }
 
             return state;
         }
-        
+
         public void WriteNewState(ExpectedNodeState newState)
         {
             if (!File.Exists(_envFile))
@@ -49,36 +76,35 @@ namespace src
             }
 
             List<string> newFileContents = new List<string>();
+
             foreach (string line in File.ReadAllLines(_envFile))
             {
                 // replace any value we have authority over with the state value
-                if (line.StartsWith("PARITY_VERSION"))
+                if (line.StartsWith(ParityVersion))
                 {
-                    newFileContents.Add($"PARITY_VERSION={newState.DockerImage}");
-                } 
-                else if (line.StartsWith("PARITY_CHKSUM"))
-                {
-                    newFileContents.Add($"PARITY_CHKSUM={newState.DockerChecksum}");
-                } 
-                else if (line.StartsWith("CHAINSPEC_CHKSUM"))
-                {
-                    newFileContents.Add($"CHAINSPEC_CHKSUM={newState.ChainspecChecksum}");
+                    newFileContents.Add($"{ParityVersion}={newState.DockerImage}");
                 }
-                else if (line.StartsWith("IS_SIGNING"))
+                else if (line.StartsWith(ParityChksum))
+                {
+                    newFileContents.Add($"{ParityChksum}={newState.DockerChecksum}");
+                }
+                else if (line.StartsWith(ChainspecChksum))
+                {
+                    newFileContents.Add($"{ChainspecChksum}={newState.ChainspecChecksum}");
+                }
+                else if (line.StartsWith(IsSigning))
                 {
                     string signing = newState.IsSigning ? "1" : "0";
-                    newFileContents.Add($"IS_SIGNING={signing}");
+                    newFileContents.Add($"{IsSigning}={signing}");
                 }
                 else
                 {
                     newFileContents.Add(line);
                 }
             }
-                
-            
+
             // Write changed config to disk
-            File.WriteAllLines(_envFile,newFileContents);
+            File.WriteAllLines(_envFile, newFileContents);
         }
-        
     }
 }

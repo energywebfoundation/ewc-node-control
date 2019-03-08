@@ -4,11 +4,6 @@ using System.IO;
 
 namespace src
 {
-    public interface IDockerComposeControl
-    {
-        void ApplyChangesToStack(string pathToStack, bool restartOnly);
-    }
-    
     public class LinuxComposeControl : IDockerComposeControl
     {
 

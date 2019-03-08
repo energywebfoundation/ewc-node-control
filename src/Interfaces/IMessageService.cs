@@ -1,6 +1,6 @@
 using src.Models;
 
-namespace src
+namespace src.Interfaces
 {
     public interface IMessageService
     {

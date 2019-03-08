@@ -11,18 +11,27 @@ namespace src
 
         public StateCompare(IConfigurationProvider confProv)
         {
-            _configProvider = confProv ?? throw new ArgumentException("No Configuration provider given.", nameof(confProv));
+            _configProvider = confProv ?? throw new ArgumentNullException(nameof(confProv),"No Configuration provider given.");
         }
 
         public List<StateChangeAction> ComputeActionsFromState(ExpectedNodeState newState)
         {
+            if (newState == null)
+            {
+                throw new ArgumentNullException(nameof(newState),"newState to compare can't be null");
+            }
+            
             ExpectedNodeState curState = _configProvider.ReadCurrentState();
-            List<StateChangeAction> actions = new List<StateChangeAction>();
-
+            if (curState == null)
+            {
+                throw new StateCompareException("Received state from configuration provider is null. Can't compare");
+            }
+            
             // compare states and create according actions
+            List<StateChangeAction> actions = new List<StateChangeAction>();
             
             // check for parity update
-            if (curState.DockerChecksum != newState.DockerChecksum)
+            if (curState.DockerChecksum != newState.DockerChecksum && curState.DockerImage != newState.DockerImage)
             {
                 actions.Add(new StateChangeAction
                 {
@@ -32,13 +41,24 @@ namespace src
                 });
             }
             
-            if (curState.ChainspecChecksum != newState.ChainspecChecksum)
+            // Check for chain spec change
+            if (curState.ChainspecChecksum != newState.ChainspecChecksum && curState.ChainspecUrl != newState.ChainspecUrl)
             {
                 actions.Add(new StateChangeAction
                 {
                     Mode = UpdateMode.ChainSpec,
                     Payload = newState.ChainspecUrl,
                     PayloadHash = newState.ChainspecChecksum
+                });
+            }
+            
+            if (curState.IsSigning != newState.IsSigning)
+            {
+                actions.Add(new StateChangeAction
+                {
+                    Mode = UpdateMode.ToggleSigning,
+                    Payload = newState.IsSigning.ToString(),
+                    PayloadHash = String.Empty
                 });
             }
             
