@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace src
 {
+    /// <summary>
+    /// Exception that is thrown by StateCompare
+    /// </summary>
     [Serializable]
     public class StateCompareException : Exception
     {
@@ -13,15 +16,7 @@ namespace src
         //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
         //
 
-        public StateCompareException()
-        {
-        }
-
         public StateCompareException(string message) : base(message)
-        {
-        }
-
-        public StateCompareException(string message, Exception inner) : base(message, inner)
         {
         }
 

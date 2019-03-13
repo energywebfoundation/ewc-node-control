@@ -4,11 +4,18 @@ using src.Models;
 
 namespace src
 {
-    public class MailService : IMessageService
+    /// <summary>
+    /// Writes messages just to STDOUT
+    /// </summary>
+    public class ConsoleMessageService : IMessageService
     {
+        /// <inheritdoc />
+        /// <summary>
+        /// Write error message to console
+        /// </summary>
         public void SendErrorMessage(string subject, string errorMessage, NodeState state)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"[MSG | {subject}] {errorMessage}" );
         }
     }
 }

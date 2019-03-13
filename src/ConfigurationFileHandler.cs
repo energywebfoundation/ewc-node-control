@@ -6,6 +6,10 @@ using src.Models;
 
 namespace src
 {
+    
+    /// <summary>
+    /// Implements a configuration provider that writes docker-compose compatible env files 
+    /// </summary>
     public class ConfigurationFileHandler : IConfigurationProvider
     {
         private readonly string _envFile;
@@ -17,6 +21,12 @@ namespace src
         private const string ChainspecUrl = "CHAINSPEC_URL";
         private const string IsSigning = "IS_SIGNING";
         
+        /// <summary>
+        /// Instantiates the config provider with the given env file
+        /// </summary>
+        /// <param name="pathToEnvFile">Path to the env file</param>
+        /// <exception cref="ArgumentException">Thrown when the path is null or empty</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the env file does not exist</exception>
         public ConfigurationFileHandler(string pathToEnvFile)
         {
             if (string.IsNullOrWhiteSpace(pathToEnvFile))
@@ -32,6 +42,11 @@ namespace src
             _envFile = pathToEnvFile;
         }
 
+        /// <summary>
+        /// Parse the env file and construct a NodeState from it
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException">Thrown when the env file has disappeared</exception>
         public NodeState ReadCurrentState()
         {
             if (!File.Exists(_envFile))
@@ -72,6 +87,11 @@ namespace src
             return state;
         }
 
+        /// <summary>
+        /// Updates the specific key in the env files with the values from the given node state
+        /// </summary>
+        /// <param name="newState">The state that should be applied to the env file</param>
+        /// <exception cref="FileNotFoundException">Thrown when the env file has disappeared</exception>
         public void WriteNewState(NodeState newState)
         {
             if (!File.Exists(_envFile))

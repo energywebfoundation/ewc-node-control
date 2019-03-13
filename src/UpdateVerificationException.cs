@@ -3,13 +3,12 @@ using System.Runtime.Serialization;
 
 namespace src
 {
+    /// <summary>
+    /// Exception that is thrown during verification of a received update
+    /// </summary>
     [Serializable]
     public class UpdateVerificationException : Exception
     {
-        public UpdateVerificationException()
-        {
-        }
-
         public UpdateVerificationException(string message) : base(message)
         {
         }

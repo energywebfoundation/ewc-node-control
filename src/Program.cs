@@ -32,7 +32,7 @@ namespace src
                 ValidatorAddress = _validatorAddress,
                 DockerStackPath = _stackPath,
                 ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(_stackPath, ".env")),
-                MessageService = new MailService(),
+                MessageService = new ConsoleMessageService(),
                 DockerComposeControl = new LinuxComposeControl()
             };
             

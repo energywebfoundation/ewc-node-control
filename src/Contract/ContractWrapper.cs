@@ -45,7 +45,7 @@ namespace src.Contract
         /// <summary>
         /// Instantiates the a new wrapper
         /// </summary>
-        /// <param name="contractAddress">Address of the smart contract</param>
+        /// <param name="contractAddress">Address of the node control smart contract</param>
         /// <param name="rpcEndpoint">HTTP URL to the JSON-RPC endpoint</param>
         /// <param name="validatorAddress">The ethereum address of the controlled validator</param>
         public ContractWrapper(string contractAddress, string rpcEndpoint, string validatorAddress)
