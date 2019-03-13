@@ -56,6 +56,13 @@ namespace src
         private void CheckForUpdates(object state)
         {
             Log("Checking On-Chain for updates.");
+            
+            if(!_cw.HasNewUpdate().Result)
+            {
+                // No new update events on chain
+                return;
+            }
+                
             ExpectedNodeState expectedState = _cw.GetExpectedState().Result;
 
             // calculate action to 
