@@ -4,6 +4,7 @@ using src.Models;
 
 namespace src
 {
+    /// <inheritdoc />
     /// <summary>
     /// Writes messages just to STDOUT
     /// </summary>
