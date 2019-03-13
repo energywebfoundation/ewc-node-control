@@ -13,8 +13,15 @@ using src.Models;
 
 namespace src
 {
+    /// <summary>
+    /// Watches for new updates, compares the current and expected state and carries out the state changes if nessesary
+    /// </summary>
     public class UpdateWatch
     {
+        
+        /// <summary>
+        /// Event that gets triggered on a new log message. Use to get log output from UpdateWatch
+        /// </summary>
         internal event EventHandler<LogArgs> OnLog
         {
             add => _onLog += value;
@@ -22,14 +29,45 @@ namespace src
             remove => _onLog -= value;
         }
 
+        /// <summary>
+        /// Event handler for log messages
+        /// </summary>
         private EventHandler<LogArgs> _onLog;
+
+        /// <summary>
+        /// ContractWrapper implementation given by the constructor options
+        /// </summary>
         private readonly IContractWrapper _cw;
+        
+        /// <summary>
+        /// state compare instance initialized with the configuration provider given in construction options
+        /// </summary>
         private readonly StateCompare _sc;
+        
+        /// <summary>
+        /// Message service implementation given via the constructor options
+        /// </summary>
         private readonly IMessageService _msgService;
+        
+        /// <summary>
+        /// Path to the docker-compose stack given by the constructor options 
+        /// </summary>
         private readonly string _stackPath;
+        
+        /// <summary>
+        /// ConfigurationProvider implementation given by the constructor options
+        /// </summary>
         private readonly IConfigurationProvider _configProvider;
+        
+        /// <summary>
+        /// DockerComposeControl implementation given by the constructor options
+        /// </summary>
         private readonly IDockerComposeControl _dcc;
 
+        /// <summary>
+        /// Create a new instance of UpdateWatch.
+        /// </summary>
+        /// <param name="opts">Filled options object to configure update watch</param>
         public UpdateWatch(UpdateWatchOptions opts)
         {
             _cw = new ContractWrapper(opts.ContractAddress, opts.RpcEndpoint, opts.ValidatorAddress);
@@ -41,6 +79,9 @@ namespace src
         }
 
 
+        /// <summary>
+        /// Start a timer that will periodically check for new updates
+        /// </summary>
         public void StartWatch()
         {
             Log("Starting watch");
@@ -48,11 +89,20 @@ namespace src
             checkTimer.Change(10000, 10000);
         }
 
+        /// <summary>
+        /// Abstract log method to log arbitrary messages. Fires the OnLog() event.
+        /// </summary>
+        /// <param name="message">The message that should be send to the log event</param>
         private void Log(string message)
         {
             _onLog(this, new LogArgs(message));
         }
 
+        /// <summary>
+        /// Method called by the timer to check and execute updates
+        /// </summary>
+        /// <param name="state">dummy state that is not used</param>
+        /// <remarks>Errors during processing will not throw exceptions, but instead send a message via the message service.</remarks>
         private void CheckForUpdates(object state)
         {
             Log("Checking On-Chain for updates.");
@@ -63,10 +113,10 @@ namespace src
                 return;
             }
                 
+            // Query block chain to receive expectedcdd state
             ExpectedNodeState expectedState = _cw.GetExpectedState().Result;
 
-            // calculate action to 
-
+            // calculate actions from state difference 
             List<StateChangeAction> actions = _sc.ComputeActionsFromState(expectedState);
 
             if (actions.Count == 0)
@@ -82,10 +132,10 @@ namespace src
                 {
                     switch (act.Mode)
                     {
-                        case UpdateMode.Docker:
+                        case UpdateMode.Docker: // Update docker image
                             UpdateDocker(act, expectedState);
                             break;
-                        case UpdateMode.ChainSpec:
+                        case UpdateMode.ChainSpec: // Update chainspec
                             UpdateChainSpec(act);
                             break;
                         default:
@@ -110,13 +160,18 @@ namespace src
             _cw.ConfirmUpdate().Wait();
         }
 
-        private static string HashString(string newChainSpec)
+        /// <summary>
+        /// Hash string with SHA256 and return has as hex string
+        /// </summary>
+        /// <param name="dataToHash">Data that should be hashed</param>
+        /// <returns>hash as hex encoded string</returns>
+        private static string HashString(string dataToHash)
         {
             // Create a SHA256   
             using (SHA256 sha256Hash = SHA256.Create())
             {
                 // ComputeHash - returns byte array  
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(newChainSpec));
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(dataToHash));
 
                 // Convert byte array to a string   
                 StringBuilder builder = new StringBuilder();
@@ -128,7 +183,21 @@ namespace src
                 return builder.ToString();
             }
         }
-
+        
+        
+        /// <summary>
+        /// Downloads, verifies and updates the chain spec file
+        /// </summary>
+        /// <param name="act">The action containing the new chainspec url and checksum</param>
+        /// <exception cref="UpdateVerificationException">
+        /// Thrown when update is not able to verify. This can happen when:
+        /// <list type="bullet">
+        /// <item>URL to chain file is not https://</item>
+        /// <item>Checksum of the downloaded content doesn't match</item>
+        /// <item>Unable to read the current chainspec file. Maybe someone messed with the file.</item>
+        /// </list>
+        /// </exception>
+        
         private void UpdateChainSpec(StateChangeAction act)
         {
             // verify https
@@ -175,16 +244,27 @@ namespace src
             _dcc.ApplyChangesToStack(_stackPath, true);
         }
 
+        /// <summary>
+        /// Pulland verify a new docker image and update the docker-compose file 
+        /// </summary>
+        /// <param name="act">The action containing the new chainspec url and checksum</param>
+        /// <param name="expectedState">The expected state that the action was derived from</param>
+        /// <exception cref="UpdateVerificationException">
+        /// Thrown when update is not able to be verified. Reasons:
+        /// <list type="bullet">
+        /// <item>The image is not able to be pulled</item>
+        /// <item>Checksum of the downloaded content doesn't match</item>
+        /// </list>
+        /// </exception>
         private void UpdateDocker(StateChangeAction act, ExpectedNodeState expectedState)
         {
-            // pull docker image
+            // Connect to local docker deamon
             DockerClient client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock"))
                 .CreateClient();
 
-            // TODO: verify its a proper docker image tag
             Log($"Pulling new parity image [{act.Payload}] ..");
 
-
+            // Prepare progress logging
             string msg = string.Empty;
             Progress<JSONMessage> progress = new Progress<JSONMessage>();
             progress.ProgressChanged += (sender, message) =>
@@ -198,13 +278,21 @@ namespace src
                 msg = newMsg;
             };
 
-            client.Images.CreateImageAsync(new ImagesCreateParameters
+            try
             {
-                FromImage = act.Payload.Split(':')[0],
-                Tag = act.Payload.Split(':')[1]
-            }, null, progress).Wait();
+                // pull docker image
+                client.Images.CreateImageAsync(new ImagesCreateParameters
+                {
+                    FromImage = act.Payload.Split(':')[0],
+                    Tag = act.Payload.Split(':')[1]
+                }, null, progress).Wait();
+            }
+            catch (Exception e)
+            {
+                throw new UpdateVerificationException("Unable to pull new image.",e);
+            }
 
-            // verify hash
+            // verify docker image id against expected hash
             ImageInspectResponse inspectResult = client.Images.InspectImageAsync(act.Payload).Result;
             if (inspectResult.ID != act.PayloadHash)
             {
