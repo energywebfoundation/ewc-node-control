@@ -37,7 +37,7 @@ namespace tests
             
             StateCompareException ex = Assert.Throws<StateCompareException>(() =>
             {
-                sc.ComputeActionsFromState(new ExpectedNodeState());
+                sc.ComputeActionsFromState(new NodeState());
             });
             
             Assert.Equal("Received state from configuration provider is null. Can't compare",ex.Message);
@@ -47,7 +47,7 @@ namespace tests
         public void ShouldGenerateNoActionsOnSameState()
         {
             
-            MockConfigProvider cp = new MockConfigProvider {CurrentState = new ExpectedNodeState
+            MockConfigProvider cp = new MockConfigProvider {CurrentState = new NodeState
             {
                 IsSigning = true,
                 DockerImage = "parity/parity:v2.3.4",
@@ -58,7 +58,7 @@ namespace tests
             }};
             
             // Recreate the same state so state object references are different
-            ExpectedNodeState newState = new ExpectedNodeState
+            NodeState newState = new NodeState
             {
                 IsSigning = true,
                 DockerImage = "parity/parity:v2.3.4",
@@ -80,7 +80,7 @@ namespace tests
         public void ShouldGenerateNoActionsOnEqualState()
         {
             // Recreate a single state so state object references are equal
-            ExpectedNodeState sharedState = new ExpectedNodeState
+            NodeState sharedState = new NodeState
             {
                 IsSigning = true,
                 DockerImage = "parity/parity:v2.3.4",
@@ -104,7 +104,7 @@ namespace tests
         public void ShouldGenerateDockerAction()
         {
             
-            MockConfigProvider cp = new MockConfigProvider {CurrentState = new ExpectedNodeState
+            MockConfigProvider cp = new MockConfigProvider {CurrentState = new NodeState
             {
                 IsSigning = true,
                 DockerImage = "parity/parity:v2.3.4",
@@ -115,7 +115,7 @@ namespace tests
             }};
             
             // Recreate the same state so state object references are different
-            ExpectedNodeState newState = new ExpectedNodeState
+            NodeState newState = new NodeState
             {
                 IsSigning = true,
                 DockerImage = "parity/parity:v2.4.4",
@@ -141,7 +141,7 @@ namespace tests
         public void ShouldGenerateChainspecAction()
         {
             
-            MockConfigProvider cp = new MockConfigProvider {CurrentState = new ExpectedNodeState
+            MockConfigProvider cp = new MockConfigProvider {CurrentState = new NodeState
             {
                 IsSigning = true,
                 DockerImage = "parity/parity:v2.3.4",
@@ -152,7 +152,7 @@ namespace tests
             }};
             
             // Recreate the same state so state object references are different
-            ExpectedNodeState newState = new ExpectedNodeState
+            NodeState newState = new NodeState
             {
                 IsSigning = true,
                 DockerImage = "parity/parity:v2.3.4",
@@ -178,7 +178,7 @@ namespace tests
         public void ShouldGenerateSigningAction()
         {
             
-            MockConfigProvider cp = new MockConfigProvider {CurrentState = new ExpectedNodeState
+            MockConfigProvider cp = new MockConfigProvider {CurrentState = new NodeState
             {
                 IsSigning = true,
                 DockerImage = "parity/parity:v2.3.4",
@@ -189,7 +189,7 @@ namespace tests
             }};
             
             // Recreate the same state so state object references are different
-            ExpectedNodeState newState = new ExpectedNodeState
+            NodeState newState = new NodeState
             {
                 IsSigning = false,
                 DockerImage = "parity/parity:v2.3.4",
@@ -216,7 +216,7 @@ namespace tests
             // Test docker and chain
             yield return new object[]
             {
-                new ExpectedNodeState
+                new NodeState
                 {
                     IsSigning = true,
                     DockerImage = "parity/parity:v2.3.4",
@@ -225,7 +225,7 @@ namespace tests
                     ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
                     UpdateIntroducedBlock = 1234567
                 },
-                new ExpectedNodeState
+                new NodeState
                 {
                     IsSigning = true,
                     DockerImage = "parity/parity:v2.4.4",
@@ -254,7 +254,7 @@ namespace tests
             // Test docker, Chain and signing toggle
             yield return new object[]
             {
-                new ExpectedNodeState
+                new NodeState
                 {
                     IsSigning = true,
                     DockerImage = "parity/parity:v2.3.4",
@@ -263,7 +263,7 @@ namespace tests
                     ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
                     UpdateIntroducedBlock = 1234567
                 },
-                new ExpectedNodeState
+                new NodeState
                 {
                     IsSigning = false,
                     DockerImage = "parity/parity:v2.4.4",
@@ -298,7 +298,7 @@ namespace tests
 
         [Theory]
         [MemberData(nameof(GenerateTestCasesForActionCombinations))]
-        public void ShouldGenerateActionCombinations(ExpectedNodeState currentState, ExpectedNodeState newState, List<StateChangeAction> expectedActions)
+        public void ShouldGenerateActionCombinations(NodeState currentState, NodeState newState, List<StateChangeAction> expectedActions)
         {
             
             MockConfigProvider cp = new MockConfigProvider {CurrentState = currentState};

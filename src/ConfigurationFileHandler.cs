@@ -32,14 +32,14 @@ namespace src
             _envFile = pathToEnvFile;
         }
 
-        public ExpectedNodeState ReadCurrentState()
+        public NodeState ReadCurrentState()
         {
             if (!File.Exists(_envFile))
             {
                 throw new FileNotFoundException("Settings file disappeared");
             }
 
-            ExpectedNodeState state = new ExpectedNodeState();
+            NodeState state = new NodeState();
             foreach (string line in File.ReadAllLines(_envFile))
             {
                 string[] kv = line.Split('=');
@@ -72,7 +72,7 @@ namespace src
             return state;
         }
 
-        public void WriteNewState(ExpectedNodeState newState)
+        public void WriteNewState(NodeState newState)
         {
             if (!File.Exists(_envFile))
             {

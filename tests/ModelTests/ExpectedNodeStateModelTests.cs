@@ -15,7 +15,7 @@ namespace tests
         [Fact]
         public void ShouldHaveCorrectDefaults()
         {
-            ExpectedNodeState ens = new ExpectedNodeState();
+            NodeState ens = new NodeState();
             Assert.Equal(string.Empty, ens.DockerImage);
             Assert.Equal(string.Empty, ens.DockerChecksum);
             Assert.Equal(string.Empty, ens.ChainspecUrl);
@@ -31,7 +31,7 @@ namespace tests
         [InlineData("parity/parity:v2.3.3","0x12345678912345","https://google.com","0x12345678912345",true,256)]
         public void ShouldGetSetProperly(string dImg, string dChksum, string cs, string csSum, bool isSigning, int block)
         {
-            ExpectedNodeState ens = new ExpectedNodeState
+            NodeState ens = new NodeState
             {
                 IsSigning = isSigning,
                 DockerImage = dImg,

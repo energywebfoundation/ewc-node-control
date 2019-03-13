@@ -6,7 +6,7 @@ namespace src.Interfaces
     public interface IContractWrapper
     {
         Task<bool> HasNewUpdate();
-        Task<ExpectedNodeState> GetExpectedState();
+        Task<NodeState> GetExpectedState();
         Task ConfirmUpdate();
     }
 }

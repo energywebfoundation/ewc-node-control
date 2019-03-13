@@ -18,7 +18,7 @@ namespace tests
         [InlineData("    ")]
         public void ShouldHaveCorrectMessage(string msg)
         {
-            LogArgs la = new LogArgs(msg);
+            LogEventArgs la = new LogEventArgs(msg);
             Assert.Equal(msg, la.Message);
         }
         

@@ -22,7 +22,7 @@ namespace tests
             // Interfaces should be null
             Assert.Null(sca.ConfigurationProvider);
             Assert.Null(sca.MessageService);
-            Assert.Null(sca.DockerControl);
+            Assert.Null(sca.DockerComposeControl);
 
             // Strings should be empty
             Assert.Equal(string.Empty, sca.ContractAddress);
@@ -48,7 +48,7 @@ namespace tests
                 ContractAddress = contractAddr,
                 ValidatorAddress = validatorAddr,
                 DockerStackPath = path,
-                DockerControl = mdcc,
+                DockerComposeControl = mdcc,
                 MessageService = ms,
                 ConfigurationProvider = cp 
             };
@@ -58,7 +58,7 @@ namespace tests
             Assert.Equal(validatorAddr, sca.ValidatorAddress);
             Assert.Equal(path, sca.DockerStackPath);
             
-            Assert.Equal(mdcc, sca.DockerControl);
+            Assert.Equal(mdcc, sca.DockerComposeControl);
             Assert.Equal(ms,sca.MessageService);
             Assert.Equal(ms,sca.MessageService);
             Assert.Equal(cp,sca.ConfigurationProvider);

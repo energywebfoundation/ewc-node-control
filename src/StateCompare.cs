@@ -14,14 +14,14 @@ namespace src
             _configProvider = confProv ?? throw new ArgumentNullException(nameof(confProv),"No Configuration provider given.");
         }
 
-        public List<StateChangeAction> ComputeActionsFromState(ExpectedNodeState newState)
+        public List<StateChangeAction> ComputeActionsFromState(NodeState newState)
         {
             if (newState == null)
             {
                 throw new ArgumentNullException(nameof(newState),"newState to compare can't be null");
             }
             
-            ExpectedNodeState curState = _configProvider.ReadCurrentState();
+            NodeState curState = _configProvider.ReadCurrentState();
             if (curState == null)
             {
                 throw new StateCompareException("Received state from configuration provider is null. Can't compare");

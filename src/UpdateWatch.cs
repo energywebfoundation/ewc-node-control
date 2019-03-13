@@ -22,7 +22,7 @@ namespace src
         /// <summary>
         /// Event that gets triggered on a new log message. Use to get log output from UpdateWatch
         /// </summary>
-        internal event EventHandler<LogArgs> OnLog
+        internal event EventHandler<LogEventArgs> OnLog
         {
             add => _onLog += value;
             // TODO: Rider complains about delegate subtraction - find better way - https://www.jetbrains.com/help/rider/DelegateSubtraction.html
@@ -32,7 +32,7 @@ namespace src
         /// <summary>
         /// Event handler for log messages
         /// </summary>
-        private EventHandler<LogArgs> _onLog;
+        private EventHandler<LogEventArgs> _onLog;
 
         /// <summary>
         /// ContractWrapper implementation given by the constructor options
@@ -75,7 +75,7 @@ namespace src
             _msgService = opts.MessageService;
             _stackPath = opts.DockerStackPath;
             _configProvider = opts.ConfigurationProvider;
-            _dcc = opts.DockerControl;
+            _dcc = opts.DockerComposeControl;
         }
 
 
@@ -95,7 +95,7 @@ namespace src
         /// <param name="message">The message that should be send to the log event</param>
         private void Log(string message)
         {
-            _onLog(this, new LogArgs(message));
+            _onLog(this, new LogEventArgs(message));
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace src
             }
                 
             // Query block chain to receive expectedcdd state
-            ExpectedNodeState expectedState = _cw.GetExpectedState().Result;
+            NodeState expectedState = _cw.GetExpectedState().Result;
 
             // calculate actions from state difference 
             List<StateChangeAction> actions = _sc.ComputeActionsFromState(expectedState);
@@ -256,7 +256,7 @@ namespace src
         /// <item>Checksum of the downloaded content doesn't match</item>
         /// </list>
         /// </exception>
-        private void UpdateDocker(StateChangeAction act, ExpectedNodeState expectedState)
+        private void UpdateDocker(StateChangeAction act, NodeState expectedState)
         {
             // Connect to local docker deamon
             DockerClient client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock"))

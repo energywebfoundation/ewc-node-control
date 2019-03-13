@@ -33,7 +33,7 @@ namespace src
                 DockerStackPath = _stackPath,
                 ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(_stackPath, ".env")),
                 MessageService = new MailService(),
-                DockerControl = new LinuxComposeControl()
+                DockerComposeControl = new LinuxComposeControl()
             };
             
             // instantiate the update watch

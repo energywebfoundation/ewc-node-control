@@ -45,7 +45,7 @@ namespace src.Contract
             return outrstandingEvents.Any(x => x.Event.TargetValidator == _validatorAddress);
         } 
 
-        public async Task<ExpectedNodeState> GetExpectedState()
+        public async Task<NodeState> GetExpectedState()
         {
 
             UpdateStateDto contractResponse =  await _contractHandler.QueryDeserializingToObjectAsync<RetrieveUpdateFunction, UpdateStateDto>(new RetrieveUpdateFunction
@@ -53,7 +53,7 @@ namespace src.Contract
                 ValidatorAddress = _validatorAddress,
                 FromAddress = _validatorAddress
             });
-            return new ExpectedNodeState
+            return new NodeState
             {
                 DockerImage = contractResponse.ValidatorState.DockerName,
                 DockerChecksum = ConvertBytesToHexString(contractResponse.ValidatorState.DockerSha),

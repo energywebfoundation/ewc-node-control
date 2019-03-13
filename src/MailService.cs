@@ -6,7 +6,7 @@ namespace src
 {
     public class MailService : IMessageService
     {
-        public void SendMessage(string subject, string errorMEssage, ExpectedNodeState expectedState)
+        public void SendMessage(string subject, string errorMEssage, NodeState state)
         {
             throw new NotImplementedException();
         }

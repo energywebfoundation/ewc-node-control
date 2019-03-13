@@ -5,16 +5,16 @@ namespace tests.Mocks
 {
     public class MockConfigProvider : IConfigurationProvider
     {
-        public ExpectedNodeState ReadCurrentState()
+        public NodeState ReadCurrentState()
         {
             return CurrentState;
         }
 
-        public void WriteNewState(ExpectedNodeState newState)
+        public void WriteNewState(NodeState newState)
         {
             CurrentState = newState;
         }
 
-        public ExpectedNodeState CurrentState { get; set; }
+        public NodeState CurrentState { get; set; }
     }
 }

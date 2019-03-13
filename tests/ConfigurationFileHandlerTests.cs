@@ -50,7 +50,7 @@ namespace tests
                     "CHAINSPEC_URL=https://example.com/chainspec.json",
                     "CHAINSPEC_CHKSUM=b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea"
                 },
-                new ExpectedNodeState
+                new NodeState
                 {
                     IsSigning = true,
                     DockerImage = "parity/parity:v2.3.3",
@@ -80,7 +80,7 @@ namespace tests
                     "TERM=screen"
 
                 },
-                new ExpectedNodeState
+                new NodeState
                 {
                     IsSigning = true,
                     DockerImage = "parity/parity:v2.3.3",
@@ -112,7 +112,7 @@ namespace tests
                     "TERM=screen"
 
                 },
-                new ExpectedNodeState
+                new NodeState
                 {
                     IsSigning = true,
                     DockerImage = "parity/parity:v2.3.3",
@@ -142,7 +142,7 @@ namespace tests
                     "TERM=screen"
 
                 },
-                new ExpectedNodeState
+                new NodeState
                 {
                     IsSigning = true,
                     DockerImage = "parity/parity:v2.3.3",
@@ -177,7 +177,7 @@ namespace tests
                     "CHAINSPEC_CHKSUM=b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
 
                 },
-                new ExpectedNodeState
+                new NodeState
                 {
                     IsSigning = false,
                     DockerImage = "parity/parity:v2.4.0",
@@ -226,7 +226,7 @@ namespace tests
                     "CHAINSPEC_CHKSUM=b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
 
                 },
-                new ExpectedNodeState
+                new NodeState
                 {
                     IsSigning = false,
                     DockerImage = "parity/parity:v2.4.0",
@@ -258,18 +258,18 @@ namespace tests
         
         [Theory]
         [MemberData(nameof(GenerateReadTestCases))]
-        public void ShouldReadFromFile(List<string> fileLines, ExpectedNodeState expectedState)
+        public void ShouldReadFromFile(List<string> fileLines, NodeState state)
         {
             string tmpFilePAth = Path.GetTempFileName();
             File.WriteAllLines(tmpFilePAth,fileLines);
             ConfigurationFileHandler cfh = new ConfigurationFileHandler(tmpFilePAth);
             var resultState = cfh.ReadCurrentState();
-            resultState.Should().BeEquivalentTo(expectedState);
+            resultState.Should().BeEquivalentTo(state);
         }
         
         [Theory]
         [MemberData(nameof(GenerateWriteTestCases))]
-        public void ShouldWriteToFile(List<string> inputFile, ExpectedNodeState newState, List<string> expectedLines)
+        public void ShouldWriteToFile(List<string> inputFile, NodeState newState, List<string> expectedLines)
         {
             string tmpFilePAth = Path.GetTempFileName();
             File.WriteAllLines(tmpFilePAth,inputFile);
@@ -319,7 +319,7 @@ namespace tests
             }
 
             // Should fail on a file write attempt
-            Assert.Throws<FileNotFoundException>(() => { cfh.WriteNewState(new ExpectedNodeState()); });
+            Assert.Throws<FileNotFoundException>(() => { cfh.WriteNewState(new NodeState()); });
             
             // Should fail on a file read attempt
             Assert.Throws<FileNotFoundException>(() => { _ = cfh.ReadCurrentState(); });

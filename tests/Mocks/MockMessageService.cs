@@ -5,14 +5,14 @@ namespace tests.Mocks
 {
     public class MockMessageService : IMessageService
     {
-        public void SendMessage(string subject, string errorMEssage, ExpectedNodeState expectedState)
+        public void SendMessage(string subject, string errorMEssage, NodeState state)
         {
             SendSubject = subject;
             SendErrorMessage = errorMEssage;
-            SendExpectedState = expectedState;
+            SendState = state;
         }
 
-        public ExpectedNodeState SendExpectedState { get; set; }
+        public NodeState SendState { get; set; }
 
         public string SendErrorMessage { get; set; }
 

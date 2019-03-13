@@ -4,6 +4,6 @@ namespace src.Interfaces
 {
     public interface IMessageService
     {
-        void SendMessage(string subject, string errorMEssage, ExpectedNodeState expectedState);
+        void SendMessage(string subject, string errorMEssage, NodeState state);
     }
 }
