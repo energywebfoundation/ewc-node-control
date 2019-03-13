@@ -144,11 +144,11 @@ namespace src
                 }
                 catch (UpdateVerificationException uve)
                 {
-                    _msgService.SendMessage("Unable to verify update", uve.Message, expectedState);
+                    _msgService.SendErrorMessage("Unable to verify update", uve.Message, expectedState);
                 }
                 catch (Exception ex)
                 {
-                    _msgService.SendMessage("Unknown error during update", ex.Message, expectedState);
+                    _msgService.SendErrorMessage("Unknown error during update", ex.Message, expectedState);
                 }
             }
 

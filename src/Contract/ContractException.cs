@@ -3,18 +3,13 @@ using System.Runtime.Serialization;
 
 namespace src.Contract
 {
+    /// <summary>
+    /// Exception that is thown when there is an issue during contract interaction
+    /// </summary>
     [Serializable]
     public class ContractException : Exception
     {
-        public ContractException()
-        {
-        }
-
         public ContractException(string message) : base(message)
-        {
-        }
-
-        public ContractException(string message, Exception inner) : base(message, inner)
         {
         }
 
