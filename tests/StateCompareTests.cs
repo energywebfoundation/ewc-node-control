@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using src;
 using src.Models;
@@ -8,6 +9,8 @@ using Xunit;
 
 namespace tests
 {
+
+    [ExcludeFromCodeCoverage]
     public class StateCompareTests
     {
         [Fact]

@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using src.Contract;
 using src.Interfaces;
 using Xunit;
 
 namespace tests
 {
+    [ExcludeFromCodeCoverage]
     public class ContractTests
     {
         [Fact(Skip = "Needs an RPC endpoint")]

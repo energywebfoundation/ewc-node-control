@@ -1,0 +1,7 @@
+version: '2.0'
+services:
+  demo:
+    image: nginx:alpine
+    ports:
+     - 8056:80
+
