@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Numerics;
+using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using src;
+using src.Interfaces;
 using src.Models;
 using tests.Mocks;
 using Xunit;
@@ -203,6 +206,14 @@ namespace tests
         public void ShouldNotUpdateWhenNoNewEvent()
         {
             // Run the test
+           
+            Mock<IContractWrapper> cwMock = new Mock<IContractWrapper>(MockBehavior.Loose);
+            cwMock
+                .Setup(mock => mock.HasNewUpdate())
+                .Returns(() => Task.FromResult(false))
+                .Verifiable("Contract was not checked for update event");
+                
+            
             UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
             {
                 RpcEndpoint = "http://example.com",
@@ -212,11 +223,138 @@ namespace tests
                 DockerComposeControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
-                ContractWrapper = new MockContractWrapper()
+                ContractWrapper = cwMock.Object
             });
 
-            
+            var checkResult = uw.CheckForUpdates(new object());
+            checkResult.Should().Be(false);
+
+            cwMock.Verify();
+            cwMock.VerifyNoOtherCalls();
+
+        }
+        
+        [Fact]
+        public void ShouldNotUpdateWhenEqualState()
+        {
+            // Run the test
            
+            Mock<IContractWrapper> cwMock = new Mock<IContractWrapper>(MockBehavior.Loose);
+            cwMock
+                .Setup(mock => mock.HasNewUpdate())
+                .Returns(() => Task.FromResult(true))
+                .Verifiable("Contract was not checked for update event");
+            
+            cwMock
+                .Setup(mock => mock.GetExpectedState())
+                .Returns(() => Task.FromResult(new NodeState
+                {
+                    DockerImage = "parity/parity:v2.3.3",
+                    DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    ChainspecUrl = "https://example.com",
+                    IsSigning = false,
+                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    UpdateIntroducedBlock = new BigInteger(20)
+                }))
+                .Verifiable("Contract was not queried for state");
+
+            
+            // Prime config provider with equal state but older
+            MockConfigProvider confMock = new MockConfigProvider
+            {
+                CurrentState = new NodeState
+                {
+                    DockerImage = "parity/parity:v2.3.3",
+                    DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    ChainspecUrl = "https://example.com",
+                    IsSigning = false,
+                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    UpdateIntroducedBlock = new BigInteger(10)
+                }
+            };
+
+            UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
+            {
+                RpcEndpoint = "http://example.com",
+                ContractAddress = "0x0",
+                ValidatorAddress = "0x0",
+                DockerStackPath = "./path",
+                DockerComposeControl = new MockDockerControl(),
+                ConfigurationProvider = confMock,
+                MessageService = new MockMessageService(),
+                ContractWrapper = cwMock.Object
+            });
+
+            // Should yield not update actions and therefore should return false
+            var checkResult = uw.CheckForUpdates(new object());
+            checkResult.Should().Be(false);
+
+            cwMock.Verify();
+            cwMock.VerifyNoOtherCalls();
+
+        }
+        
+         [Fact]
+        public void ShouldUpdateWhenDifferentState()
+        {
+            // Run the test
+           
+            Mock<IContractWrapper> cwMock = new Mock<IContractWrapper>(MockBehavior.Loose);
+            cwMock
+                .Setup(mock => mock.HasNewUpdate())
+                .Returns(() => Task.FromResult(true))
+                .Verifiable("Contract was not checked for update event");
+            
+            cwMock
+                .Setup(mock => mock.GetExpectedState())
+                .Returns(() => Task.FromResult(new NodeState
+                {
+                    DockerImage = "parity/parity:v2.3.3",
+                    DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    ChainspecUrl = "https://example.com",
+                    IsSigning = false,
+                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    UpdateIntroducedBlock = new BigInteger(20)
+                }))
+                .Verifiable("Contract was not queried for state");
+
+            cwMock
+                .Setup(mock => mock.ConfirmUpdate())
+                .Returns(() => Task.CompletedTask)
+                .Verifiable("Contract was not checked for update event");
+            
+            // Prime config provider with equal state but older
+            MockConfigProvider confMock = new MockConfigProvider
+            {
+                CurrentState = new NodeState
+                {
+                    DockerImage = "parity/parity:v2.3.5",
+                    DockerChecksum = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    ChainspecUrl = "https://example.com",
+                    IsSigning = false,
+                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    UpdateIntroducedBlock = new BigInteger(10)
+                }
+            };
+
+            UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
+            {
+                RpcEndpoint = "http://example.com",
+                ContractAddress = "0x0",
+                ValidatorAddress = "0x0",
+                DockerStackPath = "./path",
+                DockerComposeControl = new MockDockerControl(),
+                ConfigurationProvider = confMock,
+                MessageService = new MockMessageService(),
+                ContractWrapper = cwMock.Object
+            });
+
+            // Should yield not update actions and therefore should return false
+            var checkResult = uw.CheckForUpdates(new object());
+            checkResult.Should().Be(true);
+
+            cwMock.Verify();
+            cwMock.VerifyNoOtherCalls();
 
         }
     }

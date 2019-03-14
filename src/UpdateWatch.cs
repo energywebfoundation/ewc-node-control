@@ -110,7 +110,10 @@ namespace src
         public void StartWatch()
         {
             Log("Starting watch");
-            CheckTimer = new Timer(CheckForUpdates);
+            CheckTimer = new Timer((state) =>
+            {
+                CheckForUpdates(state);
+            });
             CheckTimer.Change(10000, 10000);
         }
 
@@ -130,17 +133,17 @@ namespace src
         /// </summary>
         /// <param name="state">dummy state that is not used</param>
         /// <remarks>Errors during processing will not throw exceptions, but instead send a message via the message service.</remarks>
-        public void CheckForUpdates(object state)
+        public bool CheckForUpdates(object state)
         {
             Log("Checking On-Chain for updates.");
             
             if(!_cw.HasNewUpdate().Result)
             {
                 // No new update events on chain
-                return;
+                return false;
             }
                 
-            // Query block chain to receive expectedcdd state
+            // Query block chain to receive expected state
             NodeState expectedState = _cw.GetExpectedState().Result;
 
             // calculate actions from state difference 
@@ -149,7 +152,7 @@ namespace src
             if (actions.Count == 0)
             {
                 // No actions. Sleep.
-                return;
+                return false;
             }
 
             // Process actions
@@ -185,6 +188,7 @@ namespace src
 
             // Confirm update with tx through local parity
             _cw.ConfirmUpdate().Wait();
+            return true;
         }
 
         /// <summary>

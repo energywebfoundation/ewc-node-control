@@ -9,6 +9,7 @@ namespace tests.Mocks
         public Task<bool> HasNewUpdate()
         {
             throw new System.NotImplementedException();
+
         }
 
         public Task<NodeState> GetExpectedState()
