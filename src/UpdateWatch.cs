@@ -75,7 +75,7 @@ namespace src
             _msgService = opts.MessageService ?? throw new ArgumentException("Options didn't carry a message service implementation");
             _configProvider = opts.ConfigurationProvider ?? throw new ArgumentException("Options didn't carry a configuration provider implementation");
             _dcc = opts.DockerComposeControl ?? throw new ArgumentException("Options didn't carry a docker compose control implementation");
-            _cw = opts.ContractWrapper ?? throw new ArgumentException("Options didn't carry a docker ContractWrapper implementation");
+            _cw = opts.ContractWrapper ?? throw new ArgumentException("Options didn't carry a ContractWrapper implementation");
             
             // verify scalar options
             if (string.IsNullOrWhiteSpace(opts.RpcEndpoint))

@@ -114,7 +114,8 @@ namespace tests
                 DockerStackPath = "/some/path",
                 DockerComposeControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
 
             Action updateDocker = () => { uw.UpdateDocker(changeAction,state); };
@@ -179,7 +180,8 @@ namespace tests
                 DockerStackPath = "/some/path",
                 DockerComposeControl = mocDcc.Object,
                 ConfigurationProvider = confProvider,
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
 
             // Run the update action
@@ -253,7 +255,8 @@ namespace tests
                 DockerStackPath = "/some/path",
                 DockerComposeControl = mocDcc.Object,
                 ConfigurationProvider = confProvider,
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
 
             // Run the update action
@@ -310,7 +313,8 @@ namespace tests
                 DockerStackPath = "/some/path",
                 DockerComposeControl = mocDcc.Object,
                 ConfigurationProvider = confProvider,
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
 
             // Run the update action

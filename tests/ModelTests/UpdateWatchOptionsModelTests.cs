@@ -51,7 +51,8 @@ namespace tests
                 DockerStackPath = path,
                 DockerComposeControl = mdcc,
                 MessageService = ms,
-                ConfigurationProvider = cp 
+                ConfigurationProvider = cp,
+                ContractWrapper = cw
             };
             
             Assert.Equal(rpc, watchOpts.RpcEndpoint);

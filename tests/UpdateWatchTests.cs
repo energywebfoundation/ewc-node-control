@@ -74,10 +74,11 @@ namespace tests
                     ContractAddress = "0x0",
                     ValidatorAddress = "0x0",
                     DockerStackPath = "/some/path",
+                    MessageService = new MockMessageService(),
                     DockerComposeControl = new MockDockerControl(),
                     ConfigurationProvider = new MockConfigProvider()
                 },
-                "Options didn't carry a docker ContractWrapper implementation"
+                "Options didn't carry a ContractWrapper implementation"
             };
             
             // Missing rpc endpoint 
@@ -181,7 +182,8 @@ namespace tests
                 DockerStackPath = "./path",
                 DockerComposeControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
 
             uw.CheckTimer.Should().BeNull();
@@ -209,7 +211,8 @@ namespace tests
                 DockerStackPath = "./path",
                 DockerComposeControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
 
             

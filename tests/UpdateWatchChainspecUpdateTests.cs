@@ -65,7 +65,8 @@ namespace tests
                 DockerStackPath = "/some/path",
                 DockerComposeControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
 
             Action updateChainSpec = () => { uw.UpdateChainSpec(badState); };
@@ -147,7 +148,8 @@ namespace tests
                 DockerStackPath = path,
                 DockerComposeControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
             
             Action update = () =>
@@ -234,7 +236,8 @@ namespace tests
                 DockerStackPath = path,
                 DockerComposeControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
             
             Action update = () =>
@@ -310,7 +313,8 @@ namespace tests
                 DockerStackPath = path,
                 DockerComposeControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
             
             Action update = () =>
@@ -368,7 +372,8 @@ namespace tests
                 DockerStackPath = path,
                 DockerComposeControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
-                MessageService = new MockMessageService()
+                MessageService = new MockMessageService(),
+                ContractWrapper = new MockContractWrapper()
             });
             
             Action update = () =>
