@@ -120,7 +120,7 @@ namespace src
         /// <param name="message">The message that should be send to the log event</param>
         private void Log(string message)
         {
-            _onLog(this, new LogEventArgs(message));
+            _onLog?.Invoke(this, new LogEventArgs(message));
         }
 
         /// <summary>
@@ -297,9 +297,21 @@ namespace src
         /// </exception>
         public void UpdateDocker(StateChangeAction act, NodeState expectedState)
         {
-            // Connect to local docker deamon
-            DockerClient client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock"))
-                .CreateClient();
+            if (act.Mode != UpdateMode.Docker)
+            {
+                throw new UpdateVerificationException("Action with wrong update mode passed");
+            }
+            
+            if (string.IsNullOrWhiteSpace(act.Payload) || string.IsNullOrWhiteSpace(act.PayloadHash))
+            {
+                throw new UpdateVerificationException("Payload or hash are empty");
+            }
+
+            if (act.Payload != expectedState.DockerImage || act.PayloadHash != expectedState.DockerChecksum)
+            {
+                throw new UpdateVerificationException("Action vs. nodestate mismatch");
+            }
+            
 
             Log($"Pulling new parity image [{act.Payload}] ..");
 
@@ -320,11 +332,12 @@ namespace src
             try
             {
                 // pull docker image
-                client.Images.CreateImageAsync(new ImagesCreateParameters
+                _dcc.PullImage(new ImagesCreateParameters
                 {
                     FromImage = act.Payload.Split(':')[0],
                     Tag = act.Payload.Split(':')[1]
-                }, null, progress).Wait();
+                }, null, progress);
+                
             }
             catch (Exception e)
             {
@@ -332,11 +345,11 @@ namespace src
             }
 
             // verify docker image id against expected hash
-            ImageInspectResponse inspectResult = client.Images.InspectImageAsync(act.Payload).Result;
+            ImageInspectResponse inspectResult = _dcc.InspectImage(act.Payload);
             if (inspectResult.ID != act.PayloadHash)
             {
                 Log("Image hashes don't match. Cancel update.");
-                client.Images.DeleteImageAsync(act.Payload, new ImageDeleteParameters()).Wait();
+                _dcc.DeleteImage(act.Payload);
                 Log("Pulled imaged removed.");
                 throw new UpdateVerificationException("Docker image hashes don't match.");
             }
