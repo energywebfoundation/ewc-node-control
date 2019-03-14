@@ -1,25 +1,41 @@
 ﻿using System;
-using System.Threading;
+using System.Collections;
+using System.IO;
+using Docker.DotNet.Models;
+using Nethereum.Contracts;
+using src;
+using src.Contract;
+using src.Interfaces;
+using src.Models;
 
 namespace src
 {
-    class Program
+    internal static class Program
     {
-        private static readonly CheckState _checkState = new CheckState();
-        static void Main(string[] args)
+        
+        private static void Main(string[] args)
         {
             Console.WriteLine("EWF NodeControl");
-
-            int checkIntervalSeconds = 60;
             
-            while (true)
-            {
-                Console.WriteLine("Checking On-Chain for updates...");
-                Thread.Sleep(checkIntervalSeconds * 1000);
-            }
-     
-        }
+            // config stuff
+            IDictionary env = Environment.GetEnvironmentVariables();
+            UpdateWatchOptions watchOpts = ConfigBuilder.BuildConfigurationFromEnvironment(env);
 
-        
+            // Add dependencies
+            watchOpts.ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(watchOpts.DockerStackPath, ".env"));
+            watchOpts.MessageService = new ConsoleMessageService();
+            watchOpts.DockerComposeControl = new LinuxComposeControl();
+            watchOpts.ContractWrapper = new ContractWrapper(watchOpts.ContractAddress,watchOpts.RpcEndpoint,watchOpts.ValidatorAddress);
+
+            // instantiate the update watch
+            UpdateWatch uw = new UpdateWatch(watchOpts);
+            
+            // attach log output
+            uw.OnLog += (sender, logArgs) => Console.WriteLine($"[WATCH] {logArgs.Message}");
+            
+            // start watching - Will block here
+            uw.StartWatch();
+
+        }
     }
 }
