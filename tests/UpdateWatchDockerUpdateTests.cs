@@ -197,5 +197,137 @@ namespace tests
             confProvider.CurrentState.Should().BeEquivalentTo(nodeState);
         }
         
+        [Fact]
+        public void ShoudThrowOnBadHash()
+        {
+
+            string expectedImage = "parity/parity:v2.3.4";
+            string expectedHash = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514";
+
+            var changeAction = new StateChangeAction
+            {
+                Mode = UpdateMode.Docker,
+                Payload = "parity/parity:v2.3.4",
+                PayloadHash = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
+            };
+            var nodeState = new NodeState
+            {
+                DockerImage = "parity/parity:v2.3.4",
+                DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
+            };
+            
+            
+            Mock<IDockerComposeControl> mocDcc = new Mock<IDockerComposeControl>(MockBehavior.Loose);
+            
+            // Setup image pull mock 
+            mocDcc.Setup(mock => mock.PullImage(
+                    It.Is<ImagesCreateParameters>(icp => icp.Tag == "v2.3.4" && icp.FromImage == "parity/parity"),
+                    It.Is<AuthConfig>(obj => obj == null),
+                    It.IsAny<Progress<JSONMessage>>()))
+                .Verifiable("Did not pull correct image");
+            
+            // Setup inspect image mock
+            mocDcc
+                .Setup(mock => mock.InspectImage(
+                    It.Is<string>(i => i == expectedImage)
+                ))
+                .Returns(new ImageInspectResponse
+                {
+                    ID = expectedHash
+                })
+                .Verifiable("Did not inspect the correct image");
+
+
+            // setup delete mock
+            mocDcc
+                .Setup(mock => mock.DeleteImage(expectedImage))
+                .Verifiable("Did not correctly delete the wrong image");
+            
+            MockConfigProvider confProvider = new MockConfigProvider();
+            
+            UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
+            {
+                RpcEndpoint = "http://example.com",
+                ContractAddress = "0x0",
+                ValidatorAddress = "0x0",
+                DockerStackPath = "/some/path",
+                DockerComposeControl = mocDcc.Object,
+                ConfigurationProvider = confProvider,
+                MessageService = new MockMessageService()
+            });
+
+            // Run the update action
+            Action updateDocker = () => { uw.UpdateDocker(changeAction,nodeState); };
+            updateDocker.Should()
+                .Throw<UpdateVerificationException>()
+                .WithMessage("Docker image hashes don't match.");
+            
+            // Verify the mocks
+            mocDcc.Verify();
+            
+            // make sure nothing else was called
+            mocDcc.VerifyNoOtherCalls();
+            
+            // verify no new state was written
+            confProvider.CurrentState.Should().BeNull();
+        }
+        
+        [Fact]
+        public void ShoudThrowOnUnableToPull()
+        {
+
+            var changeAction = new StateChangeAction
+            {
+                Mode = UpdateMode.Docker,
+                Payload = "parity/parity:v2.3.4",
+                PayloadHash = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
+            };
+            var nodeState = new NodeState
+            {
+                DockerImage = "parity/parity:v2.3.4",
+                DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
+            };
+            
+            
+            Mock<IDockerComposeControl> mocDcc = new Mock<IDockerComposeControl>(MockBehavior.Loose);
+            
+            // Setup image pull mock 
+            mocDcc.Setup(mock => mock.PullImage(
+                    It.IsAny<ImagesCreateParameters>(),
+                    It.IsAny<AuthConfig>(),
+                    It.IsAny<Progress<JSONMessage>>()))
+                .Throws<Exception>()
+                .Verifiable("Did not pull correct image");
+            
+            
+            MockConfigProvider confProvider = new MockConfigProvider();
+            
+            UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
+            {
+                RpcEndpoint = "http://example.com",
+                ContractAddress = "0x0",
+                ValidatorAddress = "0x0",
+                DockerStackPath = "/some/path",
+                DockerComposeControl = mocDcc.Object,
+                ConfigurationProvider = confProvider,
+                MessageService = new MockMessageService()
+            });
+
+            // Run the update action
+            Action updateDocker = () => { uw.UpdateDocker(changeAction,nodeState); };
+            updateDocker.Should()
+                .Throw<UpdateVerificationException>()
+                .WithMessage("Unable to pull new image.");
+            
+            // Verify the mocks
+            mocDcc.Verify();
+            
+            // make sure nothing else was called
+            mocDcc.VerifyNoOtherCalls();
+            
+            // verify no new state was written
+            confProvider.CurrentState.Should().BeNull();
+        }
+        
     }
 }

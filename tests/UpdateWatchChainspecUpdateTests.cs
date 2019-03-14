@@ -333,5 +333,57 @@ namespace tests
 
 
         }
+        
+        [Fact]
+        public void ShouldFailtoVerifyWhenCurrentChainspecIsMissing()
+        {
+            // Test setup 
+            string expectedUrl = "https://example.com/chain.json";
+            string expectedPayload = "This would be a corrupt chainspec file.";
+            string expectedHash = "8394d0987bd84c677122872aa67f60295b972eceb3f75bec068e83570d3c6999";
+            
+            // prepare directory
+            string basePath = $"nodecontrol-tests-{Guid.NewGuid()}";
+            string path = Path.Join(Path.GetTempPath(),basePath);
+
+            Directory.CreateDirectory(path);
+            Directory.CreateDirectory(Path.Join(path,"config"));
+
+            // get a mock dcc
+            MockDockerControl mockDcc = new MockDockerControl();
+            
+            StateChangeAction sca = new StateChangeAction
+            {
+                Mode = UpdateMode.ChainSpec,
+                Payload = expectedUrl,
+                PayloadHash = expectedHash
+            };
+            
+            // Run the test
+            UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
+            {
+                RpcEndpoint = "http://example.com",
+                ContractAddress = "0x0",
+                ValidatorAddress = "0x0",
+                DockerStackPath = path,
+                DockerComposeControl = mockDcc,
+                ConfigurationProvider = new MockConfigProvider(),
+                MessageService = new MockMessageService()
+            });
+            
+            Action update = () =>
+            {
+                uw.UpdateChainSpec(sca);
+            };
+            
+            // Execute test
+            update.Should().Throw<UpdateVerificationException>()
+                .WithMessage("Unable to read current chainspec");
+            
+            // should not call apply updates
+            mockDcc.ApplyChangesCallCount.Should().Be(0);
+
+        }
+        
     }
 }
