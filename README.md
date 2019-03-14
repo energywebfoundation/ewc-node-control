@@ -1,3 +1,3 @@
-# Chainspec - Codename Rarity
+# Node Control
 
-Chainspec and scripts to generate it from contracts and seed accounts
+Component to update parity and chain spec via on-chain events
