@@ -4,6 +4,7 @@ using System.IO;
 using Docker.DotNet.Models;
 using Nethereum.Contracts;
 using src;
+using src.Contract;
 using src.Interfaces;
 using src.Models;
 
@@ -24,7 +25,8 @@ namespace src
             watchOpts.ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(watchOpts.DockerStackPath, ".env"));
             watchOpts.MessageService = new ConsoleMessageService();
             watchOpts.DockerComposeControl = new LinuxComposeControl();
-            
+            watchOpts.ContractWrapper = new ContractWrapper(watchOpts.ContractAddress,watchOpts.RpcEndpoint,watchOpts.ValidatorAddress);
+
             // instantiate the update watch
             UpdateWatch uw = new UpdateWatch(watchOpts);
             

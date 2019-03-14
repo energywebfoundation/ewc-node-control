@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using src.Interfaces;
 using src.Models;
 using tests.Mocks;
@@ -40,8 +41,9 @@ namespace tests
             IDockerComposeControl mdcc = new MockDockerControl();
             IMessageService ms = new MockMessageService();
             IConfigurationProvider cp = new MockConfigProvider();
+            IContractWrapper cw = new MockContractWrapper();
             
-            UpdateWatchOptions sca = new UpdateWatchOptions
+            UpdateWatchOptions watchOpts = new UpdateWatchOptions
             {
                 RpcEndpoint = rpc,
                 ContractAddress = contractAddr,
@@ -49,19 +51,22 @@ namespace tests
                 DockerStackPath = path,
                 DockerComposeControl = mdcc,
                 MessageService = ms,
-                ConfigurationProvider = cp 
+                ConfigurationProvider = cp,
+                ContractWrapper = cw
             };
             
-            Assert.Equal(rpc, sca.RpcEndpoint);
-            Assert.Equal(contractAddr, sca.ContractAddress);
-            Assert.Equal(validatorAddr, sca.ValidatorAddress);
-            Assert.Equal(path, sca.DockerStackPath);
+            Assert.Equal(rpc, watchOpts.RpcEndpoint);
+            Assert.Equal(contractAddr, watchOpts.ContractAddress);
+            Assert.Equal(validatorAddr, watchOpts.ValidatorAddress);
+            Assert.Equal(path, watchOpts.DockerStackPath);
             
-            Assert.Equal(mdcc, sca.DockerComposeControl);
-            Assert.Equal(ms,sca.MessageService);
-            Assert.Equal(ms,sca.MessageService);
-            Assert.Equal(cp,sca.ConfigurationProvider);
+            Assert.Equal(mdcc, watchOpts.DockerComposeControl);
+            Assert.Equal(ms,watchOpts.MessageService);
+            Assert.Equal(cw,watchOpts.ContractWrapper);
+            Assert.Equal(cp,watchOpts.ConfigurationProvider);
             
         }
     }
+
+   
 }

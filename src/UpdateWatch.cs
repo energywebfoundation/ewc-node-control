@@ -75,6 +75,7 @@ namespace src
             _msgService = opts.MessageService ?? throw new ArgumentException("Options didn't carry a message service implementation");
             _configProvider = opts.ConfigurationProvider ?? throw new ArgumentException("Options didn't carry a configuration provider implementation");
             _dcc = opts.DockerComposeControl ?? throw new ArgumentException("Options didn't carry a docker compose control implementation");
+            _cw = opts.ContractWrapper ?? throw new ArgumentException("Options didn't carry a ContractWrapper implementation");
             
             // verify scalar options
             if (string.IsNullOrWhiteSpace(opts.RpcEndpoint))
@@ -98,7 +99,6 @@ namespace src
             }
 
             // Instantiate needed objects
-            _cw = new ContractWrapper(opts.ContractAddress, opts.RpcEndpoint, opts.ValidatorAddress);
             _sc = new StateCompare(opts.ConfigurationProvider);
             _stackPath = opts.DockerStackPath;
         }
@@ -110,9 +110,14 @@ namespace src
         public void StartWatch()
         {
             Log("Starting watch");
-            Timer checkTimer = new Timer(CheckForUpdates);
-            checkTimer.Change(10000, 10000);
+            CheckTimer = new Timer((state) =>
+            {
+                CheckForUpdates(state);
+            });
+            CheckTimer.Change(10000, 10000);
         }
+
+        public Timer CheckTimer { get; set; }
 
         /// <summary>
         /// Abstract log method to log arbitrary messages. Fires the OnLog() event.
@@ -120,7 +125,7 @@ namespace src
         /// <param name="message">The message that should be send to the log event</param>
         private void Log(string message)
         {
-            _onLog(this, new LogEventArgs(message));
+            _onLog?.Invoke(this, new LogEventArgs(message));
         }
 
         /// <summary>
@@ -128,17 +133,17 @@ namespace src
         /// </summary>
         /// <param name="state">dummy state that is not used</param>
         /// <remarks>Errors during processing will not throw exceptions, but instead send a message via the message service.</remarks>
-        private void CheckForUpdates(object state)
+        public bool CheckForUpdates(object state)
         {
             Log("Checking On-Chain for updates.");
             
             if(!_cw.HasNewUpdate().Result)
             {
                 // No new update events on chain
-                return;
+                return false;
             }
                 
-            // Query block chain to receive expectedcdd state
+            // Query block chain to receive expected state
             NodeState expectedState = _cw.GetExpectedState().Result;
 
             // calculate actions from state difference 
@@ -147,7 +152,7 @@ namespace src
             if (actions.Count == 0)
             {
                 // No actions. Sleep.
-                return;
+                return false;
             }
 
             // Process actions
@@ -183,6 +188,7 @@ namespace src
 
             // Confirm update with tx through local parity
             _cw.ConfirmUpdate().Wait();
+            return true;
         }
 
         /// <summary>
@@ -297,9 +303,21 @@ namespace src
         /// </exception>
         public void UpdateDocker(StateChangeAction act, NodeState expectedState)
         {
-            // Connect to local docker deamon
-            DockerClient client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock"))
-                .CreateClient();
+            if (act.Mode != UpdateMode.Docker)
+            {
+                throw new UpdateVerificationException("Action with wrong update mode passed");
+            }
+            
+            if (string.IsNullOrWhiteSpace(act.Payload) || string.IsNullOrWhiteSpace(act.PayloadHash))
+            {
+                throw new UpdateVerificationException("Payload or hash are empty");
+            }
+
+            if (act.Payload != expectedState.DockerImage || act.PayloadHash != expectedState.DockerChecksum)
+            {
+                throw new UpdateVerificationException("Action vs. nodestate mismatch");
+            }
+            
 
             Log($"Pulling new parity image [{act.Payload}] ..");
 
@@ -320,11 +338,12 @@ namespace src
             try
             {
                 // pull docker image
-                client.Images.CreateImageAsync(new ImagesCreateParameters
+                _dcc.PullImage(new ImagesCreateParameters
                 {
                     FromImage = act.Payload.Split(':')[0],
                     Tag = act.Payload.Split(':')[1]
-                }, null, progress).Wait();
+                }, null, progress);
+                
             }
             catch (Exception e)
             {
@@ -332,11 +351,11 @@ namespace src
             }
 
             // verify docker image id against expected hash
-            ImageInspectResponse inspectResult = client.Images.InspectImageAsync(act.Payload).Result;
+            ImageInspectResponse inspectResult = _dcc.InspectImage(act.Payload);
             if (inspectResult.ID != act.PayloadHash)
             {
                 Log("Image hashes don't match. Cancel update.");
-                client.Images.DeleteImageAsync(act.Payload, new ImageDeleteParameters()).Wait();
+                _dcc.DeleteImage(act.Payload);
                 Log("Pulled imaged removed.");
                 throw new UpdateVerificationException("Docker image hashes don't match.");
             }

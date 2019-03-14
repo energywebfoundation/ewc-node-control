@@ -1,6 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
+using Docker.DotNet;
+using Docker.DotNet.Models;
 using src.Interfaces;
 
 namespace src
@@ -50,6 +53,35 @@ namespace src
             }
 
             Console.WriteLine("Done.");
+        }
+
+        public void PullImage(ImagesCreateParameters imagesCreateParameters, AuthConfig authConfig, Progress<JSONMessage> progress)
+        {
+            // Connect to local docker deamon
+            using (DockerClient client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient())
+            {
+                client.Images.CreateImageAsync(imagesCreateParameters, authConfig, progress).Wait();
+            }
+        }
+
+        public ImageInspectResponse InspectImage(string dockerImage)
+        {
+            // Connect to local docker deamon
+            using (DockerClient client =
+                new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient())
+            {
+                return client.Images.InspectImageAsync(dockerImage).Result;    
+            }
+            
+        }
+
+        public void DeleteImage(string dockerImage)
+        {
+            using (DockerClient client =
+                new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient())
+            {
+                client.Images.DeleteImageAsync(dockerImage, new ImageDeleteParameters()).Wait();    
+            }
         }
     }
 }

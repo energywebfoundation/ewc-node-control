@@ -41,5 +41,12 @@ namespace src.Models
         /// </summary>
         public IDockerComposeControl DockerComposeControl { get; set; }
         
+        /// <summary>
+        /// (DI) ContractWrapper to use
+        /// </summary>
+        public IContractWrapper ContractWrapper { get; set; }
+        
+       
+        
     }
 }
