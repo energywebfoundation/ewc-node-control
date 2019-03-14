@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.IO;
 using Docker.DotNet.Models;
 using Nethereum.Contracts;
 using src;
@@ -19,6 +20,11 @@ namespace src
             IDictionary env = Environment.GetEnvironmentVariables();
             UpdateWatchOptions watchOpts = ConfigBuilder.BuildConfigurationFromEnvironment(env);
 
+            // Add dependencies
+            watchOpts.ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(watchOpts.DockerStackPath, ".env"));
+            watchOpts.MessageService = new ConsoleMessageService();
+            watchOpts.DockerComposeControl = new LinuxComposeControl();
+            
             // instantiate the update watch
             UpdateWatch uw = new UpdateWatch(watchOpts);
             

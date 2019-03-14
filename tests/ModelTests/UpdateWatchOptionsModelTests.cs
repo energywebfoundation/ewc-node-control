@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using src;
 using src.Interfaces;
 using src.Models;
 using tests.Mocks;
@@ -10,7 +8,6 @@ namespace tests
     /// <summary>
     /// Test the Models for correct behaviour
     /// </summary>
-    [ExcludeFromCodeCoverage]
     public class UpdateWatchOptionsModelTests
     {
         /// <summary>

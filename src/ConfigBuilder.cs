@@ -15,6 +15,11 @@ namespace src
         
         public static UpdateWatchOptions BuildConfigurationFromEnvironment(IDictionary env)
         {
+            if (env == null)
+            {
+                throw new ArgumentNullException(nameof(env),"Environment dictionary can't be null");    
+            }
+            
             string contractAddresss = GetConfig(env,"CONTRACT_ADDRESS",String.Empty);
             string stackPath = GetConfig(env,"STACK_PATH","./demo-stack");
             string rpcEndpoint = GetConfig(env,"RPC_ENDPOINT","http://localhost:8545");
@@ -25,10 +30,7 @@ namespace src
                 RpcEndpoint = rpcEndpoint,
                 ContractAddress = contractAddresss,
                 ValidatorAddress = validatorAddress,
-                DockerStackPath = stackPath,
-                ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(stackPath, ".env")),
-                MessageService = new ConsoleMessageService(),
-                DockerComposeControl = new LinuxComposeControl()
+                DockerStackPath = stackPath
             };
         }
     }
