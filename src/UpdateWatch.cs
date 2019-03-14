@@ -13,6 +13,7 @@ using src.Models;
 
 namespace src
 {
+    
     /// <summary>
     /// Watches for new updates, compares the current and expected state and carries out the state changes if nessesary
     /// </summary>
@@ -70,12 +71,36 @@ namespace src
         /// <param name="opts">Filled options object to configure update watch</param>
         public UpdateWatch(UpdateWatchOptions opts)
         {
+            // Verify dependencies
+            _msgService = opts.MessageService ?? throw new ArgumentException("Options didn't carry a message service implementation");
+            _configProvider = opts.ConfigurationProvider ?? throw new ArgumentException("Options didn't carry a configuration provider implementation");
+            _dcc = opts.DockerComposeControl ?? throw new ArgumentException("Options didn't carry a docker compose control implementation");
+            
+            // verify scalar options
+            if (string.IsNullOrWhiteSpace(opts.RpcEndpoint))
+            {
+                throw new ArgumentException("Options didn't provide an rpc url");
+            }
+            
+            if (string.IsNullOrWhiteSpace(opts.ContractAddress))
+            {
+                throw new ArgumentException("Options didn't provide a contract address");
+            }
+            
+            if (string.IsNullOrWhiteSpace(opts.ValidatorAddress))
+            {
+                throw new ArgumentException("Options didn't provide a validator address");
+            }
+            
+            if (string.IsNullOrWhiteSpace(opts.DockerStackPath))
+            {
+                throw new ArgumentException("Options didn't provide a docker stack path");
+            }
+
+            // Instantiate needed objects
             _cw = new ContractWrapper(opts.ContractAddress, opts.RpcEndpoint, opts.ValidatorAddress);
             _sc = new StateCompare(opts.ConfigurationProvider);
-            _msgService = opts.MessageService;
             _stackPath = opts.DockerStackPath;
-            _configProvider = opts.ConfigurationProvider;
-            _dcc = opts.DockerComposeControl;
         }
 
 
@@ -165,7 +190,7 @@ namespace src
         /// </summary>
         /// <param name="dataToHash">Data that should be hashed</param>
         /// <returns>hash as hex encoded string</returns>
-        private static string HashString(string dataToHash)
+        public static string HashString(string dataToHash)
         {
             // Create a SHA256   
             using (SHA256 sha256Hash = SHA256.Create())
@@ -183,12 +208,13 @@ namespace src
                 return builder.ToString();
             }
         }
-        
-        
+
+
         /// <summary>
         /// Downloads, verifies and updates the chain spec file
         /// </summary>
         /// <param name="act">The action containing the new chainspec url and checksum</param>
+        /// <param name="httpHandler">Http handler to use for the request (used in unit tests)</param>
         /// <exception cref="UpdateVerificationException">
         /// Thrown when update is not able to verify. This can happen when:
         /// <list type="bullet">
@@ -197,21 +223,44 @@ namespace src
         /// <item>Unable to read the current chainspec file. Maybe someone messed with the file.</item>
         /// </list>
         /// </exception>
-        
-        private void UpdateChainSpec(StateChangeAction act)
+        public void UpdateChainSpec(StateChangeAction act, HttpMessageHandler httpHandler = null)
         {
-            // verify https
+            if (httpHandler == null)
+            {
+                httpHandler = new HttpClientHandler();
+            }
+            
+            if (string.IsNullOrWhiteSpace(act.Payload) || string.IsNullOrWhiteSpace(act.PayloadHash))
+            {
+                throw new UpdateVerificationException("Payload or hash are empty");
+            }
+            
+            // verify https            
             if (!act.Payload.StartsWith("https://"))
             {
                 throw new UpdateVerificationException("Won't download chainspec from unencrypted URL");
             }
 
-            string newChainSpec;
-
-            // download chainspec
-            using (HttpClient hc = new HttpClient())
+            // Check if given directory has a chain spec file
+            string chainSpecPath = Path.Combine(_stackPath, "config/chainspec.json");
+            if (!File.Exists(chainSpecPath))
             {
-                newChainSpec = hc.GetStringAsync(act.Payload).Result;
+                throw new UpdateVerificationException("Unable to read current chainspec");
+            }
+
+            // download new chainspec
+            string newChainSpec;
+            try
+            {
+
+                using (HttpClient hc = new HttpClient(httpHandler))
+                {
+                    newChainSpec = hc.GetStringAsync(act.Payload).Result;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new UpdateVerificationException("Unable to download new chainspec",e);
             }
 
             // verify hash
@@ -222,18 +271,8 @@ namespace src
                     "Downloaded chainspec don't matches hash from chain");
             }
 
-            // copy to final location
-            string chainSpecPath = Path.Combine(_stackPath, "config/chainspec.json");
-
-            if (!File.Exists(chainSpecPath))
-            {
-                throw new UpdateVerificationException("Unable to read current chainspec");
-            }
-
-            string fileTimestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString();
-
             // Backup current chainspec
-
+            string fileTimestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString();
             File.Move(chainSpecPath,
                 Path.Combine(_stackPath, $"config/chainspec.json.{fileTimestamp}"));
 
@@ -256,7 +295,7 @@ namespace src
         /// <item>Checksum of the downloaded content doesn't match</item>
         /// </list>
         /// </exception>
-        private void UpdateDocker(StateChangeAction act, NodeState expectedState)
+        public void UpdateDocker(StateChangeAction act, NodeState expectedState)
         {
             // Connect to local docker deamon
             DockerClient client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock"))

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using src.Models;
 using Xunit;
 
@@ -6,6 +7,7 @@ namespace tests
     /// <summary>
     /// Test the Models for correct behaviour
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class LogArgsModelTests
     {
         /// <summary>

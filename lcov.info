@@ -1,0 +1,747 @@
+SF:/home/markus/dev/project-equestria/nodecontrol/src/ConfigurationFileHandler.cs
+FN:50,src.Models.NodeState src.ConfigurationFileHandler::ReadCurrentState()
+FNDA:5,src.Models.NodeState src.ConfigurationFileHandler::ReadCurrentState()
+DA:51,5
+DA:52,5
+DA:53,1
+DA:54,1
+DA:57,4
+DA:58,104
+DA:59,46
+DA:60,46
+DA:61,46
+DA:62,4
+DA:64,4
+DA:67,42
+DA:70,4
+DA:71,4
+DA:73,4
+DA:74,4
+DA:76,3
+DA:77,3
+DA:79,3
+DA:80,3
+DA:82,4
+DA:83,4
+DA:85,42
+DA:87,4
+DA:88,4
+BRDA:52,17,0,1
+BRDA:52,17,1,4
+BRDA:58,259,1,46
+BRDA:61,89,0,4
+BRDA:61,89,1,42
+BRDA:67,115,0,38
+BRDA:67,129,0,34
+BRDA:67,143,0,31
+BRDA:67,157,0,28
+BRDA:67,115,1,4
+BRDA:67,129,1,4
+BRDA:67,143,1,3
+BRDA:67,157,1,3
+BRDA:67,171,1,4
+BRDA:67,171,0,42
+BRDA:58,259,0,4
+FN:95,System.Void src.ConfigurationFileHandler::WriteNewState(src.Models.NodeState)
+FNDA:3,System.Void src.ConfigurationFileHandler::WriteNewState(src.Models.NodeState)
+DA:96,3
+DA:97,3
+DA:98,1
+DA:99,1
+DA:102,2
+DA:104,66
+DA:105,30
+DA:107,30
+DA:108,2
+DA:109,2
+DA:110,2
+DA:111,28
+DA:112,2
+DA:113,2
+DA:114,2
+DA:115,26
+DA:116,1
+DA:117,1
+DA:118,1
+DA:119,25
+DA:120,1
+DA:121,1
+DA:122,1
+DA:123,24
+DA:124,2
+DA:125,2
+DA:126,2
+DA:127,2
+DA:129,22
+DA:130,22
+DA:131,22
+DA:132,30
+DA:135,2
+DA:136,2
+BRDA:97,17,0,1
+BRDA:97,17,1,2
+BRDA:104,411,1,30
+BRDA:107,75,0,2
+BRDA:107,75,1,28
+BRDA:107,98,0,2
+BRDA:107,98,1,28
+BRDA:111,142,0,2
+BRDA:111,142,1,26
+BRDA:111,165,0,2
+BRDA:111,165,1,26
+BRDA:115,209,0,2
+BRDA:115,209,1,24
+BRDA:115,232,0,1
+BRDA:115,232,1,25
+BRDA:119,276,0,2
+BRDA:119,276,1,23
+BRDA:119,299,0,1
+BRDA:119,299,1,24
+BRDA:123,344,0,2
+BRDA:125,353,0,2
+BRDA:125,353,1,0
+BRDA:123,344,1,22
+BRDA:104,411,0,2
+FN:29,System.Void src.ConfigurationFileHandler::.ctor(System.String)
+FNDA:13,System.Void src.ConfigurationFileHandler::.ctor(System.String)
+DA:30,13
+DA:31,13
+DA:32,13
+DA:33,3
+DA:34,3
+DA:37,10
+DA:38,3
+DA:39,3
+DA:42,7
+DA:43,7
+BRDA:32,16,0,3
+BRDA:32,16,1,10
+BRDA:37,41,0,3
+BRDA:37,41,1,7
+LF:69
+LH:69
+BRF:44
+BRH:43
+FNF:3
+FNH:3
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/ConsoleMessageService.cs
+FN:17,System.Void src.ConsoleMessageService::SendErrorMessage(System.String,System.String,src.Models.NodeState)
+FNDA:0,System.Void src.ConsoleMessageService::SendErrorMessage(System.String,System.String,src.Models.NodeState)
+DA:18,0
+DA:19,0
+DA:20,0
+LF:3
+LH:0
+BRF:0
+BRH:0
+FNF:1
+FNH:0
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/LinuxComposeControl.cs
+FN:20,System.Void src.LinuxComposeControl::ApplyChangesToStack(System.String,System.Boolean)
+FNDA:0,System.Void src.LinuxComposeControl::ApplyChangesToStack(System.String,System.Boolean)
+DA:21,0
+DA:24,0
+DA:25,0
+DA:26,0
+DA:30,0
+DA:32,0
+DA:35,0
+DA:36,0
+DA:37,0
+DA:38,0
+DA:39,0
+DA:40,0
+DA:41,0
+DA:42,0
+DA:43,0
+DA:45,0
+DA:46,0
+DA:47,0
+DA:48,0
+DA:49,0
+DA:50,0
+DA:52,0
+DA:53,0
+BRDA:24,12,0,0
+BRDA:24,12,1,0
+BRDA:30,27,0,0
+BRDA:30,27,1,0
+BRDA:45,200,1,0
+BRDA:45,200,0,0
+LF:23
+LH:0
+BRF:6
+BRH:0
+FNF:1
+FNH:0
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Program.cs
+FN:17,System.Void src.Program::Main(System.String[])
+FNDA:0,System.Void src.Program::Main(System.String[])
+DA:18,0
+DA:19,0
+DA:22,0
+DA:23,0
+DA:24,0
+DA:25,0
+DA:28,0
+DA:29,0
+DA:30,0
+DA:31,0
+DA:32,0
+DA:33,0
+DA:34,0
+DA:35,0
+DA:36,0
+DA:37,0
+DA:40,0
+DA:43,0
+DA:46,0
+DA:49,0
+BRDA:43,171,0,0
+BRDA:43,171,1,0
+LF:20
+LH:0
+BRF:2
+BRH:0
+FNF:1
+FNH:0
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/StateCompare.cs
+FN:34,System.Collections.Generic.List`1<src.Models.StateChangeAction> src.StateCompare::ComputeActionsFromState(src.Models.NodeState)
+FNDA:9,System.Collections.Generic.List`1<src.Models.StateChangeAction> src.StateCompare::ComputeActionsFromState(src.Models.NodeState)
+DA:35,9
+DA:36,9
+DA:37,1
+DA:38,1
+DA:41,8
+DA:42,8
+DA:43,1
+DA:44,1
+DA:48,7
+DA:51,7
+DA:52,3
+DA:53,3
+DA:54,3
+DA:55,3
+DA:56,3
+DA:57,3
+DA:58,3
+DA:59,3
+DA:62,7
+DA:63,3
+DA:64,3
+DA:65,3
+DA:66,3
+DA:67,3
+DA:68,3
+DA:69,3
+DA:70,3
+DA:73,7
+DA:74,2
+DA:75,2
+DA:76,2
+DA:77,2
+DA:78,2
+DA:79,2
+DA:80,2
+DA:81,2
+DA:83,7
+DA:84,7
+BRDA:36,7,0,1
+BRDA:36,7,1,8
+BRDA:42,44,0,1
+BRDA:42,44,1,7
+BRDA:51,81,0,3
+BRDA:51,81,1,4
+BRDA:51,107,0,3
+BRDA:51,107,1,7
+BRDA:62,174,0,3
+BRDA:62,174,1,4
+BRDA:62,200,0,3
+BRDA:62,200,1,7
+BRDA:73,271,0,2
+BRDA:73,271,1,7
+FN:21,System.Void src.StateCompare::.ctor(src.Interfaces.IConfigurationProvider)
+FNDA:10,System.Void src.StateCompare::.ctor(src.Interfaces.IConfigurationProvider)
+DA:22,10
+DA:23,10
+DA:24,10
+DA:25,9
+BRDA:24,11,0,1
+BRDA:24,11,1,9
+LF:42
+LH:42
+BRF:16
+BRH:16
+FNF:2
+FNH:2
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/StateCompareException.cs
+FN:18,System.Void src.StateCompareException::.ctor(System.String)
+FNDA:1,System.Void src.StateCompareException::.ctor(System.String)
+DA:19,1
+DA:20,1
+DA:21,1
+FN:24,System.Void src.StateCompareException::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+FNDA:0,System.Void src.StateCompareException::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+DA:25,0
+DA:26,0
+DA:27,0
+LF:6
+LH:3
+BRF:0
+BRH:0
+FNF:2
+FNH:1
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/UpdateVerificationException.cs
+FN:11,System.Void src.UpdateVerificationException::.ctor(System.String)
+FNDA:0,System.Void src.UpdateVerificationException::.ctor(System.String)
+DA:12,0
+DA:13,0
+DA:14,0
+FN:15,System.Void src.UpdateVerificationException::.ctor(System.String,System.Exception)
+FNDA:0,System.Void src.UpdateVerificationException::.ctor(System.String,System.Exception)
+DA:16,0
+DA:17,0
+DA:18,0
+FN:21,System.Void src.UpdateVerificationException::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+FNDA:0,System.Void src.UpdateVerificationException::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+DA:22,0
+DA:23,0
+DA:24,0
+LF:9
+LH:0
+BRF:0
+BRH:0
+FNF:3
+FNH:0
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/UpdateWatch.cs
+FN:26,System.Void src.UpdateWatch::add_OnLog(System.EventHandler`1<src.Models.LogEventArgs>)
+FNDA:0,System.Void src.UpdateWatch::add_OnLog(System.EventHandler`1<src.Models.LogEventArgs>)
+DA:27,0
+FN:28,System.Void src.UpdateWatch::remove_OnLog(System.EventHandler`1<src.Models.LogEventArgs>)
+FNDA:0,System.Void src.UpdateWatch::remove_OnLog(System.EventHandler`1<src.Models.LogEventArgs>)
+DA:29,0
+FN:85,System.Void src.UpdateWatch::StartWatch()
+FNDA:0,System.Void src.UpdateWatch::StartWatch()
+DA:86,0
+DA:87,0
+DA:88,0
+DA:89,0
+DA:90,0
+FN:96,System.Void src.UpdateWatch::Log(System.String)
+FNDA:0,System.Void src.UpdateWatch::Log(System.String)
+DA:97,0
+DA:98,0
+DA:99,0
+FN:106,System.Void src.UpdateWatch::CheckForUpdates(System.Object)
+FNDA:0,System.Void src.UpdateWatch::CheckForUpdates(System.Object)
+DA:107,0
+DA:108,0
+DA:110,0
+DA:111,0
+DA:113,0
+DA:117,0
+DA:120,0
+DA:122,0
+DA:123,0
+DA:125,0
+DA:129,0
+DA:130,0
+DA:132,0
+DA:133,0
+DA:136,0
+DA:137,0
+DA:139,0
+DA:140,0
+DA:142,0
+DA:144,0
+DA:145,0
+DA:146,0
+DA:147,0
+DA:148,0
+DA:149,0
+DA:150,0
+DA:151,0
+DA:152,0
+DA:153,0
+DA:156,0
+DA:157,0
+DA:160,0
+DA:161,0
+BRDA:110,34,0,0
+BRDA:110,34,1,0
+BRDA:122,83,0,0
+BRDA:122,83,1,0
+BRDA:129,246,1,0
+BRDA:133,128,0,0
+BRDA:133,128,1,0
+BRDA:133,135,1,0
+BRDA:133,135,0,0
+BRDA:129,246,0,0
+FN:168,System.String src.UpdateWatch::HashString(System.String)
+FNDA:0,System.String src.UpdateWatch::HashString(System.String)
+DA:169,0
+DA:171,0
+DA:172,0
+DA:174,0
+DA:177,0
+DA:178,0
+DA:179,0
+DA:180,0
+DA:181,0
+DA:183,0
+DA:185,0
+BRDA:178,78,1,0
+BRDA:178,78,0,0
+FN:201,System.Void src.UpdateWatch::UpdateChainSpec(src.Models.StateChangeAction)
+FNDA:0,System.Void src.UpdateWatch::UpdateChainSpec(src.Models.StateChangeAction)
+DA:202,0
+DA:204,0
+DA:205,0
+DA:206,0
+DA:212,0
+DA:213,0
+DA:214,0
+DA:215,0
+DA:218,0
+DA:219,0
+DA:220,0
+DA:221,0
+DA:222,0
+DA:226,0
+DA:228,0
+DA:229,0
+DA:230,0
+DA:233,0
+DA:237,0
+DA:238,0
+DA:241,0
+DA:244,0
+DA:245,0
+BRDA:204,24,0,0
+BRDA:204,24,1,0
+BRDA:219,104,0,0
+BRDA:219,104,1,0
+BRDA:228,148,0,0
+BRDA:228,148,1,0
+FN:259,System.Void src.UpdateWatch::UpdateDocker(src.Models.StateChangeAction,src.Models.NodeState)
+FNDA:0,System.Void src.UpdateWatch::UpdateDocker(src.Models.StateChangeAction,src.Models.NodeState)
+DA:260,0
+DA:262,0
+DA:263,0
+DA:265,0
+DA:268,0
+DA:269,0
+DA:270,0
+DA:271,0
+DA:272,0
+DA:273,0
+DA:274,0
+DA:275,0
+DA:276,0
+DA:277,0
+DA:278,0
+DA:279,0
+DA:282,0
+DA:284,0
+DA:285,0
+DA:286,0
+DA:287,0
+DA:288,0
+DA:289,0
+DA:290,0
+DA:291,0
+DA:292,0
+DA:296,0
+DA:297,0
+DA:298,0
+DA:299,0
+DA:300,0
+DA:301,0
+DA:302,0
+DA:306,0
+DA:309,0
+DA:312,0
+DA:313,0
+BRDA:297,264,0,0
+BRDA:297,264,1,0
+FN:70,System.Void src.UpdateWatch::.ctor(src.Models.UpdateWatchOptions)
+FNDA:0,System.Void src.UpdateWatch::.ctor(src.Models.UpdateWatchOptions)
+DA:71,0
+DA:72,0
+DA:73,0
+DA:74,0
+DA:75,0
+DA:76,0
+DA:77,0
+DA:78,0
+DA:79,0
+LF:123
+LH:0
+BRF:22
+BRH:0
+FNF:9
+FNH:0
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Models/LogEventArgs.cs
+FN:19,System.String src.Models.LogEventArgs::get_Message()
+FNDA:4,System.String src.Models.LogEventArgs::get_Message()
+DA:20,4
+FN:11,System.Void src.Models.LogEventArgs::.ctor(System.String)
+FNDA:4,System.Void src.Models.LogEventArgs::.ctor(System.String)
+DA:12,4
+DA:13,4
+DA:14,4
+DA:15,4
+LF:5
+LH:5
+BRF:0
+BRH:0
+FNF:2
+FNH:2
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Models/NodeState.cs
+FN:14,System.String src.Models.NodeState::get_DockerImage()
+FNDA:92,System.String src.Models.NodeState::get_DockerImage()
+DA:15,92
+FN:20,System.String src.Models.NodeState::get_DockerChecksum()
+FNDA:100,System.String src.Models.NodeState::get_DockerChecksum()
+DA:21,100
+FN:25,System.String src.Models.NodeState::get_ChainspecUrl()
+FNDA:88,System.String src.Models.NodeState::get_ChainspecUrl()
+DA:26,88
+FN:29,System.String src.Models.NodeState::get_ChainspecChecksum()
+FNDA:96,System.String src.Models.NodeState::get_ChainspecChecksum()
+DA:30,96
+FN:33,System.Boolean src.Models.NodeState::get_IsSigning()
+FNDA:66,System.Boolean src.Models.NodeState::get_IsSigning()
+DA:34,66
+FN:38,System.Numerics.BigInteger src.Models.NodeState::get_UpdateIntroducedBlock()
+FNDA:67,System.Numerics.BigInteger src.Models.NodeState::get_UpdateIntroducedBlock()
+DA:39,67
+LF:6
+LH:6
+BRF:0
+BRH:0
+FNF:6
+FNH:6
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Models/StateChangeAction.cs
+FN:11,src.Models.UpdateMode src.Models.StateChangeAction::get_Mode()
+FNDA:64,src.Models.UpdateMode src.Models.StateChangeAction::get_Mode()
+DA:12,64
+FN:26,System.String src.Models.StateChangeAction::get_Payload()
+FNDA:64,System.String src.Models.StateChangeAction::get_Payload()
+DA:27,64
+FN:41,System.String src.Models.StateChangeAction::get_PayloadHash()
+FNDA:64,System.String src.Models.StateChangeAction::get_PayloadHash()
+DA:42,64
+LF:3
+LH:3
+BRF:0
+BRH:0
+FNF:3
+FNH:3
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Models/UpdateWatchOptions.cs
+FN:12,System.String src.Models.UpdateWatchOptions::get_ContractAddress()
+FNDA:5,System.String src.Models.UpdateWatchOptions::get_ContractAddress()
+DA:13,5
+FN:17,System.String src.Models.UpdateWatchOptions::get_RpcEndpoint()
+FNDA:5,System.String src.Models.UpdateWatchOptions::get_RpcEndpoint()
+DA:18,5
+FN:22,System.String src.Models.UpdateWatchOptions::get_ValidatorAddress()
+FNDA:5,System.String src.Models.UpdateWatchOptions::get_ValidatorAddress()
+DA:23,5
+FN:27,System.String src.Models.UpdateWatchOptions::get_DockerStackPath()
+FNDA:5,System.String src.Models.UpdateWatchOptions::get_DockerStackPath()
+DA:28,5
+FN:32,src.Interfaces.IConfigurationProvider src.Models.UpdateWatchOptions::get_ConfigurationProvider()
+FNDA:3,src.Interfaces.IConfigurationProvider src.Models.UpdateWatchOptions::get_ConfigurationProvider()
+DA:33,3
+FN:37,src.Interfaces.IMessageService src.Models.UpdateWatchOptions::get_MessageService()
+FNDA:4,src.Interfaces.IMessageService src.Models.UpdateWatchOptions::get_MessageService()
+DA:38,4
+FN:41,src.Interfaces.IDockerComposeControl src.Models.UpdateWatchOptions::get_DockerComposeControl()
+FNDA:3,src.Interfaces.IDockerComposeControl src.Models.UpdateWatchOptions::get_DockerComposeControl()
+DA:42,3
+LF:7
+LH:7
+BRF:0
+BRH:0
+FNF:7
+FNH:7
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Contract/ContractException.cs
+FN:11,System.Void src.Contract.ContractException::.ctor(System.String)
+FNDA:0,System.Void src.Contract.ContractException::.ctor(System.String)
+DA:12,0
+DA:13,0
+DA:14,0
+FN:17,System.Void src.Contract.ContractException::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+FNDA:0,System.Void src.Contract.ContractException::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+DA:18,0
+DA:19,0
+DA:20,0
+LF:6
+LH:0
+BRF:0
+BRH:0
+FNF:2
+FNH:0
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Contract/ContractWrapper.cs
+FN:129,System.String src.Contract.ContractWrapper::ConvertBytesToHexString(System.Collections.Generic.IEnumerable`1<System.Byte>)
+FNDA:0,System.String src.Contract.ContractWrapper::ConvertBytesToHexString(System.Collections.Generic.IEnumerable`1<System.Byte>)
+DA:130,0
+DA:132,0
+DA:133,0
+DA:134,0
+DA:135,0
+DA:136,0
+DA:137,0
+DA:138,0
+BRDA:133,51,1,0
+BRDA:133,51,0,0
+FN:78,System.Boolean src.Contract.ContractWrapper::<HasNewUpdate>b__6_0(Nethereum.Contracts.EventLog`1<src.Contract.UpdateEventDTO>)
+FNDA:0,System.Boolean src.Contract.ContractWrapper::<HasNewUpdate>b__6_0(Nethereum.Contracts.EventLog`1<src.Contract.UpdateEventDTO>)
+DA:79,0
+FN:50,System.Void src.Contract.ContractWrapper::.ctor(System.String,System.String,System.String)
+FNDA:0,System.Void src.Contract.ContractWrapper::.ctor(System.String,System.String,System.String)
+DA:51,0
+DA:52,0
+DA:53,0
+DA:56,0
+DA:59,0
+DA:60,0
+DA:62,0
+FN:68,System.Void src.Contract.ContractWrapper/<HasNewUpdate>d__6::MoveNext()
+FNDA:0,System.Void src.Contract.ContractWrapper/<HasNewUpdate>d__6::MoveNext()
+DA:69,0
+DA:71,0
+DA:74,0
+DA:75,0
+DA:78,0
+DA:80,0
+BRDA:69,14,0,0
+BRDA:71,71,0,0
+BRDA:71,71,1,0
+BRDA:75,249,0,0
+BRDA:69,14,1,0
+BRDA:75,249,1,0
+FN:86,System.Void src.Contract.ContractWrapper/<GetExpectedState>d__7::MoveNext()
+FNDA:0,System.Void src.Contract.ContractWrapper/<GetExpectedState>d__7::MoveNext()
+DA:87,0
+DA:89,0
+DA:90,0
+DA:91,0
+DA:92,0
+DA:93,0
+DA:94,0
+DA:95,0
+DA:96,0
+DA:97,0
+DA:98,0
+DA:99,0
+DA:100,0
+DA:101,0
+DA:102,0
+DA:103,0
+BRDA:89,86,0,0
+BRDA:89,86,1,0
+FN:110,System.Void src.Contract.ContractWrapper/<ConfirmUpdate>d__8::MoveNext()
+FNDA:0,System.Void src.Contract.ContractWrapper/<ConfirmUpdate>d__8::MoveNext()
+DA:111,0
+DA:113,0
+DA:114,0
+DA:115,0
+DA:116,0
+DA:117,0
+DA:118,0
+DA:119,0
+DA:120,0
+DA:123,0
+BRDA:113,68,0,0
+BRDA:113,68,1,0
+BRDA:118,197,0,0
+BRDA:118,197,1,0
+BRDA:118,215,0,0
+BRDA:118,215,1,0
+LF:48
+LH:0
+BRF:16
+BRH:0
+FNF:6
+FNH:0
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Contract/RetrieveUpdateFunction.cs
+FN:15,System.String src.Contract.RetrieveUpdateFunction::get_ValidatorAddress()
+FNDA:0,System.String src.Contract.RetrieveUpdateFunction::get_ValidatorAddress()
+DA:16,0
+LF:1
+LH:0
+BRF:0
+BRH:0
+FNF:1
+FNH:0
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Contract/UpdateEventDTO.cs
+FN:14,System.String src.Contract.UpdateEventDTO::get_TargetValidator()
+FNDA:0,System.String src.Contract.UpdateEventDTO::get_TargetValidator()
+DA:15,0
+FN:20,System.String src.Contract.UpdateEventDTO::get_EventId()
+FNDA:0,System.String src.Contract.UpdateEventDTO::get_EventId()
+DA:21,0
+LF:2
+LH:0
+BRF:0
+BRH:0
+FNF:2
+FNH:0
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Contract/UpdateStateDTO.cs
+FN:14,src.Contract.ValidatorStateDTO src.Contract.UpdateStateDto::get_ValidatorState()
+FNDA:0,src.Contract.ValidatorStateDTO src.Contract.UpdateStateDto::get_ValidatorState()
+DA:15,0
+LF:1
+LH:0
+BRF:0
+BRH:0
+FNF:1
+FNH:0
+end_of_record
+SF:/home/markus/dev/project-equestria/nodecontrol/src/Contract/ValidatorStateDTO.cs
+FN:15,System.Byte[] src.Contract.ValidatorStateDTO::get_DockerSha()
+FNDA:0,System.Byte[] src.Contract.ValidatorStateDTO::get_DockerSha()
+DA:16,0
+FN:22,System.String src.Contract.ValidatorStateDTO::get_DockerName()
+FNDA:0,System.String src.Contract.ValidatorStateDTO::get_DockerName()
+DA:23,0
+FN:28,System.Byte[] src.Contract.ValidatorStateDTO::get_ChainSpecSha()
+FNDA:0,System.Byte[] src.Contract.ValidatorStateDTO::get_ChainSpecSha()
+DA:29,0
+FN:34,System.String src.Contract.ValidatorStateDTO::get_ChainSpecUrl()
+FNDA:0,System.String src.Contract.ValidatorStateDTO::get_ChainSpecUrl()
+DA:35,0
+FN:40,System.Boolean src.Contract.ValidatorStateDTO::get_IsSigning()
+FNDA:0,System.Boolean src.Contract.ValidatorStateDTO::get_IsSigning()
+DA:41,0
+FN:46,System.Numerics.BigInteger src.Contract.ValidatorStateDTO::get_Updateintroduced()
+FNDA:0,System.Numerics.BigInteger src.Contract.ValidatorStateDTO::get_Updateintroduced()
+DA:47,0
+FN:52,System.Numerics.BigInteger src.Contract.ValidatorStateDTO::get_UpdateConfirmed()
+FNDA:0,System.Numerics.BigInteger src.Contract.ValidatorStateDTO::get_UpdateConfirmed()
+DA:53,0
+LF:7
+LH:0
+BRF:0
+BRH:0
+FNF:7
+FNH:0
+end_of_record

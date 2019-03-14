@@ -22,10 +22,15 @@ test-dotnet:
     - short-jobs
   image: microsoft/dotnet:2.2-sdk
   script:
+    - dotnet tool install -g trx2junit
+    - export PATH="$PATH:/root/.dotnet/tools"
     - dotnet restore
     - dotnet build
-    - dotnet test --no-build -v=normal tests
-
+    - dotnet test /p:CollectCoverage=true /p:Include='[src*]*' /p:CoverletOutputFormat=\"opencover,lcov\" /p:CoverletOutput=../lcov --logger "trx;LogFileName=TestResults.trx"
+    - trx2junit tests/TestResults/TestResults.trx
+  artifacts:
+    reports:
+      junit: tests/TestResults/TestResults.xml
 package-docker:
   stage: package
   image: docker
