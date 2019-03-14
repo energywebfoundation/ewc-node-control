@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using FluentAssertions;
 using src;
 using src.Models;
@@ -25,7 +26,8 @@ namespace tests
                     DockerStackPath = "/some/path",
 
                     MessageService = new MockMessageService(),
-                    ConfigurationProvider = new MockConfigProvider()
+                    ConfigurationProvider = new MockConfigProvider(),
+                    ContractWrapper = new MockContractWrapper()
                 },
                 "Options didn't carry a docker compose control implementation"
             };
@@ -41,7 +43,8 @@ namespace tests
                     DockerStackPath = "/some/path",
 
                     MessageService = new MockMessageService(),
-                    DockerComposeControl = new MockDockerControl()
+                    DockerComposeControl = new MockDockerControl(),
+                    ContractWrapper = new MockContractWrapper()
                 },
                 "Options didn't carry a configuration provider implementation"
             };
@@ -56,11 +59,27 @@ namespace tests
                     ValidatorAddress = "0x0",
                     DockerStackPath = "/some/path",
                     DockerComposeControl = new MockDockerControl(),
-                    ConfigurationProvider = new MockConfigProvider()
+                    ConfigurationProvider = new MockConfigProvider(),
+                    ContractWrapper = new MockContractWrapper()
                 },
                 "Options didn't carry a message service implementation"
             };
 
+            // Missing contract wrapper service
+            yield return new object[]
+            {
+                new UpdateWatchOptions
+                {
+                    RpcEndpoint = "http://example.com",
+                    ContractAddress = "0x0",
+                    ValidatorAddress = "0x0",
+                    DockerStackPath = "/some/path",
+                    DockerComposeControl = new MockDockerControl(),
+                    ConfigurationProvider = new MockConfigProvider()
+                },
+                "Options didn't carry a docker ContractWrapper implementation"
+            };
+            
             // Missing rpc endpoint 
             yield return new object[]
             {
@@ -71,7 +90,8 @@ namespace tests
                     DockerStackPath = "/some/path",
                     MessageService = new MockMessageService(),
                     DockerComposeControl = new MockDockerControl(),
-                    ConfigurationProvider = new MockConfigProvider()
+                    ConfigurationProvider = new MockConfigProvider(),
+                    ContractWrapper = new MockContractWrapper()
                 },
                 "Options didn't provide an rpc url"
             };
@@ -86,7 +106,8 @@ namespace tests
                     DockerStackPath = "/some/path",
                     MessageService = new MockMessageService(),
                     DockerComposeControl = new MockDockerControl(),
-                    ConfigurationProvider = new MockConfigProvider()
+                    ConfigurationProvider = new MockConfigProvider(),
+                    ContractWrapper = new MockContractWrapper()
                 },
                 "Options didn't provide a contract address"
             };
@@ -101,7 +122,8 @@ namespace tests
                     DockerStackPath = "/some/path",
                     MessageService = new MockMessageService(),
                     DockerComposeControl = new MockDockerControl(),
-                    ConfigurationProvider = new MockConfigProvider()
+                    ConfigurationProvider = new MockConfigProvider(),
+                    ContractWrapper = new MockContractWrapper()
                 },
                 "Options didn't provide a validator address"
             };
@@ -116,7 +138,8 @@ namespace tests
                     ValidatorAddress = "0x0",
                     MessageService = new MockMessageService(),
                     DockerComposeControl = new MockDockerControl(),
-                    ConfigurationProvider = new MockConfigProvider()
+                    ConfigurationProvider = new MockConfigProvider(),
+                    ContractWrapper = new MockContractWrapper()
                 },
                 "Options didn't provide a docker stack path"
             };
@@ -143,6 +166,55 @@ namespace tests
         {
             var computedhash = UpdateWatch.HashString(plainText);
             computedhash.Should().Be(expectedHash);
+        }
+
+
+        [Fact]
+        public void ShouldStartTimer()
+        {
+            // Run the test
+            UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
+            {
+                RpcEndpoint = "http://example.com",
+                ContractAddress = "0x0",
+                ValidatorAddress = "0x0",
+                DockerStackPath = "./path",
+                DockerComposeControl = new MockDockerControl(),
+                ConfigurationProvider = new MockConfigProvider(),
+                MessageService = new MockMessageService()
+            });
+
+            uw.CheckTimer.Should().BeNull();
+            
+            // start the timer
+            uw.StartWatch();
+
+            uw.CheckTimer.Should()
+                .NotBeNull();
+
+            // dispose timer
+            uw.CheckTimer.Dispose();
+
+        }
+        
+        [Fact]
+        public void ShouldNotUpdateWhenNoNewEvent()
+        {
+            // Run the test
+            UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
+            {
+                RpcEndpoint = "http://example.com",
+                ContractAddress = "0x0",
+                ValidatorAddress = "0x0",
+                DockerStackPath = "./path",
+                DockerComposeControl = new MockDockerControl(),
+                ConfigurationProvider = new MockConfigProvider(),
+                MessageService = new MockMessageService()
+            });
+
+            
+           
+
         }
     }
 }

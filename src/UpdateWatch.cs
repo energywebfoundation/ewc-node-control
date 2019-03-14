@@ -75,6 +75,7 @@ namespace src
             _msgService = opts.MessageService ?? throw new ArgumentException("Options didn't carry a message service implementation");
             _configProvider = opts.ConfigurationProvider ?? throw new ArgumentException("Options didn't carry a configuration provider implementation");
             _dcc = opts.DockerComposeControl ?? throw new ArgumentException("Options didn't carry a docker compose control implementation");
+            _cw = opts.ContractWrapper ?? throw new ArgumentException("Options didn't carry a docker ContractWrapper implementation");
             
             // verify scalar options
             if (string.IsNullOrWhiteSpace(opts.RpcEndpoint))
@@ -98,7 +99,6 @@ namespace src
             }
 
             // Instantiate needed objects
-            _cw = new ContractWrapper(opts.ContractAddress, opts.RpcEndpoint, opts.ValidatorAddress);
             _sc = new StateCompare(opts.ConfigurationProvider);
             _stackPath = opts.DockerStackPath;
         }
@@ -110,9 +110,11 @@ namespace src
         public void StartWatch()
         {
             Log("Starting watch");
-            Timer checkTimer = new Timer(CheckForUpdates);
-            checkTimer.Change(10000, 10000);
+            CheckTimer = new Timer(CheckForUpdates);
+            CheckTimer.Change(10000, 10000);
         }
+
+        public Timer CheckTimer { get; set; }
 
         /// <summary>
         /// Abstract log method to log arbitrary messages. Fires the OnLog() event.
@@ -128,7 +130,7 @@ namespace src
         /// </summary>
         /// <param name="state">dummy state that is not used</param>
         /// <remarks>Errors during processing will not throw exceptions, but instead send a message via the message service.</remarks>
-        private void CheckForUpdates(object state)
+        public void CheckForUpdates(object state)
         {
             Log("Checking On-Chain for updates.");
             
