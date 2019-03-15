@@ -6,7 +6,7 @@ using Xunit;
 namespace tests
 {
     [ExcludeFromCodeCoverage]
-    public class ContractTests
+    public class ContractWrapperTests
     {
         [Fact(Skip = "Needs an RPC endpoint")]
         public void QueryContract()
