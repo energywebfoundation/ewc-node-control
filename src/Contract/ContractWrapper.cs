@@ -98,7 +98,7 @@ namespace src.Contract
                 IsSigning = contractResponse.ValidatorState.IsSigning,
                 ChainspecUrl = contractResponse.ValidatorState.ChainSpecUrl,
                 ChainspecChecksum = ConvertBytesToHexString(contractResponse.ValidatorState.ChainSpecSha),
-                UpdateIntroducedBlock = contractResponse.ValidatorState.Updateintroduced
+                UpdateIntroducedBlock = contractResponse.ValidatorState.UpdateIntroduced
             };
         }
 

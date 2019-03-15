@@ -7,8 +7,5 @@ namespace src.Contract
     /// The nethereum function definition of the ConfirmUpdate contract function 
     /// </summary>
     [Function("confirmUpdate")]
-    public class ConfirmUpdateFunction : FunctionMessage
-    {
-        
-    }
+    public class ConfirmUpdateFunction : FunctionMessage {}
 }

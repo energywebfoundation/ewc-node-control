@@ -44,7 +44,7 @@ namespace src.Contract
         /// Timestamp of the block when the update was introduced
         /// </summary>
         [Parameter("uint","updateIntroduced",6)]
-        public BigInteger Updateintroduced { get; set; }
+        public BigInteger UpdateIntroduced { get; set; }
         
         /// <summary>
         /// Timestamp of the block when the update was confirmed using ConfirmUpdate
