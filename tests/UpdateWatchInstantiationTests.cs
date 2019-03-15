@@ -294,8 +294,7 @@ namespace tests
 
         }
         
-         [Fact(Skip = "Takes too long. enable later")]
-         
+        [Fact]
         public void ShouldUpdateWhenDifferentState()
         {
             // Run the test
