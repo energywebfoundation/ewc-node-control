@@ -262,7 +262,6 @@ namespace tests
         {
             // Test setup 
             string expectedUrl = "https://example.com/chain.json";
-            string expectedPayload = "This would be a corrupt chainspec file.";
             string expectedHash = "8394d0987bd84c677122872aa67f60295b972eceb3f75bec068e83570d3c6999";
             
             // prepare directory
@@ -343,7 +342,6 @@ namespace tests
         {
             // Test setup 
             string expectedUrl = "https://example.com/chain.json";
-            string expectedPayload = "This would be a corrupt chainspec file.";
             string expectedHash = "8394d0987bd84c677122872aa67f60295b972eceb3f75bec068e83570d3c6999";
             
             // prepare directory
