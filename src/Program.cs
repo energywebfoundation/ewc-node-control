@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Threading;
 using Docker.DotNet.Models;
 using Nethereum.Contracts;
 using src;
@@ -33,9 +34,15 @@ namespace src
             // attach log output
             uw.OnLog += (sender, logArgs) => Console.WriteLine($"[WATCH] {logArgs.Message}");
             
-            // start watching - Will block here
+            // start watching
             uw.StartWatch();
 
+            // Block main thread
+            while (true)
+            {
+                Thread.Sleep(60000);
+            }
+            
         }
     }
 }

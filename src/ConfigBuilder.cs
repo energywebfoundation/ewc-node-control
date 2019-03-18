@@ -20,10 +20,10 @@ namespace src
                 throw new ArgumentNullException(nameof(env),"Environment dictionary can't be null");    
             }
             
-            string contractAddresss = GetConfig(env,"CONTRACT_ADDRESS",String.Empty);
+            string contractAddresss = GetConfig(env,"CONTRACT_ADDRESS","0x0");
             string stackPath = GetConfig(env,"STACK_PATH","./demo-stack");
             string rpcEndpoint = GetConfig(env,"RPC_ENDPOINT","http://localhost:8545");
-            string validatorAddress = GetConfig(env,"VALIDATOR_ADDRESS",String.Empty);
+            string validatorAddress = GetConfig(env,"VALIDATOR_ADDRESS","0x0");
             
             return new UpdateWatchOptions
             {
