@@ -8,7 +8,7 @@ namespace tests
     [ExcludeFromCodeCoverage]
     public class ContractWrapperTests
     {
-        [Fact(Skip = "Needs an RPC endpoint")]
+        [Fact(Skip = "CI not ready")]
         public void QueryContract()
         {
             string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
@@ -20,7 +20,7 @@ namespace tests
             Assert.Equal("parity/parity:v2.3.3",state.DockerImage);
         }
         
-        [Fact(Skip = "Needs an RPC endpoint")]
+        [Fact(Skip = "Ci not ready")]
         public void ConfirmUpdate()
         {
             
