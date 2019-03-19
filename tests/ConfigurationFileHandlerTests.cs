@@ -45,7 +45,7 @@ namespace tests
             {
                 new List<string>
                 {
-                    "IS_SIGNING=1",
+                    "IS_SIGNING=signing",
                     "PARITY_VERSION=parity/parity:v2.3.3",
                     "PARITY_CHKSUM=9f0142e1ae1641fbcf6116c49b5c73d5a4b48340e07f9ecb4da8d2d9847a76e6",
                     "CHAINSPEC_URL=https://example.com/chainspec.json",
@@ -66,7 +66,7 @@ namespace tests
             {
                 new List<string>
                 {
-                    "IS_SIGNING=1",
+                    "IS_SIGNING=signing",
                     "PARITY_VERSION=parity/parity:v2.3.3",
                     "PARITY_CHKSUM=9f0142e1ae1641fbcf6116c49b5c73d5a4b48340e07f9ecb4da8d2d9847a76e6",
                     "CHAINSPEC_URL=https://example.com/chainspec.json",
@@ -97,7 +97,7 @@ namespace tests
                 new List<string>
                 {
                     "#This is a config file",
-                    "IS_SIGNING=1",
+                    "IS_SIGNING=signing",
                     "PARITY_VERSION=parity/parity:v2.3.3",
                     "PARITY_CHKSUM=9f0142e1ae1641fbcf6116c49b5c73d5a4b48340e07f9ecb4da8d2d9847a76e6",
                     "CHAINSPEC_URL=https://example.com/chainspec.json",
@@ -129,7 +129,7 @@ namespace tests
                 new List<string>
                 {
                     "#This is a config file",
-                    "IS_SIGNING=1",
+                    "IS_SIGNING=signing",
                     "PARITY_VERSION=parity/parity:v2.3.3",
                     "PARITY_CHKSUM=9f0142e1ae1641fbcf6116c49b5c73d5a4b48340e07f9ecb4da8d2d9847a76e6",
                     "ANOTHER_KEY=foobar",
@@ -162,7 +162,7 @@ namespace tests
                 new List<string>
                 {
                     "#This is a config file",
-                    "IS_SIGNING=1",
+                    "IS_SIGNING=signing",
                     "PARITY_VERSION=parity/parity:v2.3.3",
                     "PARITY_CHKSUM=9f0142e1ae1641fbcf6116c49b5c73d5a4b48340e07f9ecb4da8d2d9847a76e6",
                     "ANOTHER_KEY=foobar",
@@ -187,7 +187,7 @@ namespace tests
                 new List<string>
                 {
                     "#This is a config file",
-                    "IS_SIGNING=0",
+                    "IS_SIGNING=non-signing",
                     "PARITY_VERSION=parity/parity:v2.4.0",
                     "PARITY_CHKSUM=30b9c9852b52546e7de32832ddfaa4aba33c0c436c985ad97d3fe9c4210043d8",
                     "ANOTHER_KEY=foobar",
@@ -211,7 +211,7 @@ namespace tests
                 new List<string>
                 {
                     "#This is a config file",
-                    "IS_SIGNING=1",
+                    "IS_SIGNING=signing",
                     "PARITY_VERSION=parity/parity:v2.3.3",
                     "PARITY_CHKSUM=9f0142e1ae1641fbcf6116c49b5c73d5a4b48340e07f9ecb4da8d2d9847a76e6",
                     "ANOTHER_KEY=foobar",
@@ -238,7 +238,7 @@ namespace tests
                 new List<string>
                 {
                     "#This is a config file",
-                    "IS_SIGNING=0",
+                    "IS_SIGNING=non-signing",
                     "PARITY_VERSION=parity/parity:v2.4.0",
                     "PARITY_CHKSUM=30b9c9852b52546e7de32832ddfaa4aba33c0c436c985ad97d3fe9c4210043d8",
                     "ANOTHER_KEY=foobar",
@@ -290,7 +290,7 @@ namespace tests
             File.WriteAllLines(tmpFilePAth, new List<string>
             {
                 "#This is a config file",
-                "IS_SIGNING=0",
+                "IS_SIGNING=non-signing",
                 "PARITY_VERSION=parity/parity:v2.4.0",
                 "PARITY_CHKSUM=30b9c9852b52546e7de32832ddfaa4aba33c0c436c985ad97d3fe9c4210043d8",
                 "ANOTHER_KEY=foobar",
