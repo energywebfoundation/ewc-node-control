@@ -72,8 +72,9 @@ namespace src.Contract
             // get current block number
             var curBlock = await _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
 
+            
             // check block range for new events
-            NewFilterInput filterInput = _updateEventHandler.CreateFilterInput(_lastBlock, curBlock);
+            NewFilterInput filterInput = _updateEventHandler.CreateFilterInput(_validatorAddress, new BlockParameter(_lastBlock),new BlockParameter(curBlock));
             List<EventLog<UpdateEventDTO>> outrstandingEvents = await  _updateEventHandler.GetAllChanges(filterInput);
 
             // save current block number

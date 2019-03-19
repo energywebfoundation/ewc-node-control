@@ -140,6 +140,7 @@ namespace src
             if(!_cw.HasNewUpdate().Result)
             {
                 // No new update events on chain
+                Log("No updates found.");
                 return false;
             }
                 
@@ -152,6 +153,7 @@ namespace src
             if (actions.Count == 0)
             {
                 // No actions. Sleep.
+                Log("Update found but no change in state detected.");
                 return false;
             }
 
