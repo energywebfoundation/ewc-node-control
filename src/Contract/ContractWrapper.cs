@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nethereum.Contracts;
 using Nethereum.Contracts.ContractHandlers;
 using Nethereum.Hex.HexTypes;
+using Nethereum.RPC.Eth.Blocks;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
 using src.Interfaces;
@@ -58,6 +59,7 @@ namespace src.Contract
             // hook up to the contract and event
             _contractHandler = _web3.Eth.GetContractHandler(contractAddress);
             _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDTO>(contractAddress);
+            _lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
 
         }
 
