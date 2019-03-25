@@ -316,22 +316,9 @@ namespace src
 
             Log($"Pulling new parity image [{act.Payload}] ..");
 
-            // Prepare progress logging
-            string msg = string.Empty;
+            // Prepare progress logging stub
             Progress<JSONMessage> progress = new Progress<JSONMessage>();
             
-            // TODO: maybe remove
-            progress.ProgressChanged += (sender, message) =>
-            {
-                string newMsg = $"[DOCKER IMAGE PULL | {message.ID}] {message.Status}...";
-                if (newMsg != msg)
-                {
-                    Log(newMsg);
-                }
-
-                msg = newMsg;
-            };
-
             try
             {
                 // pull docker image

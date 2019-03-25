@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.IO;
 using FluentAssertions;
 using Org.BouncyCastle.Crypto.Digests;
 using src;
@@ -8,6 +9,24 @@ using Xunit;
 
 namespace tests
 {
+
+    public class ConsoleLoggerTests
+    {
+        [Fact]
+        public void ShouldWriteToConsole()
+        {
+            StringWriter sw = new StringWriter();
+            
+            Console.SetOut(sw);
+            ConsoleLogger cl = new ConsoleLogger();
+            cl.Log("this is a message");
+
+            string cwLog = sw.ToString();
+            cwLog.Should().Be("this is a message\n");
+            
+        }
+    }
+    
     public class ConfigBuilderTests
     {
         [Fact]
