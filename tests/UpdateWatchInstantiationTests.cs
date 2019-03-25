@@ -46,7 +46,7 @@ namespace tests
                     DockerStackPath = "/some/path",
 
                     MessageService = new MockMessageService(),
-                    DockerComposeControl = new MockDockerControl(),
+                    DockerControl = new MockDockerControl(),
                     ContractWrapper = new MockContractWrapper()
                 },
                 "Options didn't carry a configuration provider implementation"
@@ -61,7 +61,7 @@ namespace tests
                     ContractAddress = "0x0",
                     ValidatorAddress = "0x0",
                     DockerStackPath = "/some/path",
-                    DockerComposeControl = new MockDockerControl(),
+                    DockerControl = new MockDockerControl(),
                     ConfigurationProvider = new MockConfigProvider(),
                     ContractWrapper = new MockContractWrapper()
                 },
@@ -78,7 +78,7 @@ namespace tests
                     ValidatorAddress = "0x0",
                     DockerStackPath = "/some/path",
                     MessageService = new MockMessageService(),
-                    DockerComposeControl = new MockDockerControl(),
+                    DockerControl = new MockDockerControl(),
                     ConfigurationProvider = new MockConfigProvider()
                 },
                 "Options didn't carry a ContractWrapper implementation"
@@ -93,7 +93,7 @@ namespace tests
                     ValidatorAddress = "0x0",
                     DockerStackPath = "/some/path",
                     MessageService = new MockMessageService(),
-                    DockerComposeControl = new MockDockerControl(),
+                    DockerControl = new MockDockerControl(),
                     ConfigurationProvider = new MockConfigProvider(),
                     ContractWrapper = new MockContractWrapper()
                 },
@@ -109,7 +109,7 @@ namespace tests
                     ValidatorAddress = "0x0",
                     DockerStackPath = "/some/path",
                     MessageService = new MockMessageService(),
-                    DockerComposeControl = new MockDockerControl(),
+                    DockerControl = new MockDockerControl(),
                     ConfigurationProvider = new MockConfigProvider(),
                     ContractWrapper = new MockContractWrapper()
                 },
@@ -125,7 +125,7 @@ namespace tests
                     ContractAddress = "0x0",
                     DockerStackPath = "/some/path",
                     MessageService = new MockMessageService(),
-                    DockerComposeControl = new MockDockerControl(),
+                    DockerControl = new MockDockerControl(),
                     ConfigurationProvider = new MockConfigProvider(),
                     ContractWrapper = new MockContractWrapper()
                 },
@@ -141,7 +141,7 @@ namespace tests
                     ContractAddress = "0x0",
                     ValidatorAddress = "0x0",
                     MessageService = new MockMessageService(),
-                    DockerComposeControl = new MockDockerControl(),
+                    DockerControl = new MockDockerControl(),
                     ConfigurationProvider = new MockConfigProvider(),
                     ContractWrapper = new MockContractWrapper()
                 },
@@ -155,7 +155,7 @@ namespace tests
         public void ShouldThrowOnMissingOptions(UpdateWatchOptions badOpts, string expectedMessage)
         {
 
-            Action ctor = () => { _ = new UpdateWatch(badOpts); };
+            Action ctor = () => { _ = new UpdateWatch(badOpts, new MockLogger()); };
             ctor.Should()
                 .Throw<ArgumentException>()
                 .WithMessage(expectedMessage);
@@ -183,11 +183,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "./path",
-                DockerComposeControl = new MockDockerControl(),
+                DockerControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
 
             uw.CheckTimer.Should().BeNull();
             
@@ -220,11 +220,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "./path",
-                DockerComposeControl = new MockDockerControl(),
+                DockerControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = cwMock.Object
-            });
+            }, new MockLogger());
 
             var checkResult = uw.CheckForUpdates(new object());
             checkResult.Should().Be(false);
@@ -279,11 +279,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "./path",
-                DockerComposeControl = new MockDockerControl(),
+                DockerControl = new MockDockerControl(),
                 ConfigurationProvider = confMock,
                 MessageService = new MockMessageService(),
                 ContractWrapper = cwMock.Object
-            });
+            }, new MockLogger());
 
             // Should yield not update actions and therefore should return false
             var checkResult = uw.CheckForUpdates(new object());
@@ -293,9 +293,91 @@ namespace tests
             cwMock.VerifyNoOtherCalls();
 
         }
+
+
+        public static IEnumerable<object[]> GenerateShouldUpdateTestCases()
+        {
+            // Test parity
+            yield return new object[]
+            {
+                new NodeState
+                {
+                    DockerImage = "parity/parity:v2.3.3",
+                    DockerChecksum = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    ChainspecUrl = "https://example.com",
+                    IsSigning = false,
+                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    UpdateIntroducedBlock = new BigInteger(10)
+                },
+                new NodeState
+                {
+                    DockerImage = "parity/parity:v2.3.4",
+                    DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    ChainspecUrl = "https://example.com",
+                    IsSigning = false,
+                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    UpdateIntroducedBlock = new BigInteger(20)
+                },
+                true
+            };
+            
+            // Test chainspec
+            yield return new object[]
+            {
+                new NodeState
+                {
+                    DockerImage = "parity/parity:v2.3.3",
+                    DockerChecksum = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    ChainspecUrl = "https://example.com/chain.json#1234",
+                    IsSigning = false,
+                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf284",
+                    UpdateIntroducedBlock = new BigInteger(10)
+                },
+                new NodeState
+                {
+                    DockerImage = "parity/parity:v2.3.3",
+                    DockerChecksum = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    ChainspecUrl = "https://example.com/chain.json#5678",
+                    IsSigning = false,
+                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    UpdateIntroducedBlock = new BigInteger(20)
+                },
+                true
+            };
+
+            // Test signing
+            yield return new object[]
+            {
+                new NodeState
+                {
+                    DockerImage = "parity/parity:v2.3.3",
+                    DockerChecksum = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    ChainspecUrl = "https://example.com/chain.json#1234",
+                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf284",
+                    IsSigning = false,
+
+                    UpdateIntroducedBlock = new BigInteger(10)
+                },
+                new NodeState
+                {
+                    DockerImage = "parity/parity:v2.3.3",
+                    DockerChecksum = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
+                    ChainspecUrl = "https://example.com/chain.json#1234",
+                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf284",
+                    IsSigning = true,
+                    UpdateIntroducedBlock = new BigInteger(20)
+                },
+                true
+            };
+
+           
+        }
         
-        [Fact]
-        public void ShouldUpdateWhenDifferentState()
+        
+        
+        [Theory]
+        [MemberData(nameof(GenerateShouldUpdateTestCases))]
+        public void ShouldUpdateWhenDifferentState(NodeState currentState, NodeState expectedState, bool shouldTriggerUpdate)
         {
             // Run the test
            
@@ -305,36 +387,22 @@ namespace tests
                 .Returns(() => Task.FromResult(true))
                 .Verifiable("Contract was not checked for update event");
             
+            // Mock expected state from contract
             cwMock
                 .Setup(mock => mock.GetExpectedState())
-                .Returns(() => Task.FromResult(new NodeState
-                {
-                    DockerImage = "parity/parity:v2.3.3",
-                    DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
-                    ChainspecUrl = "https://example.com",
-                    IsSigning = false,
-                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
-                    UpdateIntroducedBlock = new BigInteger(20)
-                }))
+                .Returns(() => Task.FromResult(expectedState))
                 .Verifiable("Contract was not queried for state");
 
+            
             cwMock
                 .Setup(mock => mock.ConfirmUpdate())
                 .Returns(() => Task.CompletedTask)
-                .Verifiable("Contract was not checked for update event");
+                .Verifiable("Contract was not called to confirm update");
             
             // Prime config provider with equal state but older
             MockConfigProvider confMock = new MockConfigProvider
             {
-                CurrentState = new NodeState
-                {
-                    DockerImage = "parity/parity:v2.3.5",
-                    DockerChecksum = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
-                    ChainspecUrl = "https://example.com",
-                    IsSigning = false,
-                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
-                    UpdateIntroducedBlock = new BigInteger(10)
-                }
+                CurrentState =currentState
             };
 
             UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
@@ -343,15 +411,15 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "./path",
-                DockerComposeControl = new MockDockerControl(),
+                DockerControl = new MockDockerControl(),
                 ConfigurationProvider = confMock,
                 MessageService = new MockMessageService(),
                 ContractWrapper = cwMock.Object
-            });
+            }, new MockLogger());
 
-            // Should yield not update actions and therefore should return false
+            // Should yield update actions and therefore should return true
             var checkResult = uw.CheckForUpdates(new object());
-            checkResult.Should().Be(true);
+            checkResult.Should().Be(shouldTriggerUpdate);
 
             cwMock.Verify();
             cwMock.VerifyNoOtherCalls();

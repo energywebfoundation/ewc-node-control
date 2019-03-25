@@ -39,7 +39,7 @@ namespace src.Models
         /// <summary>
         /// (DI) Instantiated DockerComposeControl to use
         /// </summary>
-        public IDockerComposeControl DockerComposeControl { get; set; }
+        public IDockerControl DockerControl { get; set; }
         
         /// <summary>
         /// (DI) ContractWrapper to use

@@ -16,7 +16,8 @@ namespace src
         
         private static void Main(string[] args)
         {
-            Console.WriteLine("EWF NodeControl");
+            ILogger logger = new ConsoleLogger();
+            logger.Log("EWF NodeControl");
             
             // config stuff
             IDictionary env = Environment.GetEnvironmentVariables();
@@ -25,15 +26,12 @@ namespace src
             // Add dependencies
             watchOpts.ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(watchOpts.DockerStackPath, ".env"));
             watchOpts.MessageService = new ConsoleMessageService();
-            watchOpts.DockerComposeControl = new LinuxComposeControl();
+            watchOpts.DockerControl = new LinuxDockerControl(logger);
             watchOpts.ContractWrapper = new ContractWrapper(watchOpts.ContractAddress,watchOpts.RpcEndpoint,watchOpts.ValidatorAddress);
 
             // instantiate the update watch
-            UpdateWatch uw = new UpdateWatch(watchOpts);
-            
-            // attach log output
-            uw.OnLog += (sender, logArgs) => Console.WriteLine($"[WATCH] {logArgs.Message}");
-            
+            UpdateWatch uw = new UpdateWatch(watchOpts,logger);
+
             // start watching
             uw.StartWatch();
 

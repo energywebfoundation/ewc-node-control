@@ -63,11 +63,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "/some/path",
-                DockerComposeControl = new MockDockerControl(),
+                DockerControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
 
             Action updateChainSpec = () => { uw.UpdateChainSpec(badState); };
             updateChainSpec.Should()
@@ -146,11 +146,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = path,
-                DockerComposeControl = mockDcc,
+                DockerControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
             
             Action update = () =>
             {
@@ -234,11 +234,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = path,
-                DockerComposeControl = mockDcc,
+                DockerControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
             
             Action update = () =>
             {
@@ -310,11 +310,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = path,
-                DockerComposeControl = mockDcc,
+                DockerControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
             
             Action update = () =>
             {
@@ -368,11 +368,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = path,
-                DockerComposeControl = mockDcc,
+                DockerControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
             
             Action update = () =>
             {
