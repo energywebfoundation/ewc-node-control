@@ -6,7 +6,7 @@ namespace src.Contract
     /// <summary>
     /// The node state representation DTO from the smart contract
     /// </summary>
-    public class ValidatorStateDTO
+    public class ValidatorStateDto
     {
         /// <summary>
         /// SHA256 Checksum of the docker image

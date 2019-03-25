@@ -52,7 +52,8 @@ namespace tests
                 DockerControl = mdcc,
                 MessageService = ms,
                 ConfigurationProvider = cp,
-                ContractWrapper = cw
+                ContractWrapper = cw,
+                WaitTimeAfterUpdate = 12345
             };
             
             Assert.Equal(rpc, watchOpts.RpcEndpoint);
@@ -64,6 +65,7 @@ namespace tests
             Assert.Equal(ms,watchOpts.MessageService);
             Assert.Equal(cw,watchOpts.ContractWrapper);
             Assert.Equal(cp,watchOpts.ConfigurationProvider);
+            Assert.Equal(12345,watchOpts.WaitTimeAfterUpdate);
             
         }
     }

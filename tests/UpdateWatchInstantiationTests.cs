@@ -414,7 +414,8 @@ namespace tests
                 DockerControl = new MockDockerControl(),
                 ConfigurationProvider = confMock,
                 MessageService = new MockMessageService(),
-                ContractWrapper = cwMock.Object
+                ContractWrapper = cwMock.Object,
+                WaitTimeAfterUpdate = 1000 // shorten time to wait
             }, new MockLogger());
 
             // Should yield update actions and therefore should return true

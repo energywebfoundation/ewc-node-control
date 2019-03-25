@@ -53,7 +53,13 @@ namespace src
         /// <summary>
         /// Logger to send status messages to
         /// </summary>
-        private ILogger _logger;
+        private readonly ILogger _logger;
+
+        
+        /// <summary>
+        /// Time to wait for update to settle
+        /// </summary>
+        private int _waitTime;
 
         /// <summary>
         /// Create a new instance of UpdateWatch.
@@ -68,7 +74,7 @@ namespace src
             _dcc = opts.DockerControl ?? throw new ArgumentException("Options didn't carry a docker compose control implementation");
             _cw = opts.ContractWrapper ?? throw new ArgumentException("Options didn't carry a ContractWrapper implementation");
             _logger = logger ?? throw new ArgumentException("No logger was supplied.");
-            
+            _waitTime = opts.WaitTimeAfterUpdate;
             
             // verify scalar options
             if (string.IsNullOrWhiteSpace(opts.RpcEndpoint))
@@ -178,8 +184,8 @@ namespace src
             }
 
             // wait until parity is back online
-            Log("Waiting 20 seconds for updates to settle.");
-            Thread.Sleep(20000);
+            Log($"Waiting {_waitTime} ms for updates to settle.");
+            Thread.Sleep(_waitTime);
 
             // Confirm update with tx through local parity
             _cw.ConfirmUpdate().Wait();

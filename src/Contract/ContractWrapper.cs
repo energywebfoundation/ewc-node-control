@@ -31,7 +31,7 @@ namespace src.Contract
         /// <summary>
         /// Handler for the on-chain UpdateEvent
         /// </summary>
-        private readonly Event<UpdateEventDTO> _updateEventHandler;
+        private readonly Event<UpdateEventDto> _updateEventHandler;
         
         /// <summary>
         /// Last checked block
@@ -58,7 +58,7 @@ namespace src.Contract
             
             // hook up to the contract and event
             _contractHandler = _web3.Eth.GetContractHandler(contractAddress);
-            _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDTO>(contractAddress);
+            _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDto>(contractAddress);
             _lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
 
         }
@@ -75,7 +75,7 @@ namespace src.Contract
             
             // check block range for new events
             NewFilterInput filterInput = _updateEventHandler.CreateFilterInput(_validatorAddress, new BlockParameter(_lastBlock),new BlockParameter(curBlock));
-            List<EventLog<UpdateEventDTO>> outrstandingEvents = await  _updateEventHandler.GetAllChanges(filterInput);
+            List<EventLog<UpdateEventDto>> outrstandingEvents = await  _updateEventHandler.GetAllChanges(filterInput);
 
             // save current block number
             _lastBlock = curBlock;

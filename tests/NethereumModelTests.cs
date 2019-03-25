@@ -22,7 +22,7 @@ namespace tests
         [Fact]
         public void UpdateStateDtoModelTests()
         {
-            var state = new ValidatorStateDTO();
+            var state = new ValidatorStateDto();
             
             UpdateStateDto ruf = new UpdateStateDto
             {
@@ -36,7 +36,7 @@ namespace tests
         [Fact]
         public void UpdateEventDtoModelTests()
         {
-            UpdateEventDTO ueDto = new UpdateEventDTO
+            UpdateEventDto ueDto = new UpdateEventDto
             {
                 TargetValidator = "0x00000",
                 EventId = "1234"
@@ -50,7 +50,7 @@ namespace tests
         [Fact]
         public void ValidatorStateDtoModelTests()
         {
-            ValidatorStateDTO vsDto = new ValidatorStateDTO
+            ValidatorStateDto vsDto = new ValidatorStateDto
             {
                 IsSigning = true,
                 DockerSha = new byte[]{0x0,0x1,0x2},
