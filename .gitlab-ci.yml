@@ -24,6 +24,7 @@ test-dotnet:
   script:
     - /prepare.sh
     - cd contract-prepare
+    - npm install -g typescript
     - npm install
     - npm run start-ganache > /dev/null 2>&1 &
     - sleep 5
