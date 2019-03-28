@@ -21,7 +21,11 @@ test-dotnet:
   tags:
     - short-jobs
   image: docker.slock.it/build-images/dotnet-and-node:latest
+  variables:
+    TEST_RPC: http://localhost:8545
   script:
+    - dotnet tool install -g trx2junit
+    - export PATH="$PATH:/root/.dotnet/tools"
     - /prepare.sh
     - cd contract-prepare
     - npm install -g typescript
