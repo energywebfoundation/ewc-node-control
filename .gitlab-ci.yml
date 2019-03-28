@@ -24,9 +24,8 @@ test-dotnet:
   variables:
     TEST_RPC: http://localhost:8545
   script:
-    - dotnet tool install -g trx2junit
-    - export PATH="$PATH:/root/.dotnet/tools"
     - /prepare.sh
+    - export PATH="$PATH:/root/.dotnet/tools"
     - cd contract-prepare
     - npm install -g typescript
     - npm install
