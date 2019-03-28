@@ -26,6 +26,12 @@ namespace src.Models
         /// Absolut path to the docker stack base path
         /// </summary>
         public string DockerStackPath { get; set; } = string.Empty;
+
+
+        /// <summary>
+        /// How log should the updater wait after applying the update and sending the update confirm transaction
+        /// </summary>
+        public int WaitTimeAfterUpdate { get; set; } = 10000;
         
         /// <summary>
         /// (DI) Instantiated ConfigurationProvider to use
@@ -39,7 +45,7 @@ namespace src.Models
         /// <summary>
         /// (DI) Instantiated DockerComposeControl to use
         /// </summary>
-        public IDockerComposeControl DockerComposeControl { get; set; }
+        public IDockerControl DockerControl { get; set; }
         
         /// <summary>
         /// (DI) ContractWrapper to use

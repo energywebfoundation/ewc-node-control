@@ -63,11 +63,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "/some/path",
-                DockerComposeControl = new MockDockerControl(),
+                DockerControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
 
             Action updateChainSpec = () => { uw.UpdateChainSpec(badState); };
             updateChainSpec.Should()
@@ -146,11 +146,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = path,
-                DockerComposeControl = mockDcc,
+                DockerControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
             
             Action update = () =>
             {
@@ -234,11 +234,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = path,
-                DockerComposeControl = mockDcc,
+                DockerControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
             
             Action update = () =>
             {
@@ -262,7 +262,6 @@ namespace tests
         {
             // Test setup 
             string expectedUrl = "https://example.com/chain.json";
-            string expectedPayload = "This would be a corrupt chainspec file.";
             string expectedHash = "8394d0987bd84c677122872aa67f60295b972eceb3f75bec068e83570d3c6999";
             
             // prepare directory
@@ -311,11 +310,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = path,
-                DockerComposeControl = mockDcc,
+                DockerControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
             
             Action update = () =>
             {
@@ -343,7 +342,6 @@ namespace tests
         {
             // Test setup 
             string expectedUrl = "https://example.com/chain.json";
-            string expectedPayload = "This would be a corrupt chainspec file.";
             string expectedHash = "8394d0987bd84c677122872aa67f60295b972eceb3f75bec068e83570d3c6999";
             
             // prepare directory
@@ -370,11 +368,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = path,
-                DockerComposeControl = mockDcc,
+                DockerControl = mockDcc,
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
             
             Action update = () =>
             {

@@ -12,6 +12,6 @@ namespace src.Contract
         /// Map the returning tuple to the ValidatorState struct tuple
         /// </summary>
         [Parameter("tuple")]
-        public ValidatorStateDTO ValidatorState { get; set; }
+        public ValidatorStateDto ValidatorState { get; set; }
     }
 }

@@ -21,21 +21,6 @@ namespace src
     {
         
         /// <summary>
-        /// Event that gets triggered on a new log message. Use to get log output from UpdateWatch
-        /// </summary>
-        internal event EventHandler<LogEventArgs> OnLog
-        {
-            add => _onLog += value;
-            // TODO: Rider complains about delegate subtraction - find better way - https://www.jetbrains.com/help/rider/DelegateSubtraction.html
-            remove => _onLog -= value;
-        }
-
-        /// <summary>
-        /// Event handler for log messages
-        /// </summary>
-        private EventHandler<LogEventArgs> _onLog;
-
-        /// <summary>
         /// ContractWrapper implementation given by the constructor options
         /// </summary>
         private readonly IContractWrapper _cw;
@@ -63,19 +48,33 @@ namespace src
         /// <summary>
         /// DockerComposeControl implementation given by the constructor options
         /// </summary>
-        private readonly IDockerComposeControl _dcc;
+        private readonly IDockerControl _dcc;
+
+        /// <summary>
+        /// Logger to send status messages to
+        /// </summary>
+        private readonly ILogger _logger;
+
+        
+        /// <summary>
+        /// Time to wait for update to settle
+        /// </summary>
+        private int _waitTime;
 
         /// <summary>
         /// Create a new instance of UpdateWatch.
         /// </summary>
         /// <param name="opts">Filled options object to configure update watch</param>
-        public UpdateWatch(UpdateWatchOptions opts)
+        /// <param name="logger"></param>
+        public UpdateWatch(UpdateWatchOptions opts, ILogger logger)
         {
             // Verify dependencies
             _msgService = opts.MessageService ?? throw new ArgumentException("Options didn't carry a message service implementation");
             _configProvider = opts.ConfigurationProvider ?? throw new ArgumentException("Options didn't carry a configuration provider implementation");
-            _dcc = opts.DockerComposeControl ?? throw new ArgumentException("Options didn't carry a docker compose control implementation");
+            _dcc = opts.DockerControl ?? throw new ArgumentException("Options didn't carry a docker compose control implementation");
             _cw = opts.ContractWrapper ?? throw new ArgumentException("Options didn't carry a ContractWrapper implementation");
+            _logger = logger ?? throw new ArgumentException("No logger was supplied.");
+            _waitTime = opts.WaitTimeAfterUpdate;
             
             // verify scalar options
             if (string.IsNullOrWhiteSpace(opts.RpcEndpoint))
@@ -120,12 +119,12 @@ namespace src
         public Timer CheckTimer { get; set; }
 
         /// <summary>
-        /// Abstract log method to log arbitrary messages. Fires the OnLog() event.
+        /// Abstract log method to log arbitrary messages. Uses the given ILogger.
         /// </summary>
-        /// <param name="message">The message that should be send to the log event</param>
+        /// <param name="message">The message that should be send to the log</param>
         private void Log(string message)
         {
-            _onLog?.Invoke(this, new LogEventArgs(message));
+            _logger.Log(message);
         }
 
         /// <summary>
@@ -140,6 +139,7 @@ namespace src
             if(!_cw.HasNewUpdate().Result)
             {
                 // No new update events on chain
+                Log("No updates found.");
                 return false;
             }
                 
@@ -152,6 +152,7 @@ namespace src
             if (actions.Count == 0)
             {
                 // No actions. Sleep.
+                Log("Update found but no change in state detected.");
                 return false;
             }
 
@@ -183,8 +184,8 @@ namespace src
             }
 
             // wait until parity is back online
-            Log("Waiting 20 seconds for updates to settle.");
-            Thread.Sleep(20000);
+            Log($"Waiting {_waitTime} ms for updates to settle.");
+            Thread.Sleep(_waitTime);
 
             // Confirm update with tx through local parity
             _cw.ConfirmUpdate().Wait();
@@ -321,20 +322,9 @@ namespace src
 
             Log($"Pulling new parity image [{act.Payload}] ..");
 
-            // Prepare progress logging
-            string msg = string.Empty;
+            // Prepare progress logging stub
             Progress<JSONMessage> progress = new Progress<JSONMessage>();
-            progress.ProgressChanged += (sender, message) =>
-            {
-                string newMsg = $"[DOCKER IMAGE PULL | {message.ID}] {message.Status}...";
-                if (newMsg != msg)
-                {
-                    Log(newMsg);
-                }
-
-                msg = newMsg;
-            };
-
+            
             try
             {
                 // pull docker image

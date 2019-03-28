@@ -79,7 +79,7 @@ namespace src
                         state.ChainspecUrl = kv[1];
                         break;
                     case IsSigning:
-                        state.IsSigning = kv[1] == "1";
+                        state.IsSigning = kv[1] == "signing";
                         break;
                 }
             }
@@ -122,7 +122,7 @@ namespace src
                 }
                 else if (line.StartsWith(IsSigning))
                 {
-                    string signing = newState.IsSigning ? "1" : "0";
+                    string signing = newState.IsSigning ? "signing" : "non-signing";
                     newFileContents.Add($"{IsSigning}={signing}");
                 }
                 else

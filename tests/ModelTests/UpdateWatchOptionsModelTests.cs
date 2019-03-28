@@ -22,7 +22,7 @@ namespace tests
             // Interfaces should be null
             Assert.Null(sca.ConfigurationProvider);
             Assert.Null(sca.MessageService);
-            Assert.Null(sca.DockerComposeControl);
+            Assert.Null(sca.DockerControl);
 
             // Strings should be empty
             Assert.Equal(string.Empty, sca.ContractAddress);
@@ -38,7 +38,7 @@ namespace tests
         [InlineData("0x5f51f49e25b2ba1acc779066a2614eb70a9093a0","http://localhost","0xc3681dfe99730eb45154208cba7b0df7e705f305","/tmp")]
         public void UpdateWatchOptionsSetgetTest(string contractAddr, string rpc, string validatorAddr, string path)
         {
-            IDockerComposeControl mdcc = new MockDockerControl();
+            IDockerControl mdcc = new MockDockerControl();
             IMessageService ms = new MockMessageService();
             IConfigurationProvider cp = new MockConfigProvider();
             IContractWrapper cw = new MockContractWrapper();
@@ -49,10 +49,11 @@ namespace tests
                 ContractAddress = contractAddr,
                 ValidatorAddress = validatorAddr,
                 DockerStackPath = path,
-                DockerComposeControl = mdcc,
+                DockerControl = mdcc,
                 MessageService = ms,
                 ConfigurationProvider = cp,
-                ContractWrapper = cw
+                ContractWrapper = cw,
+                WaitTimeAfterUpdate = 12345
             };
             
             Assert.Equal(rpc, watchOpts.RpcEndpoint);
@@ -60,10 +61,11 @@ namespace tests
             Assert.Equal(validatorAddr, watchOpts.ValidatorAddress);
             Assert.Equal(path, watchOpts.DockerStackPath);
             
-            Assert.Equal(mdcc, watchOpts.DockerComposeControl);
+            Assert.Equal(mdcc, watchOpts.DockerControl);
             Assert.Equal(ms,watchOpts.MessageService);
             Assert.Equal(cw,watchOpts.ContractWrapper);
             Assert.Equal(cp,watchOpts.ConfigurationProvider);
+            Assert.Equal(12345,watchOpts.WaitTimeAfterUpdate);
             
         }
     }

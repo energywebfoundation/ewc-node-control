@@ -8,3 +8,4 @@ TestResults/
 node_modules/
 js/
 docs/
+lcov*

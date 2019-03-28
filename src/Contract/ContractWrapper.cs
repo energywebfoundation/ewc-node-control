@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nethereum.Contracts;
 using Nethereum.Contracts.ContractHandlers;
 using Nethereum.Hex.HexTypes;
+using Nethereum.RPC.Eth.Blocks;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
 using src.Interfaces;
@@ -30,7 +31,7 @@ namespace src.Contract
         /// <summary>
         /// Handler for the on-chain UpdateEvent
         /// </summary>
-        private readonly Event<UpdateEventDTO> _updateEventHandler;
+        private readonly Event<UpdateEventDto> _updateEventHandler;
         
         /// <summary>
         /// Last checked block
@@ -57,7 +58,8 @@ namespace src.Contract
             
             // hook up to the contract and event
             _contractHandler = _web3.Eth.GetContractHandler(contractAddress);
-            _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDTO>(contractAddress);
+            _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDto>(contractAddress);
+            _lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
 
         }
 
@@ -70,9 +72,10 @@ namespace src.Contract
             // get current block number
             var curBlock = await _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
 
+            
             // check block range for new events
-            NewFilterInput filterInput = _updateEventHandler.CreateFilterInput(_lastBlock, curBlock);
-            List<EventLog<UpdateEventDTO>> outrstandingEvents = await  _updateEventHandler.GetAllChanges(filterInput);
+            NewFilterInput filterInput = _updateEventHandler.CreateFilterInput(new BlockParameter(_lastBlock),new BlockParameter(curBlock));
+            List<EventLog<UpdateEventDto>> outrstandingEvents = await  _updateEventHandler.GetAllChanges(filterInput);
 
             // save current block number
             _lastBlock = curBlock;
@@ -98,7 +101,7 @@ namespace src.Contract
                 IsSigning = contractResponse.ValidatorState.IsSigning,
                 ChainspecUrl = contractResponse.ValidatorState.ChainSpecUrl,
                 ChainspecChecksum = ConvertBytesToHexString(contractResponse.ValidatorState.ChainSpecSha),
-                UpdateIntroducedBlock = contractResponse.ValidatorState.Updateintroduced
+                UpdateIntroducedBlock = contractResponse.ValidatorState.UpdateIntroduced
             };
         }
 

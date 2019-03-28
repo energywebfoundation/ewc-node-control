@@ -9,11 +9,20 @@ using src.Interfaces;
 namespace src
 {
     /// <summary>
-    /// Implements docker compose control using linux shell commands
+    /// Implements docker control using linux shell commands and docker unix sockets
     /// </summary>
-    public class LinuxComposeControl : IDockerComposeControl
+    public class LinuxDockerControl : IDockerControl
     {
+        private readonly ILogger _logger;
 
+        /// <summary>
+        /// Instantiate the control
+        /// </summary>
+        /// <param name="logger">A logger to post status messages to</param>
+        public LinuxDockerControl(ILogger logger)
+        {
+            _logger = logger;
+        }
         /// <summary>
         /// Use the docker-compose CLI to apply changes 
         /// </summary>
@@ -32,7 +41,7 @@ namespace src
             // Decide on compose parameters
             string cmd = restartOnly ? "restart" : "up -d";
             
-            Console.WriteLine("Apply changes to compose stack...");
+            _logger.Log("Apply changes to compose stack...");
             
             // Fire up a new shell process to apply the changes
             using (Process myProcess = new Process())
@@ -48,13 +57,14 @@ namespace src
                 while (!myProcess.StandardOutput.EndOfStream)
                 {
                     string composeLine = myProcess.StandardOutput.ReadLine();
-                    Console.WriteLine("COMPOSE: " + composeLine);
+                    _logger.Log("COMPOSE: " + composeLine);
                 }
             }
 
-            Console.WriteLine("Done.");
+            _logger.Log("Done.");
         }
 
+        /// <inheritdoc />
         public void PullImage(ImagesCreateParameters imagesCreateParameters, AuthConfig authConfig, Progress<JSONMessage> progress)
         {
             // Connect to local docker deamon
@@ -64,6 +74,7 @@ namespace src
             }
         }
 
+        /// <inheritdoc />
         public ImageInspectResponse InspectImage(string dockerImage)
         {
             // Connect to local docker deamon
@@ -75,6 +86,7 @@ namespace src
             
         }
 
+        /// <inheritdoc />
         public void DeleteImage(string dockerImage)
         {
             using (DockerClient client =

@@ -6,18 +6,13 @@ namespace src.Contract
     /// Declares the on-chain event UpdateAvailable
     /// </summary>
     [Event("UpdateAvailable")]
-    public class UpdateEventDTO
+    public class UpdateEventDto
     {
         /// <summary>
         /// Address of the validator that the update is targeted for
         /// </summary>
-        [Parameter("address","targetValidator",1,true)]
+        [Parameter("address","targetValidator",1,false)]
         public string TargetValidator { get; set; }
-        
-        /// <summary>
-        /// Id of the event
-        /// </summary>
-        [Parameter("uint256","eventid",2,true)]
-        public string EventId { get; set; }
+
     }
 }

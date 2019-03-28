@@ -112,11 +112,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "/some/path",
-                DockerComposeControl = new MockDockerControl(),
+                DockerControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
 
             Action updateDocker = () => { uw.UpdateDocker(changeAction,state); };
             updateDocker.Should()
@@ -145,7 +145,7 @@ namespace tests
             };
             
             
-            Mock<IDockerComposeControl> mocDcc = new Mock<IDockerComposeControl>(MockBehavior.Loose);
+            Mock<IDockerControl> mocDcc = new Mock<IDockerControl>(MockBehavior.Loose);
             
             // Setup image pull mock 
             mocDcc.Setup(mock => mock.PullImage(
@@ -178,11 +178,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "/some/path",
-                DockerComposeControl = mocDcc.Object,
+                DockerControl = mocDcc.Object,
                 ConfigurationProvider = confProvider,
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
 
             // Run the update action
             Action updateDocker = () => { uw.UpdateDocker(changeAction,nodeState); };
@@ -219,7 +219,7 @@ namespace tests
             };
             
             
-            Mock<IDockerComposeControl> mocDcc = new Mock<IDockerComposeControl>(MockBehavior.Loose);
+            Mock<IDockerControl> mocDcc = new Mock<IDockerControl>(MockBehavior.Loose);
             
             // Setup image pull mock 
             mocDcc.Setup(mock => mock.PullImage(
@@ -253,11 +253,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "/some/path",
-                DockerComposeControl = mocDcc.Object,
+                DockerControl = mocDcc.Object,
                 ConfigurationProvider = confProvider,
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
 
             // Run the update action
             Action updateDocker = () => { uw.UpdateDocker(changeAction,nodeState); };
@@ -292,7 +292,7 @@ namespace tests
             };
             
             
-            Mock<IDockerComposeControl> mocDcc = new Mock<IDockerComposeControl>(MockBehavior.Loose);
+            Mock<IDockerControl> mocDcc = new Mock<IDockerControl>(MockBehavior.Loose);
             
             // Setup image pull mock 
             mocDcc.Setup(mock => mock.PullImage(
@@ -311,11 +311,11 @@ namespace tests
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "/some/path",
-                DockerComposeControl = mocDcc.Object,
+                DockerControl = mocDcc.Object,
                 ConfigurationProvider = confProvider,
                 MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
-            });
+            }, new MockLogger());
 
             // Run the update action
             Action updateDocker = () => { uw.UpdateDocker(changeAction,nodeState); };

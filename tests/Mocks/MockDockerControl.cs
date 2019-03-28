@@ -4,7 +4,7 @@ using src.Interfaces;
 
 namespace tests.Mocks
 {
-    public class MockDockerControl : IDockerComposeControl
+    public class MockDockerControl : IDockerControl
     {
         public int ApplyChangesCallCount { get; set; } = 0;
         public string SendPathToStack { get; set; }

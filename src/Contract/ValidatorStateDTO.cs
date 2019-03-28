@@ -6,7 +6,7 @@ namespace src.Contract
     /// <summary>
     /// The node state representation DTO from the smart contract
     /// </summary>
-    public class ValidatorStateDTO
+    public class ValidatorStateDto
     {
         /// <summary>
         /// SHA256 Checksum of the docker image
@@ -44,7 +44,7 @@ namespace src.Contract
         /// Timestamp of the block when the update was introduced
         /// </summary>
         [Parameter("uint","updateIntroduced",6)]
-        public BigInteger Updateintroduced { get; set; }
+        public BigInteger UpdateIntroduced { get; set; }
         
         /// <summary>
         /// Timestamp of the block when the update was confirmed using ConfirmUpdate

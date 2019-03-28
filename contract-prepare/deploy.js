@@ -12,10 +12,12 @@ const main = async () => {
     const gasPrice = 1000000000; 
 
     console.log(gasPrice);
-    const json = fs.readFileSync("./contract-build/NodeControlSimple.json").toString();
+    const json = fs.readFileSync("./ts/contract/NodeControlSimple.json").toString();
     const foo = await Sloffle.deploy(web3,JSON.parse(json),[]
     ,{privateKey:pk,gasPrice:gasPrice})
     console.log(foo);
+
+    
 }
 
 main()
