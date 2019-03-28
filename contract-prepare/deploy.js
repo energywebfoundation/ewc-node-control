@@ -16,6 +16,8 @@ const main = async () => {
     const foo = await Sloffle.deploy(web3,JSON.parse(json),[]
     ,{privateKey:pk,gasPrice:gasPrice})
     console.log(foo);
+
+    
 }
 
 main()

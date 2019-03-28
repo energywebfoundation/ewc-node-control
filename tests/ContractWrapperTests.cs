@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 using FluentAssertions;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 using Nethereum.Contracts;
@@ -16,6 +17,23 @@ namespace tests
     [ExcludeFromCodeCoverage]
     public class ContractWrapperTests
     {
+
+        private void ResetToSnapshot(string rpc)
+        {
+            using (HttpClient hc = new HttpClient())
+            {
+                // Revert ganach to defined snapshot
+                hc.PostAsync(rpc,
+                    new StringContent(
+                        "{ \"method\": \"evm_revert\", \"params\": [1], \"id\": 1, \"jsonrpc\": \"2.0\" }")).Wait();
+                
+                // re-snapshot right away so others can do it also
+                hc.PostAsync(rpc,
+                    new StringContent(
+                        "{ \"method\": \"evm_snapshot\", \"params\": [], \"id\": 1, \"jsonrpc\": \"2.0\" }")).Wait();
+            }
+        }
+        
         [Fact]
         public void ShouldQueryContract()
         {
@@ -23,21 +41,42 @@ namespace tests
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
 
+            ResetToSnapshot(rpc);
+            
             IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress);
             var state = cw.GetExpectedState().Result;
             Assert.Equal("parity/parity:v2.3.3",state.DockerImage);
         }
         
         [Fact]
-        public void ShouldBeAbleToConfirmUPdate()
+        public void ShouldBeAbleToConfirmUpdate()
         {
-            
             string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
             
+            ResetToSnapshot(rpc);
+            
             IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress);
             cw.ConfirmUpdate().Wait();
+            
+        }
+        
+        [Fact(Skip = "No idea how to trigger the exception")]
+        public void ShouldThrowOnWrongContractDuringConfirmUpdate()
+        {
+            string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
+            string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
+            string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
+            
+            ResetToSnapshot(rpc);
+            
+            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress);
+            
+            Action confirmUpdateAction = () => { cw.ConfirmUpdate().Wait(); };
+            confirmUpdateAction.Should()
+                .Throw<ContractException>()
+                .WithMessage("Unable to confirm update");
             
         }
         
@@ -73,9 +112,10 @@ namespace tests
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
          
+            ResetToSnapshot(rpc);
             
             // no new update should be seen
-            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress);
+            ContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress);
             bool hasUpdate = cw.HasNewUpdate().Result;
             hasUpdate.Should().Be(false);
             

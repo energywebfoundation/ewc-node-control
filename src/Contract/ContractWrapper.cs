@@ -74,7 +74,7 @@ namespace src.Contract
 
             
             // check block range for new events
-            NewFilterInput filterInput = _updateEventHandler.CreateFilterInput(_validatorAddress, new BlockParameter(_lastBlock),new BlockParameter(curBlock));
+            NewFilterInput filterInput = _updateEventHandler.CreateFilterInput(new BlockParameter(_lastBlock),new BlockParameter(curBlock));
             List<EventLog<UpdateEventDto>> outrstandingEvents = await  _updateEventHandler.GetAllChanges(filterInput);
 
             // save current block number

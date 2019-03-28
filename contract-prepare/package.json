@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start-ganache": "ganache-cli -m 'river limb garment clap minimum trumpet edit observe cattle electric aerobic city'",
-    "deploy-and-prime": "node deploy.js && node js/index.js",
+    "start-ganache": "ganache-cli --verbose -m 'river limb garment clap minimum trumpet edit observe cattle electric aerobic city'",
+    "deploy-and-prime": "npm run build&&node deploy.js && node js/index.js",
     "build": "tsc -p ."
   },
   "keywords": [],
@@ -21,3 +21,4 @@
   },
   "postinstall": "rm -f node_modules/web3/index.d.ts"
 }
+

@@ -38,13 +38,10 @@ namespace tests
         {
             UpdateEventDto ueDto = new UpdateEventDto
             {
-                TargetValidator = "0x00000",
-                EventId = "1234"
+                TargetValidator = "0x00000"
             };
 
             ueDto.TargetValidator.Should().Be("0x00000");
-            ueDto.EventId.Should().Be("1234");
-
         }
         
         [Fact]

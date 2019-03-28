@@ -64,17 +64,8 @@ namespace tests
                         para.Name == "targetValidator" &&
                         para.Type == "address" &&
                         para.Order == 1 &&
-                        para.Parameter.Indexed);
+                        !para.Parameter.Indexed);
             
-            typeof(UpdateEventDto).Should()
-                .HaveProperty<string>("EventId")
-                .Which
-                .Should().BeDecoratedWith<ParameterAttribute>(
-                    para =>
-                        para.Name == "eventid" &&
-                        para.Type == "uint256" &&
-                        para.Order == 2 &&
-                        para.Parameter.Indexed);
 
         }
         
