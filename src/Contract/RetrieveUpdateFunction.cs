@@ -15,4 +15,12 @@ namespace src.Contract
         [Parameter("address", "_targetValidator", 1, true)]
         public string ValidatorAddress { get; set; }
     }
+    
+    
+    /// <summary>
+    /// Get function to retrieve the current node control contract address
+    /// </summary>
+    [Function("nodeControlContract", "address")]
+    public class NodeControlContractFunction : FunctionMessage {}
+
 }

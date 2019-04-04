@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,10 +47,10 @@ namespace src.Contract
         /// <summary>
         /// Instantiates the a new wrapper
         /// </summary>
-        /// <param name="contractAddress">Address of the node control smart contract</param>
+        /// <param name="lookupContractAddress">Address of the address lookup smart contract</param>
         /// <param name="rpcEndpoint">HTTP URL to the JSON-RPC endpoint</param>
         /// <param name="validatorAddress">The ethereum address of the controlled validator</param>
-        public ContractWrapper(string contractAddress, string rpcEndpoint, string validatorAddress)
+        public ContractWrapper(string lookupContractAddress, string rpcEndpoint, string validatorAddress)
         {
             _validatorAddress = validatorAddress;
             
@@ -57,8 +58,18 @@ namespace src.Contract
             _web3 = new Web3(rpcEndpoint);
             
             // hook up to the contract and event
-            _contractHandler = _web3.Eth.GetContractHandler(contractAddress);
-            _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDto>(contractAddress);
+            ContractHandler lookupContractHandler = _web3.Eth.GetContractHandler(lookupContractAddress);
+            string ncContractAddress = lookupContractHandler
+                .QueryAsync<NodeControlContractFunction, string>(null, null).Result;
+
+
+            if (string.IsNullOrWhiteSpace(ncContractAddress))
+            {
+                throw new Exception("Unable to retrieve node control contract address from lookup.");
+            }
+            
+            _contractHandler = _web3.Eth.GetContractHandler(ncContractAddress);
+            _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDto>(ncContractAddress);
             _lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
 
         }
