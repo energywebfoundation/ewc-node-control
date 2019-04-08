@@ -57,5 +57,8 @@ package-docker:
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY_IMAGE:latest
+    - echo "$SECRET_EWF_DOCKER" > ~/.docker/config.json
+    - docker push energyweb/nodecontrol:latest
+    - docker push energyweb/nodecontrol:$CI_COMMIT_REF_NAME
 
 
