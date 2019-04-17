@@ -10,6 +10,7 @@ using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using src.Contract;
 using src.Interfaces;
+using tests.Mocks;
 using Xunit;
 
 namespace tests
@@ -45,7 +46,7 @@ namespace tests
 
             ResetToSnapshot(rpc);
             
-            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress);
+            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress,new MockLogger());
             var state = cw.GetExpectedState().Result;
             Assert.Equal("parity/parity:v2.3.3",state.DockerImage);
         }
@@ -60,7 +61,7 @@ namespace tests
             
             ResetToSnapshot(rpc);
             
-            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress);
+            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress,new MockLogger());
             cw.ConfirmUpdate().Wait();
             
         }
@@ -74,7 +75,7 @@ namespace tests
             
             ResetToSnapshot(rpc);
             
-            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress);
+            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress, new MockLogger());
             
             Action confirmUpdateAction = () => { cw.ConfirmUpdate().Wait(); };
             confirmUpdateAction.Should()
@@ -119,7 +120,7 @@ namespace tests
             ResetToSnapshot(rpc);
             
             // no new update should be seen
-            ContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress);
+            ContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress, new MockLogger());
             bool hasUpdate = cw.HasNewUpdate().Result;
             hasUpdate.Should().Be(false);
             

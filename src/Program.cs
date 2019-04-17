@@ -27,7 +27,7 @@ namespace src
             watchOpts.ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(watchOpts.DockerStackPath, ".env"));
             watchOpts.MessageService = new ConsoleMessageService();
             watchOpts.DockerControl = new LinuxDockerControl(logger);
-            watchOpts.ContractWrapper = new ContractWrapper(watchOpts.ContractAddress,watchOpts.RpcEndpoint,watchOpts.ValidatorAddress);
+            watchOpts.ContractWrapper = new ContractWrapper(watchOpts.ContractAddress,watchOpts.RpcEndpoint,watchOpts.ValidatorAddress,logger);
 
             // instantiate the update watch
             UpdateWatch uw = new UpdateWatch(watchOpts,logger);

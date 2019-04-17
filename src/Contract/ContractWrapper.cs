@@ -44,16 +44,18 @@ namespace src.Contract
         /// </summary>
         private readonly Web3 _web3;
 
+        private ILogger _logger;
+
         /// <summary>
         /// Instantiates the a new wrapper
         /// </summary>
         /// <param name="lookupContractAddress">Address of the address lookup smart contract</param>
         /// <param name="rpcEndpoint">HTTP URL to the JSON-RPC endpoint</param>
         /// <param name="validatorAddress">The ethereum address of the controlled validator</param>
-        public ContractWrapper(string lookupContractAddress, string rpcEndpoint, string validatorAddress)
+        public ContractWrapper(string lookupContractAddress, string rpcEndpoint, string validatorAddress, ILogger logger)
         {
             _validatorAddress = validatorAddress;
-            
+            _logger = logger;
             // create a web 3 instance
             _web3 = new Web3(rpcEndpoint);
             
@@ -65,13 +67,21 @@ namespace src.Contract
 
             if (string.IsNullOrWhiteSpace(ncContractAddress))
             {
-                throw new Exception("Unable to retrieve node control contract address from lookup.");
+                    Log($"Unable to retrieve contract address from lookup at {lookupContractAddress}");
+                    throw new Exception("Unable to retrieve node control contract address from lookup.");
             }
-            
+
+            Log($"Retrieved Contract Address {ncContractAddress} from lookup at {lookupContractAddress}");
+
             _contractHandler = _web3.Eth.GetContractHandler(ncContractAddress);
             _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDto>(ncContractAddress);
             _lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
 
+        }
+
+        private void Log(string msg)
+        {
+            _logger.Log($"[CONTRACT-WRAPPER] {msg}");
         }
 
         /// <inheritdoc />
@@ -88,6 +98,7 @@ namespace src.Contract
             NewFilterInput filterInput = _updateEventHandler.CreateFilterInput(new BlockParameter(_lastBlock),new BlockParameter(curBlock));
             List<EventLog<UpdateEventDto>> outrstandingEvents = await  _updateEventHandler.GetAllChanges(filterInput);
 
+            Log($"Found {outrstandingEvents.Count} update events. Checking if we got addressed.");
             // save current block number
             _lastBlock = curBlock;
             return outrstandingEvents.Any(x => x.Event.TargetValidator == _validatorAddress);
