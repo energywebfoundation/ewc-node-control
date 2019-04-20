@@ -149,6 +149,9 @@ namespace src
             // Query block chain to receive expected state
             NodeState expectedState = _cw.GetExpectedState().Result;
 
+            // be a bit lazy with the docker checksum
+            expectedState.DockerChecksum = expectedState.DockerChecksum.Replace("sha256:", "");
+            
             // Verify sanity of the update
             if (!StateIsPlausible(expectedState))
             {
@@ -214,7 +217,7 @@ namespace src
                 Log("[STATE VALIDATION] Error: Chainspec checksum is not a sha256 checksum. length mismatch");
                 return false;
             }
-            if (expectedState.DockerChecksum.Length != 71)
+            if (expectedState.DockerChecksum.Length != 64)
             {
                 Log("[STATE VALIDATION] Error: Docker checksum is not an docker id. length mismatch");
                 return false;

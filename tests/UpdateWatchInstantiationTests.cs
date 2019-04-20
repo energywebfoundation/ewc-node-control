@@ -407,7 +407,7 @@ namespace tests
 
             UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
             {
-                RpcEndpoint = "http://example.com",
+                RpcEndpoint = "https://example.com",
                 ContractAddress = "0x0",
                 ValidatorAddress = "0x0",
                 DockerStackPath = "./path",
