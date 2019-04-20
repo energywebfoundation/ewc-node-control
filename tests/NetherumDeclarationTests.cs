@@ -23,7 +23,7 @@ namespace tests
         {
             typeof(RetrieveUpdateFunction).Should()
                 .BeDecoratedWith<FunctionAttribute>(
-                    attr => attr.Name == "RetrieveUpdate" && attr.DTOReturnType == typeof(UpdateStateDto))
+                    attr => attr.Name == "retrieveExpectedState" && attr.DTOReturnType == typeof(UpdateStateDto))
                 .And
                 .BeDerivedFrom<FunctionMessage>()
                 .And
@@ -33,7 +33,7 @@ namespace tests
                         para.Name == "_targetValidator" &&
                         para.Type == "address" &&
                         para.Order == 1 &&
-                        para.Parameter.Indexed);
+                        !para.Parameter.Indexed);
         }
         
         [Fact]
@@ -64,7 +64,7 @@ namespace tests
                         para.Name == "targetValidator" &&
                         para.Type == "address" &&
                         para.Order == 1 &&
-                        !para.Parameter.Indexed);
+                        para.Parameter.Indexed);
             
 
         }
