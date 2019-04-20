@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Newtonsoft.Json;
 using src.Contract;
 using src.Interfaces;
 using src.Models;
@@ -142,10 +143,19 @@ namespace src
                 Log("No updates found.");
                 return false;
             }
+
+            Log("Found update.");
                 
             // Query block chain to receive expected state
             NodeState expectedState = _cw.GetExpectedState().Result;
 
+            // Verify sanity of the update
+            if (!StateIsPlausible(expectedState))
+            {
+                Log("Received state is not plausible: " + JsonConvert.SerializeObject(expectedState));
+                return false;
+            }
+            
             // calculate actions from state difference 
             List<StateChangeAction> actions = _sc.ComputeActionsFromState(expectedState);
 
@@ -189,6 +199,32 @@ namespace src
 
             // Confirm update with tx through local parity
             _cw.ConfirmUpdate().Wait();
+            return true;
+        }
+
+        private bool StateIsPlausible(NodeState expectedState)
+        {
+            if (!expectedState.ChainspecUrl.StartsWith("https://"))
+            {
+                Log("[STATE VALIDATION] Error: Chainspec url is not https");
+                return false;
+            }
+            if (expectedState.ChainspecChecksum.Length != 64)
+            {
+                Log("[STATE VALIDATION] Error: Chainspec checksum is not a sha256 checksum. length mismatch");
+                return false;
+            }
+            if (expectedState.DockerChecksum.Length != 71)
+            {
+                Log("[STATE VALIDATION] Error: Docker checksum is not an docker id. length mismatch");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(expectedState.DockerImage))
+            {
+                Log("[STATE VALIDATION] Error: Docker image is empty");
+                return false;
+            }
+            
             return true;
         }
 

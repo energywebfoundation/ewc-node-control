@@ -75,7 +75,8 @@ namespace src.Contract
 
             _contractHandler = _web3.Eth.GetContractHandler(ncContractAddress);
             _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDto>(ncContractAddress);
-            _lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
+            //_lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
+            _lastBlock = new HexBigInteger(1);
 
         }
 
