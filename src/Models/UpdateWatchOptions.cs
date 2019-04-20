@@ -39,10 +39,6 @@ namespace src.Models
         public IConfigurationProvider ConfigurationProvider { get; set; }
         
         /// <summary>
-        /// (DI) Instantiated MessageService to use
-        /// </summary>
-        public IMessageService MessageService { get; set; }
-        /// <summary>
         /// (DI) Instantiated DockerComposeControl to use
         /// </summary>
         public IDockerControl DockerControl { get; set; }

@@ -114,7 +114,6 @@ namespace tests
                 DockerStackPath = "/some/path",
                 DockerControl = new MockDockerControl(),
                 ConfigurationProvider = new MockConfigProvider(),
-                MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
             }, new MockLogger());
 
@@ -180,7 +179,6 @@ namespace tests
                 DockerStackPath = "/some/path",
                 DockerControl = mocDcc.Object,
                 ConfigurationProvider = confProvider,
-                MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
             }, new MockLogger());
 
@@ -255,7 +253,6 @@ namespace tests
                 DockerStackPath = "/some/path",
                 DockerControl = mocDcc.Object,
                 ConfigurationProvider = confProvider,
-                MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
             }, new MockLogger());
 
@@ -313,7 +310,6 @@ namespace tests
                 DockerStackPath = "/some/path",
                 DockerControl = mocDcc.Object,
                 ConfigurationProvider = confProvider,
-                MessageService = new MockMessageService(),
                 ContractWrapper = new MockContractWrapper()
             }, new MockLogger());
 

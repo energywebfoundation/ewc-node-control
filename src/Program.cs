@@ -25,7 +25,6 @@ namespace src
 
             // Add dependencies
             watchOpts.ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(watchOpts.DockerStackPath, ".env"));
-            watchOpts.MessageService = new ConsoleMessageService();
             watchOpts.DockerControl = new LinuxDockerControl(logger);
             watchOpts.ContractWrapper = new ContractWrapper(watchOpts.ContractAddress,watchOpts.RpcEndpoint,watchOpts.ValidatorAddress,logger);
 

@@ -31,10 +31,6 @@ namespace src
         /// </summary>
         private readonly StateCompare _sc;
         
-        /// <summary>
-        /// Message service implementation given via the constructor options
-        /// </summary>
-        private readonly IMessageService _msgService;
         
         /// <summary>
         /// Path to the docker-compose stack given by the constructor options 
@@ -70,7 +66,6 @@ namespace src
         public UpdateWatch(UpdateWatchOptions opts, ILogger logger)
         {
             // Verify dependencies
-            _msgService = opts.MessageService ?? throw new ArgumentException("Options didn't carry a message service implementation");
             _configProvider = opts.ConfigurationProvider ?? throw new ArgumentException("Options didn't carry a configuration provider implementation");
             _dcc = opts.DockerControl ?? throw new ArgumentException("Options didn't carry a docker compose control implementation");
             _cw = opts.ContractWrapper ?? throw new ArgumentException("Options didn't carry a ContractWrapper implementation");
@@ -188,11 +183,11 @@ namespace src
                 }
                 catch (UpdateVerificationException uve)
                 {
-                    _msgService.SendErrorMessage("Unable to verify update", uve.Message, expectedState);
+                    _logger.Error("Unable to verify update", uve.Message);
                 }
                 catch (Exception ex)
                 {
-                    _msgService.SendErrorMessage("Unknown error during update", ex.Message, expectedState);
+                    _logger.Error("Unknown error during update", ex.Message);
                 }
             }
 
