@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using Docker.DotNet.Models;
 using Nethereum.Contracts;
@@ -42,8 +43,7 @@ namespace src
             using (HttpClient hc = new HttpClient())
             {
                 var sc = new StringContent(
-                    $"{{ \"method\": \"parity_exportAccount\", \"params\": [\"{watchOpts.ValidatorAddress}\",\"{keyPw}\"], \"id\": 1, \"jsonrpc\": \"2.0\" }}");
-                sc.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+                    $"{{ \"method\": \"parity_exportAccount\", \"params\": [\"{watchOpts.ValidatorAddress}\",\"{keyPw}\"], \"id\": 1, \"jsonrpc\": \"2.0\" }}",Encoding.UTF8,"application/json");
                 var response = hc.PostAsync(watchOpts.RpcEndpoint, sc).Result;
                 var resContent = response.Content.ReadAsStringAsync().Result;
                 Console.WriteLine(resContent);
