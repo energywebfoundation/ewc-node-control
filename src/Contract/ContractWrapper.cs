@@ -10,6 +10,7 @@ using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth.Blocks;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
 using Nethereum.Web3.Accounts.Managed;
 using src.Interfaces;
 using src.Models;
@@ -55,13 +56,14 @@ namespace src.Contract
         /// <param name="lookupContractAddress">Address of the address lookup smart contract</param>
         /// <param name="rpcEndpoint">HTTP URL to the JSON-RPC endpoint</param>
         /// <param name="validatorAddress">The ethereum address of the controlled validator</param>
-        public ContractWrapper(string lookupContractAddress, string rpcEndpoint, string validatorAddress, ILogger logger,string keyPw)
+        public ContractWrapper(string lookupContractAddress, string rpcEndpoint, string validatorAddress, ILogger logger,string keyPw,string keyJson = "")
         {
             _validatorAddress = validatorAddress;
             _logger = logger;
             
             // load the validator account
-            ManagedAccount acc = new ManagedAccount(validatorAddress,keyPw);
+            //ManagedAccount acc = new ManagedAccount(validatorAddress,keyPw);
+            Account acc = Account.LoadFromKeyStore(keyJson, keyPw);
             
             // create a web 3 instance
             
