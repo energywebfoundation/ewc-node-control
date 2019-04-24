@@ -221,6 +221,7 @@ namespace src
             Log($"Waiting {_waitTime} ms for updates to settle.");
             Thread.Sleep(_waitTime);
 
+            Log("Confirming update on chain.");
             // Confirm update with tx through local parity
             _cw.ConfirmUpdate().Wait();
             

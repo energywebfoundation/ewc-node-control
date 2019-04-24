@@ -31,7 +31,7 @@ namespace src.Models
         /// <summary>
         /// How log should the updater wait after applying the update and sending the update confirm transaction
         /// </summary>
-        public int WaitTimeAfterUpdate { get; set; } = 10000;
+        public int WaitTimeAfterUpdate { get; set; } = 30000;
         
         /// <summary>
         /// (DI) Instantiated ConfigurationProvider to use
