@@ -115,6 +115,7 @@ namespace src
                     if (_updating)
                     {
                         // Don't check if we're in the middle of an update
+                        Log("Update watch is locked by running update");
                         return;
                     }
                     
@@ -223,6 +224,8 @@ namespace src
             // Confirm update with tx through local parity
             _cw.ConfirmUpdate().Wait();
             
+            
+            Log($"Update complete");
             // re-arm the timer
             _updating = false;
             return true;
