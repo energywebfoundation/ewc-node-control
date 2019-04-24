@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Nethereum.Contracts;
@@ -45,6 +46,7 @@ namespace src.Contract
         private readonly Web3 _web3;
 
         private ILogger _logger;
+        private string _ncContractAddress;
 
         /// <summary>
         /// Instantiates the a new wrapper
@@ -75,6 +77,7 @@ namespace src.Contract
 
             _contractHandler = _web3.Eth.GetContractHandler(ncContractAddress);
             _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDto>(ncContractAddress);
+            _ncContractAddress = ncContractAddress;
             _lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
             Log($"Starting to listen from block #{_lastBlock.Value}");
 
@@ -136,10 +139,21 @@ namespace src.Contract
         public async Task ConfirmUpdate()
         {
 
-            TransactionReceipt confirmResponse = await _contractHandler.SendRequestAndWaitForReceiptAsync(new ConfirmUpdateFunction
+            var updateTxHandler = _web3.Eth.GetContractTransactionHandler<ConfirmUpdateFunction>();
+            var updateTx = new ConfirmUpdateFunction
             {
-                FromAddress = _validatorAddress
-            });
+                FromAddress = _validatorAddress,
+                Gas = new BigInteger(500000)
+            };
+
+            var confirmResponse = await updateTxHandler.SendRequestAndWaitForReceiptAsync(_ncContractAddress, updateTx);
+            
+            
+            //TransactionReceipt confirmResponse = await _contractHandler.SendRequestAndWaitForReceiptAsync(new ConfirmUpdateFunction
+            //{
+            //    FromAddress = _validatorAddress,
+            //    Gas = new BigInteger(500000)
+            //});
             bool? hasErrors = confirmResponse.HasErrors();
             if (hasErrors.HasValue && hasErrors.Value)
             {
