@@ -35,15 +35,16 @@ namespace src
                 logger.Log("Unable to read secret. Exiting.");
                 return;
             }
-           
-            string keyPw = File.ReadAllText(secretPath);
+
+            string keyPw = File.ReadAllText(secretPath).TrimEnd( '\r', '\n' );;
 
             string encKey;
             // Read the encrpyted key from parity
             using (HttpClient hc = new HttpClient())
             {
-                var sc = new StringContent(
-                    $"{{ \"method\": \"parity_exportAccount\", \"params\": [\"{watchOpts.ValidatorAddress}\",\"{keyPw}\"], \"id\": 1, \"jsonrpc\": \"2.0\" }}",Encoding.UTF8,"application/json");
+                string request =
+                    $"{{ \"method\": \"parity_exportAccount\", \"params\": [\"{watchOpts.ValidatorAddress}\",\"{keyPw}\"], \"id\": 1, \"jsonrpc\": \"2.0\" }}";
+                var sc = new StringContent(request,Encoding.UTF8,"application/json");
                 var response = hc.PostAsync(watchOpts.RpcEndpoint, sc).Result;
                 var resContent = response.Content.ReadAsStringAsync().Result;
                 Console.WriteLine(resContent);
