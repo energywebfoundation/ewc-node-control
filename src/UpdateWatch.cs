@@ -58,6 +58,8 @@ namespace src
         /// </summary>
         private int _waitTime;
 
+        private bool _updating;
+
         /// <summary>
         /// Create a new instance of UpdateWatch.
         /// </summary>
@@ -71,6 +73,7 @@ namespace src
             _cw = opts.ContractWrapper ?? throw new ArgumentException("Options didn't carry a ContractWrapper implementation");
             _logger = logger ?? throw new ArgumentException("No logger was supplied.");
             _waitTime = opts.WaitTimeAfterUpdate;
+            _updating = false;
             
             // verify scalar options
             if (string.IsNullOrWhiteSpace(opts.RpcEndpoint))
@@ -107,7 +110,20 @@ namespace src
             Log("Starting watch");
             CheckTimer = new Timer((state) =>
             {
-                CheckForUpdates(state);
+                try
+                {
+                    if (_updating)
+                    {
+                        // Don't check if we're in the middle of an update
+                        return;
+                    }
+                    
+                    CheckForUpdates(state);
+                }
+                catch (Exception e)
+                {
+                    Log($"Unable to check for new Update - will try again : {e.Message}");
+                }
             });
             CheckTimer.Change(10000, 10000);
         }
@@ -164,6 +180,10 @@ namespace src
                 return false;
             }
 
+
+            // dis-arm timer
+            _updating = true;
+            
             // Process actions
             foreach (StateChangeAction act in actions)
             {
@@ -202,6 +222,9 @@ namespace src
 
             // Confirm update with tx through local parity
             _cw.ConfirmUpdate().Wait();
+            
+            // re-arm the timer
+            _updating = false;
             return true;
         }
 
