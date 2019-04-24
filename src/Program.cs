@@ -46,6 +46,7 @@ namespace src
                 sc.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
                 var response = hc.PostAsync(watchOpts.RpcEndpoint, sc).Result;
                 var resContent = response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine(resContent);
                 JObject resObj = JObject.Parse(resContent);
                 encKey = resObj["result"].ToString();
             }
