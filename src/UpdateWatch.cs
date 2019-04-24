@@ -184,10 +184,12 @@ namespace src
                 catch (UpdateVerificationException uve)
                 {
                     _logger.Error("Unable to verify update", uve.Message);
+                    return false;
                 }
                 catch (Exception ex)
                 {
                     _logger.Error("Unknown error during update", ex.Message);
+                    return false;
                 }
             }
 
@@ -376,7 +378,8 @@ namespace src
 
             // verify docker image id against expected hash
             ImageInspectResponse inspectResult = _dcc.InspectImage(act.Payload);
-            if (inspectResult.ID != act.PayloadHash)
+            string dockerHash = inspectResult.ID.Split(':')[1];
+            if (dockerHash != act.PayloadHash)
             {
                 Log("Image hashes don't match. Cancel update.");
                 _dcc.DeleteImage(act.Payload);
