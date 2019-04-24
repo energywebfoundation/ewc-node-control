@@ -42,7 +42,7 @@ namespace src
             using (HttpClient hc = new HttpClient())
             {
                 var sc = new StringContent(
-                    $"{{ \"method\": \"parity_exportAccount\", \"params\": [\"{watchOpts.ValidatorAddress}\",\" {keyPw} \"], \"id\": 1, \"jsonrpc\": \"2.0\" }}");
+                    $"{{ \"method\": \"parity_exportAccount\", \"params\": [\"{watchOpts.ValidatorAddress}\",\"{keyPw}\"], \"id\": 1, \"jsonrpc\": \"2.0\" }}");
                 sc.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
                 var response = hc.PostAsync(watchOpts.RpcEndpoint, sc).Result;
                 var resContent = response.Content.ReadAsStringAsync().Result;
