@@ -177,6 +177,9 @@ namespace src
                         case UpdateMode.ChainSpec: // Update chainspec
                             UpdateChainSpec(act);
                             break;
+                        case UpdateMode.ToggleSigning:
+                            UpdateSigning(act);
+                            break;
                         default:
                             throw new UpdateVerificationException("Unsupported update mode.");
                     }
@@ -201,6 +204,8 @@ namespace src
             _cw.ConfirmUpdate().Wait();
             return true;
         }
+
+        
 
         private bool StateIsPlausible(NodeState expectedState)
         {
@@ -268,6 +273,8 @@ namespace src
         /// </exception>
         public void UpdateChainSpec(StateChangeAction act, HttpMessageHandler httpHandler = null)
         {
+            // TODO: needs to be moved into abstraction layer to allow unit testing
+        
             if (httpHandler == null)
             {
                 httpHandler = new HttpClientHandler();
@@ -326,8 +333,38 @@ namespace src
             _dcc.ApplyChangesToStack(_stackPath, true);
         }
 
+        private void UpdateSigning(StateChangeAction act)
+        {
+            if (act.Mode != UpdateMode.ToggleSigning)
+            {
+                throw new UpdateVerificationException("Action with wrong update mode passed");
+            }
+            
+            // read current state to modify only signing
+            var newState = _configProvider.ReadCurrentState();
+            
+            // ReSharper disable once ConvertIfStatementToSwitchStatement - being explicit here 
+            if (act.Payload == "True")
+            {
+                newState.IsSigning = true;
+            }
+            else if (act.Payload == "False")
+            {
+                newState.IsSigning = false;
+            }
+            
+            // Image is legit. update docker compose
+            Log("Signing mode changed. Updating stack.");
+
+            // modify docker-compose env file
+            _configProvider.WriteNewState(newState);
+
+            // restart/upgrade stack
+            _dcc.ApplyChangesToStack(_stackPath, false);
+        }
+        
         /// <summary>
-        /// Pulland verify a new docker image and update the docker-compose file 
+        /// Pull and verify a new docker image and update the docker-compose file 
         /// </summary>
         /// <param name="act">The action containing the new chainspec url and checksum</param>
         /// <param name="expectedState">The expected state that the action was derived from</param>
@@ -378,7 +415,7 @@ namespace src
 
             // verify docker image id against expected hash
             ImageInspectResponse inspectResult = _dcc.InspectImage(act.Payload);
-            string dockerHash = inspectResult.ID.Split(':')[1];
+            string dockerHash = inspectResult.ID.Replace("sha256:",string.Empty);
             if (dockerHash != act.PayloadHash)
             {
                 Log("Image hashes don't match. Cancel update.");

@@ -6,9 +6,17 @@ namespace tests.Mocks
 {
     public class MockDockerControl : IDockerControl
     {
+        private string _inspectReturn;
+
         public int ApplyChangesCallCount { get; set; } = 0;
         public string SendPathToStack { get; set; }
         public bool SendRestartOnly { get; set; }
+
+
+        public MockDockerControl(string expectedInspectId = "")
+        {
+            _inspectReturn = expectedInspectId;
+        }
         
         public void ApplyChangesToStack(string pathToStack, bool restartOnly)
         {
@@ -24,12 +32,14 @@ namespace tests.Mocks
 
         public ImageInspectResponse InspectImage(string dockerImage)
         {
-            throw new NotImplementedException();
+            return new ImageInspectResponse
+            {
+                ID = _inspectReturn
+            };
         }
 
         public void DeleteImage(string dockerImage)
         {
-            throw new NotImplementedException();
         }
     }
 }
