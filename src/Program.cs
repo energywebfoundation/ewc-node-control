@@ -36,8 +36,8 @@ namespace src
                 return;
             }
 
-            string keyPw = File.ReadAllText(secretPath).TrimEnd( '\r', '\n' );;
-
+            string keyPw = File.ReadAllText(secretPath).TrimEnd('\r','\n');
+            
             string encKey;
             // Read the encrpyted key from parity
             using (HttpClient hc = new HttpClient())
@@ -47,8 +47,15 @@ namespace src
                 var sc = new StringContent(request,Encoding.UTF8,"application/json");
                 var response = hc.PostAsync(watchOpts.RpcEndpoint, sc).Result;
                 var resContent = response.Content.ReadAsStringAsync().Result;
-                Console.WriteLine(resContent);
                 JObject resObj = JObject.Parse(resContent);
+
+                if (resObj["result"] == null)
+                {
+                    // unable to export key
+                    logger.Log("Unable to retrieve key from parity. Exiting.");
+                    return;
+                }
+                
                 encKey = resObj["result"].ToString();
             }
                 
