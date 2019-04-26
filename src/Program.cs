@@ -52,7 +52,7 @@ namespace src
                 if (resObj["result"] == null)
                 {
                     // unable to export key
-                    logger.Log("Unable to retrieve key from parity. Exiting.");
+                    logger.Log($"Unable to retrieve key from parity. Exiting. ==> Response from parity: {resContent}");
                     return;
                 }
                 
