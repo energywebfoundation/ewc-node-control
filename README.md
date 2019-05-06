@@ -27,7 +27,7 @@ The process will also run the tests and produce a runnable image of nodecontrol 
 
 ## Configuration
 
-Nodecontrol can be configured using environment vairables:
+Nodecontrol can be configured using environment variables:
 
 - `CONTRACT_ADDRESS` - Address of the lookup contract. The address of the "real" nodecontrol contract is retrieved from there during startup
 - `STACK_PATH` - Path to the `docker-stack` directory on the host. name inside container has to match outside. See example compose section.
