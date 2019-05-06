@@ -21,7 +21,6 @@ namespace tests
             
             // Interfaces should be null
             Assert.Null(sca.ConfigurationProvider);
-            Assert.Null(sca.MessageService);
             Assert.Null(sca.DockerControl);
 
             // Strings should be empty
@@ -39,7 +38,6 @@ namespace tests
         public void UpdateWatchOptionsSetgetTest(string contractAddr, string rpc, string validatorAddr, string path)
         {
             IDockerControl mdcc = new MockDockerControl();
-            IMessageService ms = new MockMessageService();
             IConfigurationProvider cp = new MockConfigProvider();
             IContractWrapper cw = new MockContractWrapper();
             
@@ -50,7 +48,6 @@ namespace tests
                 ValidatorAddress = validatorAddr,
                 DockerStackPath = path,
                 DockerControl = mdcc,
-                MessageService = ms,
                 ConfigurationProvider = cp,
                 ContractWrapper = cw,
                 WaitTimeAfterUpdate = 12345
@@ -62,7 +59,6 @@ namespace tests
             Assert.Equal(path, watchOpts.DockerStackPath);
             
             Assert.Equal(mdcc, watchOpts.DockerControl);
-            Assert.Equal(ms,watchOpts.MessageService);
             Assert.Equal(cw,watchOpts.ContractWrapper);
             Assert.Equal(cp,watchOpts.ConfigurationProvider);
             Assert.Equal(12345,watchOpts.WaitTimeAfterUpdate);

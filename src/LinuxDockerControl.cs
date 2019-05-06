@@ -39,7 +39,7 @@ namespace src
             }
 
             // Decide on compose parameters
-            string cmd = restartOnly ? "restart" : "up -d";
+            string cmd = restartOnly ? "restart parity" : "up -d parity";
             
             _logger.Log("Apply changes to compose stack...");
             

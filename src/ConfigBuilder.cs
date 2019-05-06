@@ -36,10 +36,10 @@ namespace src
                 throw new ArgumentNullException(nameof(env),"Environment dictionary can't be null");    
             }
             
-            string contractAddresss = GetConfig(env,"CONTRACT_ADDRESS",string.Empty); // "0x0000000000000000000000000000000000000001"
+            string contractAddresss = GetConfig(env,"CONTRACT_ADDRESS",String.Empty); // "0x0000000000000000000000000000000000000001"
             string stackPath = GetConfig(env,"STACK_PATH","./demo-stack");
             string rpcEndpoint = GetConfig(env,"RPC_ENDPOINT","http://localhost:8545");
-            string validatorAddress = GetConfig(env,"VALIDATOR_ADDRESS",string.Empty); // "0x9935e9d4a208d13cd426d3bda7e6667faadb908d"
+            string validatorAddress = GetConfig(env,"VALIDATOR_ADDRESS",String.Empty); // "0x9935e9d4a208d13cd426d3bda7e6667faadb908d"
             
             return new UpdateWatchOptions
             {

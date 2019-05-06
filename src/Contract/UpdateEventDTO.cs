@@ -11,7 +11,7 @@ namespace src.Contract
         /// <summary>
         /// Address of the validator that the update is targeted for
         /// </summary>
-        [Parameter("address","targetValidator",1,false)]
+        [Parameter("address","targetValidator",1,true)]
         public string TargetValidator { get; set; }
 
     }

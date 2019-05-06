@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Newtonsoft.Json;
 using src.Contract;
 using src.Interfaces;
 using src.Models;
@@ -30,10 +31,6 @@ namespace src
         /// </summary>
         private readonly StateCompare _sc;
         
-        /// <summary>
-        /// Message service implementation given via the constructor options
-        /// </summary>
-        private readonly IMessageService _msgService;
         
         /// <summary>
         /// Path to the docker-compose stack given by the constructor options 
@@ -61,6 +58,8 @@ namespace src
         /// </summary>
         private int _waitTime;
 
+        private bool _updating;
+
         /// <summary>
         /// Create a new instance of UpdateWatch.
         /// </summary>
@@ -69,12 +68,12 @@ namespace src
         public UpdateWatch(UpdateWatchOptions opts, ILogger logger)
         {
             // Verify dependencies
-            _msgService = opts.MessageService ?? throw new ArgumentException("Options didn't carry a message service implementation");
             _configProvider = opts.ConfigurationProvider ?? throw new ArgumentException("Options didn't carry a configuration provider implementation");
             _dcc = opts.DockerControl ?? throw new ArgumentException("Options didn't carry a docker compose control implementation");
             _cw = opts.ContractWrapper ?? throw new ArgumentException("Options didn't carry a ContractWrapper implementation");
             _logger = logger ?? throw new ArgumentException("No logger was supplied.");
             _waitTime = opts.WaitTimeAfterUpdate;
+            _updating = false;
             
             // verify scalar options
             if (string.IsNullOrWhiteSpace(opts.RpcEndpoint))
@@ -111,7 +110,21 @@ namespace src
             Log("Starting watch");
             CheckTimer = new Timer((state) =>
             {
-                CheckForUpdates(state);
+                try
+                {
+                    if (_updating)
+                    {
+                        // Don't check if we're in the middle of an update
+                        Log("Update watch is locked by running update");
+                        return;
+                    }
+                    
+                    CheckForUpdates(state);
+                }
+                catch (Exception e)
+                {
+                    Log($"Unable to check for new Update - will try again : {e.Message}");
+                }
             });
             CheckTimer.Change(10000, 10000);
         }
@@ -142,10 +155,22 @@ namespace src
                 Log("No updates found.");
                 return false;
             }
+
+            Log("Found update.");
                 
             // Query block chain to receive expected state
             NodeState expectedState = _cw.GetExpectedState().Result;
 
+            // be a bit lazy with the docker checksum
+            expectedState.DockerChecksum = expectedState.DockerChecksum.Replace("sha256:", "");
+            
+            // Verify sanity of the update
+            if (!StateIsPlausible(expectedState))
+            {
+                Log("Received state is not plausible: " + JsonConvert.SerializeObject(expectedState));
+                return false;
+            }
+            
             // calculate actions from state difference 
             List<StateChangeAction> actions = _sc.ComputeActionsFromState(expectedState);
 
@@ -156,6 +181,10 @@ namespace src
                 return false;
             }
 
+
+            // dis-arm timer
+            _updating = true;
+            
             // Process actions
             foreach (StateChangeAction act in actions)
             {
@@ -169,17 +198,22 @@ namespace src
                         case UpdateMode.ChainSpec: // Update chainspec
                             UpdateChainSpec(act);
                             break;
+                        case UpdateMode.ToggleSigning:
+                            UpdateSigning(act);
+                            break;
                         default:
                             throw new UpdateVerificationException("Unsupported update mode.");
                     }
                 }
                 catch (UpdateVerificationException uve)
                 {
-                    _msgService.SendErrorMessage("Unable to verify update", uve.Message, expectedState);
+                    _logger.Error("Unable to verify update", uve.Message);
+                    return false;
                 }
                 catch (Exception ex)
                 {
-                    _msgService.SendErrorMessage("Unknown error during update", ex.Message, expectedState);
+                    _logger.Error("Unknown error during update", ex.Message);
+                    return false;
                 }
             }
 
@@ -187,8 +221,42 @@ namespace src
             Log($"Waiting {_waitTime} ms for updates to settle.");
             Thread.Sleep(_waitTime);
 
+            Log("Confirming update on chain.");
             // Confirm update with tx through local parity
             _cw.ConfirmUpdate().Wait();
+            
+            
+            Log($"Update complete");
+            // re-arm the timer
+            _updating = false;
+            return true;
+        }
+
+        
+
+        private bool StateIsPlausible(NodeState expectedState)
+        {
+            if (!expectedState.ChainspecUrl.StartsWith("https://"))
+            {
+                Log("[STATE VALIDATION] Error: Chainspec url is not https");
+                return false;
+            }
+            if (expectedState.ChainspecChecksum.Length != 64)
+            {
+                Log("[STATE VALIDATION] Error: Chainspec checksum is not a sha256 checksum. length mismatch");
+                return false;
+            }
+            if (expectedState.DockerChecksum.Length != 64)
+            {
+                Log("[STATE VALIDATION] Error: Docker checksum is not an docker id. length mismatch");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(expectedState.DockerImage))
+            {
+                Log("[STATE VALIDATION] Error: Docker image is empty");
+                return false;
+            }
+            
             return true;
         }
 
@@ -232,6 +300,8 @@ namespace src
         /// </exception>
         public void UpdateChainSpec(StateChangeAction act, HttpMessageHandler httpHandler = null)
         {
+            // TODO: needs to be moved into abstraction layer to allow unit testing
+        
             if (httpHandler == null)
             {
                 httpHandler = new HttpClientHandler();
@@ -290,8 +360,38 @@ namespace src
             _dcc.ApplyChangesToStack(_stackPath, true);
         }
 
+        private void UpdateSigning(StateChangeAction act)
+        {
+            if (act.Mode != UpdateMode.ToggleSigning)
+            {
+                throw new UpdateVerificationException("Action with wrong update mode passed");
+            }
+            
+            // read current state to modify only signing
+            var newState = _configProvider.ReadCurrentState();
+            
+            // ReSharper disable once ConvertIfStatementToSwitchStatement - being explicit here 
+            if (act.Payload == "True")
+            {
+                newState.IsSigning = true;
+            }
+            else if (act.Payload == "False")
+            {
+                newState.IsSigning = false;
+            }
+            
+            // Image is legit. update docker compose
+            Log("Signing mode changed. Updating stack.");
+
+            // modify docker-compose env file
+            _configProvider.WriteNewState(newState);
+
+            // restart/upgrade stack
+            _dcc.ApplyChangesToStack(_stackPath, false);
+        }
+        
         /// <summary>
-        /// Pulland verify a new docker image and update the docker-compose file 
+        /// Pull and verify a new docker image and update the docker-compose file 
         /// </summary>
         /// <param name="act">The action containing the new chainspec url and checksum</param>
         /// <param name="expectedState">The expected state that the action was derived from</param>
@@ -342,7 +442,8 @@ namespace src
 
             // verify docker image id against expected hash
             ImageInspectResponse inspectResult = _dcc.InspectImage(act.Payload);
-            if (inspectResult.ID != act.PayloadHash)
+            string dockerHash = inspectResult.ID.Replace("sha256:",string.Empty);
+            if (dockerHash != act.PayloadHash)
             {
                 Log("Image hashes don't match. Cancel update.");
                 _dcc.DeleteImage(act.Payload);
