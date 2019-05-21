@@ -1,7 +1,20 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./NodeControlInterface.sol";
+interface NodeControlInterface {
+    struct ValidatorState {
+        bytes dockerSha;
+        string dockerName;
+        bytes chainSpecSha;
+        string chainSpecUrl;
+        bool isSigning;
+        uint updateIntroduced;
+        uint updateConfirmed;
+    }
+    event UpdateAvailable(address indexed targetValidator);
+    function retrieveExpectedState(address _targetValidator) external view returns (ValidatorState memory);
+    function confirmUpdate() external;
+}
 
 contract NodeControlSimple is NodeControlInterface {
 
@@ -19,7 +32,7 @@ contract NodeControlSimple is NodeControlInterface {
     ///@notice Returns the current state of a validator
     ///@param _targetValidator The validator whos state you want
     ///@return The state of the validator
-    function RetrieveUpdate(address _targetValidator) external view returns (ValidatorState memory) {
+    function retrieveExpectedState(address _targetValidator) external view returns (ValidatorState memory) {
         return currentState[_targetValidator];
     }
 
@@ -38,7 +51,7 @@ contract NodeControlSimple is NodeControlInterface {
         emit UpdateAvailable(_targetValidator);
     }
 
-    ///@notice Lets the validator confirm the update
+    ///@notice Lets the validator confirm the update - OK
     function confirmUpdate() external {
         require(currentState[msg.sender].dockerSha.length != 0, "Error: You are not a validator!");
         currentState[msg.sender].updateConfirmed = now;

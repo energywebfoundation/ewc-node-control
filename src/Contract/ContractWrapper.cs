@@ -70,19 +70,20 @@ namespace src.Contract
             _web3 = new Web3(acc, rpcEndpoint);
             
             // hook up to the contract and event
-            ContractHandler lookupContractHandler = _web3.Eth.GetContractHandler(lookupContractAddress);
-            string ncContractAddress = lookupContractHandler
-                .QueryAsync<NodeControlContractFunction, string>(null, null).Result;
+//            ContractHandler lookupContractHandler = _web3.Eth.GetContractHandler(lookupContractAddress);
+//            string ncContractAddress = lookupContractHandler
+//                .QueryAsync<NodeControlContractFunction, string>(null, null).Result;
+//
+//
+//            if (string.IsNullOrWhiteSpace(ncContractAddress))
+//            {
+//                    Log($"Unable to retrieve contract address from lookup at {lookupContractAddress}");
+//                    throw new Exception("Unable to retrieve node control contract address from lookup.");
+//            }
+//
+//            Log($"Retrieved Contract Address {ncContractAddress} from lookup at {lookupContractAddress}");
 
-
-            if (string.IsNullOrWhiteSpace(ncContractAddress))
-            {
-                    Log($"Unable to retrieve contract address from lookup at {lookupContractAddress}");
-                    throw new Exception("Unable to retrieve node control contract address from lookup.");
-            }
-
-            Log($"Retrieved Contract Address {ncContractAddress} from lookup at {lookupContractAddress}");
-
+            string ncContractAddress = lookupContractAddress;
             _contractHandler = _web3.Eth.GetContractHandler(ncContractAddress);
             _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDto>(ncContractAddress);
             _ncContractAddress = ncContractAddress;
