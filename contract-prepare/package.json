@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start-ganache": "ganache-cli --verbose -m 'river limb garment clap minimum trumpet edit observe cattle electric aerobic city'",
+    "start-ganache": "ganache-cli --verbose -l 8000000 -m 'river limb garment clap minimum trumpet edit observe cattle electric aerobic city'",
     "deploy-and-prime": "npm run compile && node deploy.js",
-    "compile": "solpm -cy"
+    "compile": "solpm -cy -v byzantium"
   },
   "keywords": [],
   "author": "",
