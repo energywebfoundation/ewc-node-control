@@ -39,8 +39,8 @@ namespace tests
             }
         }
         
-        //[Fact(Skip = "CI not ready")]
-        [Fact]
+        [Fact(Skip = "CI not ready")]
+        //[Fact]
         public void ShouldQueryContract()
         {
             string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
@@ -54,8 +54,8 @@ namespace tests
             Assert.Equal("parity/parity:v2.3.3",state.DockerImage);
         }
         
-        //[Fact(Skip = "CI not ready")]
-        [Fact]
+        [Fact(Skip = "CI not ready")]
+        //[Fact]
         public void ShouldBeAbleToConfirmUpdate()
         {
             string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
@@ -111,8 +111,8 @@ namespace tests
             public bool IsSigning { get; set; }
         }
         
-        //[Fact(Skip = "CI not ready")]
-        [Fact]
+        [Fact(Skip = "CI not ready")]
+        //[Fact]
         public void ShouldCheckForNewupdate()
         {
             
