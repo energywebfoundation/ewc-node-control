@@ -6,7 +6,7 @@ namespace src.Contract
     /// Declares the on-chain event UpdateAvailable
     /// </summary>
     [Event("UpdateAvailable")]
-    public class UpdateEventDto
+    public class UpdateEventDto: IEventDTO
     {
         /// <summary>
         /// Address of the validator that the update is targeted for

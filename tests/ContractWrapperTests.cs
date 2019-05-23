@@ -18,6 +18,9 @@ namespace tests
     
     public class ContractWrapperTests
     {
+        
+        private static string KEYJSON = "{\"id\":\"c8252fc0-49a1-e126-e4b2-44ec61288045\",\"version\":3,\"crypto\":{\"cipher\":\"aes-128-ctr\",\"cipherparams\":{\"iv\":\"3065dd30bfec52cb52c91e6b4e6e5dbb\"},\"ciphertext\":\"c547e030bbd3a66c27cb47a7d679d495e9c53e631b0c28b2fd3385c12dc01c8e\",\"kdf\":\"pbkdf2\",\"kdfparams\":{\"c\":10240,\"dklen\":32,\"prf\":\"hmac-sha256\",\"salt\":\"4ddd56a4e1faf523d76a25b794eda1629741b42bc7049f799b7fb09b9d22cd89\"},\"mac\":\"85fec90f828d311cf3964ac29824de355bbf310e638faa8b937b26d3c281f39a\"},\"address\":\"c3681dfe99730eb45154208cba7b0df7e705f305\",\"name\":\"\",\"meta\":\"{}\"}";
+        
         /* NOTE: These tests require a running and primed ganache. see contract-prepare. Not ready in CI yet */
 
         private void ResetToSnapshot(string rpc)
@@ -36,32 +39,32 @@ namespace tests
             }
         }
         
-        [Fact(Skip = "CI not ready")]
-        //[Fact]
+        //[Fact(Skip = "CI not ready")]
+        [Fact]
         public void ShouldQueryContract()
         {
-            string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
+            string contractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
 
             ResetToSnapshot(rpc);
             
-            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress,new MockLogger(),"");
+            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress,new MockLogger(),"test",KEYJSON);
             var state = cw.GetExpectedState().Result;
             Assert.Equal("parity/parity:v2.3.3",state.DockerImage);
         }
         
-        [Fact(Skip = "CI not ready")]
-        //[Fact]
+        //[Fact(Skip = "CI not ready")]
+        [Fact]
         public void ShouldBeAbleToConfirmUpdate()
         {
-            string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
+            string contractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
             
             ResetToSnapshot(rpc);
             
-            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress,new MockLogger(),"");
+            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress,new MockLogger(),"test",KEYJSON);
             cw.ConfirmUpdate().Wait();
             
         }
@@ -69,13 +72,13 @@ namespace tests
         [Fact(Skip = "No idea how to trigger the exception")]
         public void ShouldThrowOnWrongContractDuringConfirmUpdate()
         {
-            string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
+            string contractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
             
             ResetToSnapshot(rpc);
             
-            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress, new MockLogger(),"");
+            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress, new MockLogger(),"test",KEYJSON);
             
             Action confirmUpdateAction = () => { cw.ConfirmUpdate().Wait(); };
             confirmUpdateAction.Should()
@@ -108,19 +111,20 @@ namespace tests
             public bool IsSigning { get; set; }
         }
         
-        [Fact(Skip = "CI not ready")]
-        //[Fact]
+        //[Fact(Skip = "CI not ready")]
+        [Fact]
         public void ShouldCheckForNewupdate()
         {
             
-            string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
+            string lookupContractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
+            string ncContractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
          
             ResetToSnapshot(rpc);
             
             // no new update should be seen
-            ContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress, new MockLogger(),"");
+            ContractWrapper cw = new ContractWrapper(lookupContractAddress,rpc,validatorAddress, new MockLogger(),"test",KEYJSON);
             bool hasUpdate = cw.HasNewUpdate().Result;
             hasUpdate.Should().Be(false);
             
@@ -128,14 +132,14 @@ namespace tests
             // Send an update
             // prepare RPC connection to play some tx
 
-            string contractOwnerPk = "0xae29ab491cf53d8b63f281cc5eecdbbac4a992b2a4bf483bacae66dfff0740f0";
+            string contractOwnerPk = "ae29ab491cf53d8b63f281cc5eecdbbac4a992b2a4bf483bacae66dfff0740f0";
             Account account = new Account(contractOwnerPk);
             
             // create a web 3 instance
             Web3 web3 = new Web3(account,rpc);
             
             // hook up to the contract and event
-            ContractHandler contractHandler = web3.Eth.GetContractHandler(contractAddress);
+            ContractHandler contractHandler = web3.Eth.GetContractHandler(ncContractAddress);
 
             // contract gets primed with by ganache start
             // const valAddr = "0xc3681dfe99730eb45154208cba7b0df7e705f305"; // first addr in ganache

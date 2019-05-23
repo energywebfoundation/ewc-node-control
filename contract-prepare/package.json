@@ -4,21 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start-ganache": "ganache-cli --verbose -m 'river limb garment clap minimum trumpet edit observe cattle electric aerobic city'",
-    "deploy-and-prime": "npm run build&&node deploy.js && node js/index.js",
-    "build": "tsc -p ."
+    "start-ganache": "ganache-cli --verbose -l 8000000 -m 'river limb garment clap minimum trumpet edit observe cattle electric aerobic city'",
+    "deploy-and-prime": "node deploy.js",
+    "compile": "solpm -cy -v byzantium"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "sloffle": "^1.4.0-beta02"
-  },
   "dependencies": {
-    "@types/web3": "^1.0.14",
-    "spm": "0.0.16",
-    "web3": "1.0.0-beta.37"
-  },
-  "postinstall": "rm -f node_modules/web3/index.d.ts"
+    "solpm": "^0.1.6",
+    "web3": "1.0.0-beta.37",
+    "ethereumjs-tx": "^1.3.4"
+  }
 }
-

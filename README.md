@@ -66,3 +66,11 @@ nodecontrol:
 To obtain coverage and test report: `dotnet test /p:CollectCoverage=true /p:Include='[src*]*' /p:CoverletOutputFormat=\"opencover,lcov\" /p:CoverletOutput=../lcov --logger "trx;LogFileName=TestResults.trx"`
 
 Remark: Per default the `ContractWrapperTests` are skipped as they are not self-contained. They need a preparewd chain with the contracts intialized.
+
+This can be done from the `contract-prepare` folder. You'll need `ganache-cli` to be installed.
+1. Run `npm install`
+2. Run `npm run start-ganache`
+3. open new terminal and run `npm run deploy-and-prime`
+
+Now Ganache has the contract deployed and also primed with some data
+
