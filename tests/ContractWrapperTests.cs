@@ -39,11 +39,11 @@ namespace tests
             }
         }
         
-        [Fact(Skip = "CI not ready")]
-        //[Fact]
+        //[Fact(Skip = "CI not ready")]
+        [Fact]
         public void ShouldQueryContract()
         {
-            string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
+            string contractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
 
@@ -54,11 +54,11 @@ namespace tests
             Assert.Equal("parity/parity:v2.3.3",state.DockerImage);
         }
         
-        [Fact(Skip = "CI not ready")]
-        //[Fact]
+        //[Fact(Skip = "CI not ready")]
+        [Fact]
         public void ShouldBeAbleToConfirmUpdate()
         {
-            string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
+            string contractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
             
@@ -72,7 +72,7 @@ namespace tests
         [Fact(Skip = "No idea how to trigger the exception")]
         public void ShouldThrowOnWrongContractDuringConfirmUpdate()
         {
-            string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
+            string contractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
             
@@ -111,19 +111,20 @@ namespace tests
             public bool IsSigning { get; set; }
         }
         
-        [Fact(Skip = "CI not ready")]
-        //[Fact]
+        //[Fact(Skip = "CI not ready")]
+        [Fact]
         public void ShouldCheckForNewupdate()
         {
             
-            string contractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
+            string lookupContractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
+            string ncContractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
          
             ResetToSnapshot(rpc);
             
             // no new update should be seen
-            ContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress, new MockLogger(),"test",KEYJSON);
+            ContractWrapper cw = new ContractWrapper(lookupContractAddress,rpc,validatorAddress, new MockLogger(),"test",KEYJSON);
             bool hasUpdate = cw.HasNewUpdate().Result;
             hasUpdate.Should().Be(false);
             
@@ -131,14 +132,14 @@ namespace tests
             // Send an update
             // prepare RPC connection to play some tx
 
-            string contractOwnerPk = "0xae29ab491cf53d8b63f281cc5eecdbbac4a992b2a4bf483bacae66dfff0740f0";
+            string contractOwnerPk = "ae29ab491cf53d8b63f281cc5eecdbbac4a992b2a4bf483bacae66dfff0740f0";
             Account account = new Account(contractOwnerPk);
             
             // create a web 3 instance
             Web3 web3 = new Web3(account,rpc);
             
             // hook up to the contract and event
-            ContractHandler contractHandler = web3.Eth.GetContractHandler(contractAddress);
+            ContractHandler contractHandler = web3.Eth.GetContractHandler(ncContractAddress);
 
             // contract gets primed with by ganache start
             // const valAddr = "0xc3681dfe99730eb45154208cba7b0df7e705f305"; // first addr in ganache

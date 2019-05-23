@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start-ganache": "ganache-cli --verbose -l 8000000 -m 'river limb garment clap minimum trumpet edit observe cattle electric aerobic city'",
-    "deploy-and-prime": "npm run compile && node deploy.js",
+    "deploy-and-prime": "node deploy.js",
     "compile": "solpm -cy -v byzantium"
   },
   "keywords": [],

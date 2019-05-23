@@ -12,55 +12,76 @@ const main = async () => {
 
     console.log("Deploying to " + rpc);
     const web3 = new Web3(rpc);
-    const sendAddr = web3.eth.accounts.privateKeyToAccount(pk).address;
+    const sendAddr = web3.eth.accounts.privateKeyToAccount('0x'+pk).address;
+    console.log("Talking from " + sendAddr);
 
-    console.log("Deploying NodeControl Contract...");
-    const contractNcJson = JSON.parse(fs.readFileSync("./contract-build/NodeControlSimple.json").toString());
+    const addrNc = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
+    const addrLookup = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
+    const addrDb = "0xeb8312cf5d2fb55bb131ded00a7adde1ed53860a";
 
-    const transaction = new EthereumTx({
+    // deploy nc 
+    console.log("Deploy NodeControl...");
+    let params = web3.eth.abi.encodeParameters(['address','address'],[addrDb, sendAddr]).substr(2);
+    const ncJson = JSON.parse(fs.readFileSync("./contract-build/NodeControlSimple.json").toString());
+    let tx = new EthereumTx({
         from: sendAddr,
         nonce: 0,
         gas: web3.utils.toHex(8000000),
         gasPrice: web3.utils.toHex(0),
         to: '',
         value:0,
-        data: '0x' + contractNcJson.bytecode
+        data: '0x' + ncJson.bytecode + params
     });
-    transaction.sign(privateKeyBuffer);
-    const serializedTx = transaction.serialize().toString('hex');
-    await web3.eth.sendSignedTransaction('0x' + serializedTx);
+    
+    tx.sign(privateKeyBuffer);
+    await web3.eth.sendSignedTransaction('0x' + tx.serialize().toString('hex'));
 
     // Deploy lookup
     console.log("Deploying Lookup Contract...");
     const contractLookupJson = JSON.parse(fs.readFileSync("./contract-build/NodeControlLookUp.json").toString());
-    const data = web3.eth.abi.encodeParameter('address', '0x5f51f49e25b2ba1acc779066a2614eb70a9093a0').substr(2);
-
-    const transaction2 = new EthereumTx({
+    params = web3.eth.abi.encodeParameters(['address','address'],[addrNc, sendAddr]).substr(2);
+    
+    tx = new EthereumTx({
         from: sendAddr,
         nonce: 1,
         gas: web3.utils.toHex(8000000),
         gasPrice: web3.utils.toHex(0),
         to: '',
         value:0,
-        data: '0x' + contractLookupJson.bytecode + data
+        data: '0x' + contractLookupJson.bytecode + params
     });
-    transaction2.sign(privateKeyBuffer);
-    const serializedTx2 = transaction2.serialize().toString('hex');
-    await web3.eth.sendSignedTransaction('0x' + serializedTx2);
-
-
-    console.log("Priming...");
-
-    const ncInstance = new web3.eth.Contract(contractNcJson.abi,"0x5f51f49e25b2ba1acc779066a2614eb70a9093a0");
     
+    tx.sign(privateKeyBuffer);
+    await web3.eth.sendSignedTransaction('0x' + tx.serialize().toString('hex'));
+   
+   
+
+    console.log("Deploy NodeControl DB...");
+    params = web3.eth.abi.encodeParameters(['address','address'],[addrLookup, sendAddr]).substr(2);
+    const dbJson = JSON.parse(fs.readFileSync("./contract-build/NodeControlDb.json").toString());
+    tx = new EthereumTx({
+        from: sendAddr,
+        nonce: 2,
+        gas: web3.utils.toHex(8000000),
+        gasPrice: web3.utils.toHex(0),
+        to: '',
+        value:0,
+        data: '0x' + dbJson.bytecode + params
+    });
+    
+    tx.sign(privateKeyBuffer);
+    await web3.eth.sendSignedTransaction('0x' + tx.serialize().toString('hex'));
+
+   
+   
 
     console.log("Priming Contract...");
-    
+    const ncInstance = new web3.eth.Contract(ncJson.abi,addrNc);
     const primeData = await ncInstance.methods.updateValidator(
         valAddr,'0x123456','parity/parity:v2.3.3','0x123456','https://chainspec',true).encodeABI();
     const transaction3 = new EthereumTx({
         from: sendAddr,
-        nonce: 2,
+        nonce: 3,
         gas: web3.utils.toHex(8000000),
         gasPrice: web3.utils.toHex(0),
         to: "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0",
@@ -70,8 +91,13 @@ const main = async () => {
     transaction3.sign(privateKeyBuffer);
     const serializedTx3 = transaction3.serialize().toString('hex');
     await web3.eth.sendSignedTransaction('0x' + serializedTx3);
-    console.log("Done.")
-   
+    
+    web3.currentProvider.send({ "method": "evm_mine", "params": [], "id": 1, "jsonrpc": "2.0" },() => {
+        web3.currentProvider.send({ "method": "evm_snapshot", "params": [], "id": 1, "jsonrpc": "2.0" },() => {
+            console.log("Done.")
+        });
+    });
+
 }
 
 main()
