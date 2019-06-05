@@ -63,7 +63,7 @@ namespace src
             // Add dependencies
             watchOpts.ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(watchOpts.DockerStackPath, ".env"));
             watchOpts.DockerControl = new LinuxDockerControl(logger);
-            watchOpts.ContractWrapper = new ContractWrapper(watchOpts.ContractAddress,watchOpts.RpcEndpoint,watchOpts.ValidatorAddress,logger,keyPw,encKey);
+            watchOpts.ContractWrapper = new ContractWrapper(watchOpts.ContractAddress,watchOpts.RpcEndpoint,watchOpts.ValidatorAddress,logger,keyPw,encKey, watchOpts.BlockNumberPersistFile);
 
             // instantiate the update watch
             UpdateWatch uw = new UpdateWatch(watchOpts,logger);

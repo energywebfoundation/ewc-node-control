@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -49,6 +50,7 @@ namespace src.Contract
 
         private ILogger _logger;
         private string _ncContractAddress;
+        private string _blockNumberFile;
 
         /// <summary>
         /// Instantiates the a new wrapper
@@ -56,7 +58,7 @@ namespace src.Contract
         /// <param name="lookupContractAddress">Address of the address lookup smart contract</param>
         /// <param name="rpcEndpoint">HTTP URL to the JSON-RPC endpoint</param>
         /// <param name="validatorAddress">The ethereum address of the controlled validator</param>
-        public ContractWrapper(string lookupContractAddress, string rpcEndpoint, string validatorAddress, ILogger logger,string keyPw,string keyJson = "")
+        public ContractWrapper(string lookupContractAddress, string rpcEndpoint, string validatorAddress, ILogger logger,string keyPw,string keyJson, string blockNumberFile)
         {
             _validatorAddress = validatorAddress;
             _logger = logger;
@@ -86,9 +88,57 @@ namespace src.Contract
             _contractHandler = _web3.Eth.GetContractHandler(ncContractAddress);
             _updateEventHandler = _web3.Eth.GetEvent<UpdateEventDto>(ncContractAddress);
             _ncContractAddress = ncContractAddress;
-            _lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
+            _blockNumberFile = blockNumberFile;
+            
+            // get block
+            GetLastCheckedBlock();
+
             Log($"Starting to listen from block #{_lastBlock.Value}");
 
+        }
+
+        private void GetLastCheckedBlock()
+        {
+            _lastBlock = null;
+
+            try
+            {
+                if (File.Exists(_blockNumberFile))
+                {
+                    string hexValueFromFile = File.ReadAllText(_blockNumberFile);
+                    if (!String.IsNullOrWhiteSpace(hexValueFromFile))
+                    {
+                        _lastBlock = new HexBigInteger(hexValueFromFile);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error("ContractWrapper","Unable to read last block from file: " + e.Message);
+            }
+
+            if (_lastBlock == null)
+            {
+                // Unable to read block from file
+                _lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
+            }
+        }
+        
+        private void PersistLastCheckedBlock()
+        {
+            string blockNumberAsHex = _lastBlock.HexValue;
+
+            try
+            {
+                if (File.Exists(_blockNumberFile))
+                {
+                    File.WriteAllText(_blockNumberFile,blockNumberAsHex);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error("ContractWrapper","Unable to persist last checked block to file: " + e.Message);
+            }
         }
 
         private void Log(string msg)
@@ -113,6 +163,7 @@ namespace src.Contract
             Log($"Found {outrstandingEvents.Count} update events. Checking if we got addressed.");
             // save current block number
             _lastBlock = curBlock;
+            PersistLastCheckedBlock();
             return outrstandingEvents.Any(x => x.Event.TargetValidator == _validatorAddress);
         } 
 

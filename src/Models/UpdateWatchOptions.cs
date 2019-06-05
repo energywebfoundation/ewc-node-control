@@ -11,6 +11,11 @@ namespace src.Models
         /// Address of the nodecontrol contract
         /// </summary>
         public string ContractAddress { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The file to store the last checked block number in
+        /// </summary>
+        public string BlockNumberPersistFile { get; set; } = null;
         
         /// <summary>
         /// url to the http endpoint for JSON-RPC

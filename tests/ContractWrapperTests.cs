@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net.Http;
 using FluentAssertions;
 using Nethereum.ABI.FunctionEncoding.Attributes;
@@ -46,10 +47,11 @@ namespace tests
             string contractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
+            string fileToPersistBlockNum = Path.GetTempFileName();
 
             ResetToSnapshot(rpc);
             
-            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress,new MockLogger(),"test",KEYJSON);
+            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress,new MockLogger(),"test",KEYJSON,fileToPersistBlockNum);
             var state = cw.GetExpectedState().Result;
             Assert.Equal("parity/parity:v2.3.3",state.DockerImage);
         }
@@ -61,10 +63,12 @@ namespace tests
             string contractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
+            string fileToPersistBlockNum = Path.GetTempFileName();
+
             
             ResetToSnapshot(rpc);
             
-            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress,new MockLogger(),"test",KEYJSON);
+            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress,new MockLogger(),"test",KEYJSON,fileToPersistBlockNum);
             cw.ConfirmUpdate().Wait();
             
         }
@@ -75,10 +79,11 @@ namespace tests
             string contractAddress = "0xa454963c7a6dcbdcd0d3fb281f4e67262fb71586";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
-            
+            string fileToPersistBlockNum = Path.GetTempFileName();
+
             ResetToSnapshot(rpc);
             
-            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress, new MockLogger(),"test",KEYJSON);
+            IContractWrapper cw = new ContractWrapper(contractAddress,rpc,validatorAddress, new MockLogger(),"test",KEYJSON,fileToPersistBlockNum);
             
             Action confirmUpdateAction = () => { cw.ConfirmUpdate().Wait(); };
             confirmUpdateAction.Should()
@@ -120,11 +125,12 @@ namespace tests
             string ncContractAddress = "0x5f51f49e25b2ba1acc779066a2614eb70a9093a0";
             string rpc = Environment.GetEnvironmentVariable("TEST_RPC") ?? "http://localhost:8545";
             string validatorAddress = "0xc3681dfe99730eb45154208cba7b0df7e705f305";
-         
+            string fileToPersistBlockNum = Path.GetTempFileName();
+
             ResetToSnapshot(rpc);
             
             // no new update should be seen
-            ContractWrapper cw = new ContractWrapper(lookupContractAddress,rpc,validatorAddress, new MockLogger(),"test",KEYJSON);
+            ContractWrapper cw = new ContractWrapper(lookupContractAddress,rpc,validatorAddress, new MockLogger(),"test",KEYJSON,fileToPersistBlockNum);
             bool hasUpdate = cw.HasNewUpdate().Result;
             hasUpdate.Should().Be(false);
             
