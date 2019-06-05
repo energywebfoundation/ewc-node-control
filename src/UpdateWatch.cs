@@ -384,10 +384,24 @@ namespace src
             Log("Signing mode changed. Updating stack.");
 
             // modify docker-compose env file
+
+            var stateBeforeUpgrade = _configProvider.ReadCurrentState();
+            
+            // Write new config file and try to upgrade
             _configProvider.WriteNewState(newState);
 
             // restart/upgrade stack
-            _dcc.ApplyChangesToStack(_stackPath, false);
+            try
+            {
+                _dcc.ApplyChangesToStack(_stackPath, false);
+            }
+            catch
+            {
+                // Stack upgrade didn't work - rollback to last config file and rethrow
+                _configProvider.WriteNewState(stateBeforeUpgrade);
+                throw;
+            }
+
         }
         
         /// <summary>
@@ -454,11 +468,22 @@ namespace src
             // Image is legit. update docker compose
             Log("Image valid. Updating stack.");
 
-            // modify docker-compose env file
+            var stateBeforeUpgrade = _configProvider.ReadCurrentState();
+            
+            // Write new config file and try to upgrade
             _configProvider.WriteNewState(expectedState);
 
             // restart/upgrade stack
-            _dcc.ApplyChangesToStack(_stackPath, false);
+            try
+            {
+                _dcc.ApplyChangesToStack(_stackPath, false);
+            }
+            catch
+            {
+                // Stack upgrade didn't work - rollback to last config file and rethrow
+                _configProvider.WriteNewState(stateBeforeUpgrade);
+                throw;
+            }
         }
     }
 }
