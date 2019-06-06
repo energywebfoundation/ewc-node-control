@@ -222,12 +222,6 @@ namespace src.Contract
 
             TransactionReceipt confirmResponse = await updateTxHandler.SendRequestAndWaitForReceiptAsync(_ncContractAddress, updateTx);
 
-
-            //TransactionReceipt confirmResponse = await _contractHandler.SendRequestAndWaitForReceiptAsync(new ConfirmUpdateFunction
-            //{
-            //    FromAddress = _validatorAddress,
-            //    Gas = new BigInteger(500000)
-            //});
             bool? hasErrors = confirmResponse.HasErrors();
             if (hasErrors.HasValue && hasErrors.Value)
             {
