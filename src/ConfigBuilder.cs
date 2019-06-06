@@ -41,6 +41,7 @@ namespace src
             string rpcEndpoint = GetConfig(env,"RPC_ENDPOINT","http://localhost:8545");
             string validatorAddress = GetConfig(env,"VALIDATOR_ADDRESS",String.Empty); // "0x9935e9d4a208d13cd426d3bda7e6667faadb908d"
             string blockPersistFile= GetConfig(env,"BLOCKFILE_PATH","blocknumber.txt"); 
+            string KeyFile= GetConfig(env,"KEYFILE_PATH",String.Empty); 
             
             return new UpdateWatchOptions
             {
@@ -48,7 +49,8 @@ namespace src
                 ContractAddress = contractAddresss,
                 ValidatorAddress = validatorAddress,
                 DockerStackPath = stackPath,
-                BlockNumberPersistFile = blockPersistFile
+                BlockNumberPersistFile = blockPersistFile,
+                ValidatorKeyFile = KeyFile
             };
         }
     }

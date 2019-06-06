@@ -52,8 +52,10 @@ namespace src.Models
         /// (DI) ContractWrapper to use
         /// </summary>
         public IContractWrapper ContractWrapper { get; set; }
-        
-       
-        
+
+        /// <summary>
+        /// Path to the parity keyfile
+        /// </summary>
+        public string ValidatorKeyFile { get; set; }
     }
 }

@@ -38,26 +38,14 @@ namespace src
 
             string keyPw = File.ReadAllText(secretPath).TrimEnd('\r','\n');
             
-            string encKey;
-            // Read the encrpyted key from parity
-            using (HttpClient hc = new HttpClient())
+            
+            if (!File.Exists(watchOpts.ValidatorKeyFile))
             {
-                string request =
-                    $"{{ \"method\": \"parity_exportAccount\", \"params\": [\"{watchOpts.ValidatorAddress}\",\"{keyPw}\"], \"id\": 1, \"jsonrpc\": \"2.0\" }}";
-                var sc = new StringContent(request,Encoding.UTF8,"application/json");
-                var response = hc.PostAsync(watchOpts.RpcEndpoint, sc).Result;
-                var resContent = response.Content.ReadAsStringAsync().Result;
-                JObject resObj = JObject.Parse(resContent);
-
-                if (resObj["result"] == null)
-                {
-                    // unable to export key
-                    logger.Log($"Unable to retrieve key from parity. Exiting. ==> Response from parity: {resContent}");
-                    return;
-                }
-                
-                encKey = resObj["result"].ToString();
+                logger.Log("Unable to read parity key file. Exiting.");
+                return;
             }
+            
+            string encKey = File.ReadAllText(watchOpts.ValidatorKeyFile);
                 
             
             // Add dependencies
