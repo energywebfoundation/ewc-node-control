@@ -23,7 +23,7 @@ namespace src
             _logger = logger;
         }
         /// <summary>
-        /// Use the docker-compose CLI to apply changes 
+        /// Use the docker-compose CLI to apply changes
         /// </summary>
         /// <param name="pathToStack">Path to the docker-compose directory</param>
         /// <param name="restartOnly">Should the stack only restart</param>
@@ -39,9 +39,9 @@ namespace src
 
             // Decide on compose parameters
             string cmd = restartOnly ? "restart parity" : "up -d parity";
-            
+
             _logger.Log("Apply changes to compose stack...");
-            
+
             // Fire up a new shell process to apply the changes
             using (Process myProcess = new Process())
             {
@@ -66,7 +66,7 @@ namespace src
         /// <inheritdoc />
         public void PullImage(ImagesCreateParameters imagesCreateParameters, AuthConfig authConfig, Progress<JSONMessage> progress)
         {
-            // Connect to local docker deamon
+            // Connect to local docker daemon
             using (DockerClient client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient())
             {
                 client.Images.CreateImageAsync(imagesCreateParameters, authConfig, progress).Wait();
@@ -76,13 +76,13 @@ namespace src
         /// <inheritdoc />
         public ImageInspectResponse InspectImage(string dockerImage)
         {
-            // Connect to local docker deamon
+            // Connect to local docker daemon
             using (DockerClient client =
                 new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient())
             {
-                return client.Images.InspectImageAsync(dockerImage).Result;    
+                return client.Images.InspectImageAsync(dockerImage).Result;
             }
-            
+
         }
 
         /// <inheritdoc />
@@ -91,7 +91,7 @@ namespace src
             using (DockerClient client =
                 new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient())
             {
-                client.Images.DeleteImageAsync(dockerImage, new ImageDeleteParameters()).Wait();    
+                client.Images.DeleteImageAsync(dockerImage, new ImageDeleteParameters()).Wait();
             }
         }
     }

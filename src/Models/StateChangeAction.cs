@@ -7,16 +7,16 @@ namespace src.Models
     public class StateChangeAction
     {
         /// <summary>
-        /// Selects the update path. see UpdateMode 
+        /// Selects the update path. see UpdateMode
         /// </summary>
         public UpdateMode Mode { get; set; } = UpdateMode.Unknown;
-        
+
         /// <summary>
         /// Transports the payload for the given update mode.
         /// <list type="table">
         /// <item>
         /// <term>Docker Mode</term>
-        /// <description>Docker image (eg. parity/partiy:v2.3.4)</description>
+        /// <description>Docker image (eg. parity/parity:v2.3.4)</description>
         /// </item>
         /// <item>
         /// <term>Chainspec Mode</term>
@@ -25,7 +25,7 @@ namespace src.Models
         /// </list>
         /// </summary>
         public string Payload { get; set; } = string.Empty;
-        
+
         /// <summary>
         /// Transports the hash for the payload
         /// <list type="table">

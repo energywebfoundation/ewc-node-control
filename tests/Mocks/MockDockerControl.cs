@@ -6,18 +6,18 @@ namespace tests.Mocks
 {
     public class MockDockerControl : IDockerControl
     {
-        private string _inspectReturn;
+        private readonly string _inspectReturn;
 
-        public int ApplyChangesCallCount { get; set; } = 0;
-        public string SendPathToStack { get; set; }
-        public bool SendRestartOnly { get; set; }
+        public int ApplyChangesCallCount { get; private set; }
+        public string SendPathToStack { get; private set; }
+        public bool SendRestartOnly { get; private set; }
 
 
         public MockDockerControl(string expectedInspectId = "")
         {
             _inspectReturn = expectedInspectId;
         }
-        
+
         public void ApplyChangesToStack(string pathToStack, bool restartOnly)
         {
             SendRestartOnly = restartOnly;
@@ -27,7 +27,7 @@ namespace tests.Mocks
 
         public void PullImage(ImagesCreateParameters imagesCreateParameters, AuthConfig authConfig, Progress<JSONMessage> progress)
         {
-            
+
         }
 
         public ImageInspectResponse InspectImage(string dockerImage)

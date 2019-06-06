@@ -2,7 +2,7 @@ using FluentAssertions;
 using src.Models;
 using Xunit;
 
-namespace tests
+namespace tests.ModelTests
 {
     public class UpdateModeEnumTests
     {

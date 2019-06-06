@@ -4,7 +4,7 @@ using Docker.DotNet.Models;
 namespace src.Interfaces
 {
     /// <summary>
-    /// Describes how to apply changes on the docker compose stack and how to talks to the docker engine 
+    /// Describes how to apply changes on the docker compose stack and how to talks to the docker engine
     /// </summary>
     public interface IDockerControl
     {
@@ -16,7 +16,7 @@ namespace src.Interfaces
         void ApplyChangesToStack(string pathToStack, bool restartOnly);
 
         /// <summary>
-        /// Let the docker deamon pull the image
+        /// Let the docker daemon pull the image
         /// </summary>
         /// <param name="imagesCreateParameters"></param>
         /// <param name="authConfig"></param>
@@ -27,9 +27,9 @@ namespace src.Interfaces
         /// Inspect the properties of a given image
         /// </summary>
         /// <param name="dockerImage">Docker image to inspect (eg. parity/parity:v2.3.3)</param>
-        /// <returns>INspection results</returns>
+        /// <returns>Inspection results</returns>
         ImageInspectResponse InspectImage(string dockerImage);
-        
+
         /// <summary>
         /// Remove an image from the local docker engine
         /// </summary>

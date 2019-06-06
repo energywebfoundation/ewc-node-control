@@ -5,13 +5,13 @@ namespace tests.Mocks
 {
     public class MockLogger : ILogger
     {
-        public List<string> Messages { get; set; }
+        private List<string> Messages { get; }
 
         public MockLogger()
         {
             Messages = new List<string>();
         }
-        
+
         public void Log(string msg)
         {
             Messages.Add(msg);

@@ -9,12 +9,12 @@ namespace src
 {
     internal static class Program
     {
-        
-        private static void Main(string[] args)
+
+        private static void Main()
         {
             ILogger logger = new ConsoleLogger();
             logger.Log("EWF NodeControl");
-            
+
             // config stuff
             IDictionary env = Environment.GetEnvironmentVariables();
             UpdateWatchOptions watchOpts = ConfigBuilder.BuildConfigurationFromEnvironment(env);
@@ -28,17 +28,17 @@ namespace src
             }
 
             string keyPw = File.ReadAllText(secretPath).TrimEnd('\r','\n');
-            
-            
+
+
             if (!File.Exists(watchOpts.ValidatorKeyFile))
             {
                 logger.Log("Unable to read parity key file. Exiting.");
                 return;
             }
-            
+
             string encKey = File.ReadAllText(watchOpts.ValidatorKeyFile);
-                
-            
+
+
             // Add dependencies
             watchOpts.ConfigurationProvider = new ConfigurationFileHandler(Path.Combine(watchOpts.DockerStackPath, ".env"));
             watchOpts.DockerControl = new LinuxDockerControl(logger);
@@ -55,7 +55,7 @@ namespace src
             {
                 Thread.Sleep(60000);
             }
-            
+
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using src.Interfaces;
 using src.Models;
@@ -8,18 +9,17 @@ namespace tests.Mocks
     {
         public Task<bool> HasNewUpdate()
         {
-            throw new System.NotImplementedException();
-
+            throw new NotImplementedException();
         }
 
         public Task<NodeState> GetExpectedState()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public Task ConfirmUpdate()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

@@ -12,34 +12,34 @@ using src.Models;
 
 namespace src
 {
-    
+
     /// <summary>
-    /// Watches for new updates, compares the current and expected state and carries out the state changes if nessesary
+    /// Watches for new updates, compares the current and expected state and carries out the state changes if necessary
     /// </summary>
     public class UpdateWatch
     {
-        
+
         /// <summary>
         /// ContractWrapper implementation given by the constructor options
         /// </summary>
         private readonly IContractWrapper _cw;
-        
+
         /// <summary>
         /// state compare instance initialized with the configuration provider given in construction options
         /// </summary>
         private readonly StateCompare _sc;
-        
-        
+
+
         /// <summary>
-        /// Path to the docker-compose stack given by the constructor options 
+        /// Path to the docker-compose stack given by the constructor options
         /// </summary>
         private readonly string _stackPath;
-        
+
         /// <summary>
         /// ConfigurationProvider implementation given by the constructor options
         /// </summary>
         private readonly IConfigurationProvider _configProvider;
-        
+
         /// <summary>
         /// DockerComposeControl implementation given by the constructor options
         /// </summary>
@@ -50,11 +50,11 @@ namespace src
         /// </summary>
         private readonly ILogger _logger;
 
-        
+
         /// <summary>
         /// Time to wait for update to settle
         /// </summary>
-        private int _waitTime;
+        private readonly int _waitTime;
 
         private bool _updating;
 
@@ -72,23 +72,23 @@ namespace src
             _logger = logger ?? throw new ArgumentException("No logger was supplied.");
             _waitTime = opts.WaitTimeAfterUpdate;
             _updating = false;
-            
+
             // verify scalar options
             if (string.IsNullOrWhiteSpace(opts.RpcEndpoint))
             {
                 throw new ArgumentException("Options didn't provide an rpc url");
             }
-            
+
             if (string.IsNullOrWhiteSpace(opts.ContractAddress))
             {
                 throw new ArgumentException("Options didn't provide a contract address");
             }
-            
+
             if (string.IsNullOrWhiteSpace(opts.ValidatorAddress))
             {
                 throw new ArgumentException("Options didn't provide a validator address");
             }
-            
+
             if (string.IsNullOrWhiteSpace(opts.DockerStackPath))
             {
                 throw new ArgumentException("Options didn't provide a docker stack path");
@@ -106,7 +106,7 @@ namespace src
         public void StartWatch()
         {
             Log("Starting watch");
-            CheckTimer = new Timer((state) =>
+            CheckTimer = new Timer(state =>
             {
                 try
                 {
@@ -116,8 +116,8 @@ namespace src
                         Log("Update watch is locked by running update");
                         return;
                     }
-                    
-                    CheckForUpdates(state);
+
+                    CheckForUpdates();
                 }
                 catch (Exception e)
                 {
@@ -127,7 +127,7 @@ namespace src
             CheckTimer.Change(10000, 10000);
         }
 
-        public Timer CheckTimer { get; set; }
+        public Timer CheckTimer { get; private set; }
 
         /// <summary>
         /// Abstract log method to log arbitrary messages. Uses the given ILogger.
@@ -141,12 +141,11 @@ namespace src
         /// <summary>
         /// Method called by the timer to check and execute updates
         /// </summary>
-        /// <param name="state">dummy state that is not used</param>
         /// <remarks>Errors during processing will not throw exceptions, but instead send a message via the message service.</remarks>
-        public bool CheckForUpdates(object state)
+        public bool CheckForUpdates()
         {
             Log("Checking On-Chain for updates.");
-            
+
             if(!_cw.HasNewUpdate().Result)
             {
                 // No new update events on chain
@@ -155,21 +154,21 @@ namespace src
             }
 
             Log("Found update.");
-                
+
             // Query block chain to receive expected state
             NodeState expectedState = _cw.GetExpectedState().Result;
 
             // be a bit lazy with the docker checksum
             expectedState.DockerChecksum = expectedState.DockerChecksum.Replace("sha256:", "");
-            
+
             // Verify sanity of the update
             if (!StateIsPlausible(expectedState))
             {
                 Log("Received state is not plausible: " + JsonConvert.SerializeObject(expectedState));
                 return false;
             }
-            
-            // calculate actions from state difference 
+
+            // calculate actions from state difference
             List<StateChangeAction> actions = _sc.ComputeActionsFromState(expectedState);
 
             if (actions.Count == 0)
@@ -182,7 +181,7 @@ namespace src
 
             // dis-arm timer
             _updating = true;
-            
+
             // Process actions
             foreach (StateChangeAction act in actions)
             {
@@ -222,15 +221,15 @@ namespace src
             Log("Confirming update on chain.");
             // Confirm update with tx through local parity
             _cw.ConfirmUpdate().Wait();
-            
-            
-            Log($"Update complete");
+
+
+            Log("Update complete");
             // re-arm the timer
             _updating = false;
             return true;
         }
 
-        
+
 
         private bool StateIsPlausible(NodeState expectedState)
         {
@@ -254,7 +253,7 @@ namespace src
                 Log("[STATE VALIDATION] Error: Docker image is empty");
                 return false;
             }
-            
+
             return true;
         }
 
@@ -265,13 +264,13 @@ namespace src
         /// <returns>hash as hex encoded string</returns>
         public static string HashString(string dataToHash)
         {
-            // Create a SHA256   
+            // Create a SHA256
             using (SHA256 sha256Hash = SHA256.Create())
             {
-                // ComputeHash - returns byte array  
+                // ComputeHash - returns byte array
                 byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(dataToHash));
 
-                // Convert byte array to a string   
+                // Convert byte array to a string
                 StringBuilder builder = new StringBuilder();
                 foreach (byte t in bytes)
                 {
@@ -299,21 +298,21 @@ namespace src
         public void UpdateChainSpec(StateChangeAction act, HttpMessageHandler httpHandler = null)
         {
             // TODO: needs to be moved into abstraction layer to allow unit testing
-        
+
             if (httpHandler == null)
             {
                 httpHandler = new HttpClientHandler();
             }
-            
+
             if (string.IsNullOrWhiteSpace(act.Payload) || string.IsNullOrWhiteSpace(act.PayloadHash))
             {
                 throw new UpdateVerificationException("Payload or hash are empty");
             }
-            
-            // verify https            
+
+            // verify https
             if (!act.Payload.StartsWith("https://"))
             {
-                throw new UpdateVerificationException("Won't download chainspec from unencrypted URL");
+                throw new UpdateVerificationException("Won't download chain spec from unencrypted URL");
             }
 
             // Check if given directory has a chain spec file
@@ -364,11 +363,11 @@ namespace src
             {
                 throw new UpdateVerificationException("Action with wrong update mode passed");
             }
-            
+
             // read current state to modify only signing
-            var newState = _configProvider.ReadCurrentState();
-            
-            // ReSharper disable once ConvertIfStatementToSwitchStatement - being explicit here 
+            NodeState newState = _configProvider.ReadCurrentState();
+
+            // ReSharper disable once ConvertIfStatementToSwitchStatement - being explicit here
             if (act.Payload == "True")
             {
                 newState.IsSigning = true;
@@ -377,14 +376,14 @@ namespace src
             {
                 newState.IsSigning = false;
             }
-            
+
             // Image is legit. update docker compose
             Log("Signing mode changed. Updating stack.");
 
             // modify docker-compose env file
 
-            var stateBeforeUpgrade = _configProvider.ReadCurrentState();
-            
+            NodeState stateBeforeUpgrade = _configProvider.ReadCurrentState();
+
             // Write new config file and try to upgrade
             _configProvider.WriteNewState(newState);
 
@@ -401,9 +400,9 @@ namespace src
             }
 
         }
-        
+
         /// <summary>
-        /// Pull and verify a new docker image and update the docker-compose file 
+        /// Pull and verify a new docker image and update the docker-compose file
         /// </summary>
         /// <param name="act">The action containing the new chainspec url and checksum</param>
         /// <param name="expectedState">The expected state that the action was derived from</param>
@@ -420,7 +419,7 @@ namespace src
             {
                 throw new UpdateVerificationException("Action with wrong update mode passed");
             }
-            
+
             if (string.IsNullOrWhiteSpace(act.Payload) || string.IsNullOrWhiteSpace(act.PayloadHash))
             {
                 throw new UpdateVerificationException("Payload or hash are empty");
@@ -428,15 +427,15 @@ namespace src
 
             if (act.Payload != expectedState.DockerImage || act.PayloadHash != expectedState.DockerChecksum)
             {
-                throw new UpdateVerificationException("Action vs. nodestate mismatch");
+                throw new UpdateVerificationException("Action vs. node state mismatch");
             }
-            
+
 
             Log($"Pulling new parity image [{act.Payload}] ..");
 
             // Prepare progress logging stub
             Progress<JSONMessage> progress = new Progress<JSONMessage>();
-            
+
             try
             {
                 // pull docker image
@@ -445,7 +444,7 @@ namespace src
                     FromImage = act.Payload.Split(':')[0],
                     Tag = act.Payload.Split(':')[1]
                 }, null, progress);
-                
+
             }
             catch (Exception e)
             {
@@ -466,8 +465,8 @@ namespace src
             // Image is legit. update docker compose
             Log("Image valid. Updating stack.");
 
-            var stateBeforeUpgrade = _configProvider.ReadCurrentState();
-            
+            NodeState stateBeforeUpgrade = _configProvider.ReadCurrentState();
+
             // Write new config file and try to upgrade
             _configProvider.WriteNewState(expectedState);
 

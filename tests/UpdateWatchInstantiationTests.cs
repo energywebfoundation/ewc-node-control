@@ -15,7 +15,7 @@ namespace tests
     public class UpdateWatchInstantiationTests
     {
 
-        public static IEnumerable<object[]> GenerateMissingDependecyTestcases()
+        public static IEnumerable<object[]> GenerateMissingDependencyTestCases()
         {
 
             // Missing docker provider
@@ -64,8 +64,8 @@ namespace tests
                 },
                 "Options didn't carry a ContractWrapper implementation"
             };
-            
-            // Missing rpc endpoint 
+
+            // Missing rpc endpoint
             yield return new object[]
             {
                 new UpdateWatchOptions
@@ -128,7 +128,7 @@ namespace tests
         }
 
         [Theory]
-        [MemberData(nameof(GenerateMissingDependecyTestcases))]
+        [MemberData(nameof(GenerateMissingDependencyTestCases))]
         public void ShouldThrowOnMissingOptions(UpdateWatchOptions badOpts, string expectedMessage)
         {
 
@@ -145,8 +145,8 @@ namespace tests
             "027d0fd56d418b3b5c21813ddbb0dca5eee817d0c4b64e482f893113b3312bc9")]
         public void ShouldHashStringCorrectly(string plainText, string expectedHash)
         {
-            var computedhash = UpdateWatch.HashString(plainText);
-            computedhash.Should().Be(expectedHash);
+            string computedHash = UpdateWatch.HashString(plainText);
+            computedHash.Should().Be(expectedHash);
         }
 
 
@@ -166,7 +166,7 @@ namespace tests
             }, new MockLogger());
 
             uw.CheckTimer.Should().BeNull();
-            
+
             // start the timer
             uw.StartWatch();
 
@@ -177,19 +177,19 @@ namespace tests
             uw.CheckTimer.Dispose();
 
         }
-        
+
         [Fact]
         public void ShouldNotUpdateWhenNoNewEvent()
         {
             // Run the test
-           
+
             Mock<IContractWrapper> cwMock = new Mock<IContractWrapper>(MockBehavior.Loose);
             cwMock
                 .Setup(mock => mock.HasNewUpdate())
                 .Returns(() => Task.FromResult(false))
                 .Verifiable("Contract was not checked for update event");
-                
-            
+
+
             UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
             {
                 RpcEndpoint = "http://example.com",
@@ -201,25 +201,25 @@ namespace tests
                 ContractWrapper = cwMock.Object
             }, new MockLogger());
 
-            var checkResult = uw.CheckForUpdates(new object());
+            bool checkResult = uw.CheckForUpdates();
             checkResult.Should().Be(false);
 
             cwMock.Verify();
             cwMock.VerifyNoOtherCalls();
 
         }
-        
+
         [Fact]
         public void ShouldNotUpdateWhenEqualState()
         {
             // Run the test
-           
+
             Mock<IContractWrapper> cwMock = new Mock<IContractWrapper>(MockBehavior.Loose);
             cwMock
                 .Setup(mock => mock.HasNewUpdate())
                 .Returns(() => Task.FromResult(true))
                 .Verifiable("Contract was not checked for update event");
-            
+
             cwMock
                 .Setup(mock => mock.GetExpectedState())
                 .Returns(() => Task.FromResult(new NodeState
@@ -233,7 +233,7 @@ namespace tests
                 }))
                 .Verifiable("Contract was not queried for state");
 
-            
+
             // Prime config provider with equal state but older
             MockConfigProvider confMock = new MockConfigProvider
             {
@@ -260,7 +260,7 @@ namespace tests
             }, new MockLogger());
 
             // Should yield not update actions and therefore should return false
-            var checkResult = uw.CheckForUpdates(new object());
+            bool checkResult = uw.CheckForUpdates();
             checkResult.Should().Be(false);
 
             cwMock.Verify();
@@ -294,30 +294,6 @@ namespace tests
                 },
                 true
             };
-            
-            // Test chainspec - Commented as atm the code is not abstract to accomodate this test
-/*            yield return new object[]
-            {
-                new NodeState
-                {
-                    DockerImage = "parity/parity:v2.3.3",
-                    DockerChecksum = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
-                    ChainspecUrl = "https://example.com/chain.json#1234",
-                    IsSigning = false,
-                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf284",
-                    UpdateIntroducedBlock = new BigInteger(10)
-                },
-                new NodeState
-                {
-                    DockerImage = "parity/parity:v2.3.3",
-                    DockerChecksum = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
-                    ChainspecUrl = "https://example.com/chain.json#5678",
-                    IsSigning = false,
-                    ChainspecChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514",
-                    UpdateIntroducedBlock = new BigInteger(20)
-                },
-                true
-            };*/
 
             // Test signing
             yield return new object[]
@@ -343,36 +319,32 @@ namespace tests
                 },
                 true
             };
-
-           
         }
-        
-        
-        
+
         [Theory]
         [MemberData(nameof(GenerateShouldUpdateTestCases))]
         public void ShouldUpdateWhenDifferentState(NodeState currentState, NodeState expectedState, bool shouldTriggerUpdate)
         {
             // Run the test
-           
+
             Mock<IContractWrapper> cwMock = new Mock<IContractWrapper>(MockBehavior.Loose);
             cwMock
                 .Setup(mock => mock.HasNewUpdate())
                 .Returns(() => Task.FromResult(true))
                 .Verifiable("Contract was not checked for update event");
-            
+
             // Mock expected state from contract
             cwMock
                 .Setup(mock => mock.GetExpectedState())
                 .Returns(() => Task.FromResult(expectedState))
                 .Verifiable("Contract was not queried for state");
 
-            
+
             cwMock
                 .Setup(mock => mock.ConfirmUpdate())
                 .Returns(() => Task.CompletedTask)
                 .Verifiable("Contract was not called to confirm update");
-            
+
             // Prime config provider with equal state but older
             MockConfigProvider confMock = new MockConfigProvider
             {
@@ -392,7 +364,7 @@ namespace tests
             }, new MockLogger());
 
             // Should yield update actions and therefore should return true
-            var checkResult = uw.CheckForUpdates(new object());
+            bool checkResult = uw.CheckForUpdates();
             checkResult.Should().Be(shouldTriggerUpdate);
 
             cwMock.Verify();

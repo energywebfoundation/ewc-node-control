@@ -6,9 +6,9 @@ using src.Models;
 
 namespace src
 {
-    
+
     /// <summary>
-    /// Implements a configuration provider that writes docker-compose compatible env files 
+    /// Implements a configuration provider that writes docker-compose compatible env files
     /// </summary>
     public class ConfigurationFileHandler : IConfigurationProvider
     {
@@ -16,11 +16,11 @@ namespace src
 
         // environment variable mapping
         private const string ParityVersion = "PARITY_VERSION";
-        private const string ParityChksum = "PARITY_CHKSUM";
-        private const string ChainspecChksum = "CHAINSPEC_CHKSUM";
+        private const string ParityChecksum = "PARITY_CHKSUM";
+        private const string ChainspecChecksum = "CHAINSPEC_CHKSUM";
         private const string ChainspecUrl = "CHAINSPEC_URL";
         private const string IsSigning = "IS_SIGNING";
-        
+
         /// <summary>
         /// Instantiates the config provider with the given env file
         /// </summary>
@@ -69,10 +69,10 @@ namespace src
                     case ParityVersion:
                         state.DockerImage = kv[1];
                         break;
-                    case ParityChksum:
+                    case ParityChecksum:
                         state.DockerChecksum = kv[1];
                         break;
-                    case ChainspecChksum:
+                    case ChainspecChecksum:
                         state.ChainspecChecksum = kv[1];
                         break;
                     case ChainspecUrl:
@@ -108,13 +108,13 @@ namespace src
                 {
                     newFileContents.Add($"{ParityVersion}={newState.DockerImage}");
                 }
-                else if (line.StartsWith(ParityChksum)&& !string.IsNullOrWhiteSpace(newState.DockerChecksum))
+                else if (line.StartsWith(ParityChecksum)&& !string.IsNullOrWhiteSpace(newState.DockerChecksum))
                 {
-                    newFileContents.Add($"{ParityChksum}={newState.DockerChecksum}");
+                    newFileContents.Add($"{ParityChecksum}={newState.DockerChecksum}");
                 }
-                else if (line.StartsWith(ChainspecChksum)&& !string.IsNullOrWhiteSpace(newState.ChainspecChecksum))
+                else if (line.StartsWith(ChainspecChecksum)&& !string.IsNullOrWhiteSpace(newState.ChainspecChecksum))
                 {
-                    newFileContents.Add($"{ChainspecChksum}={newState.ChainspecChecksum}");
+                    newFileContents.Add($"{ChainspecChecksum}={newState.ChainspecChecksum}");
                 }
                 else if (line.StartsWith(ChainspecUrl)&& !string.IsNullOrWhiteSpace(newState.ChainspecUrl))
                 {

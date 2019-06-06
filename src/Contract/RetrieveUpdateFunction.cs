@@ -3,7 +3,7 @@ using Nethereum.Contracts;
 
 namespace src.Contract
 {
-    
+
     /*
      *   function retrieveExpectedState(address _targetValidator) 
         external 
@@ -11,7 +11,7 @@ namespace src.Contract
         returns (ValidatorState memory) 
         {
      */
-    
+
     /// <summary>
     /// Declares the Nethereum object that handles the RetrieveUpdate function of the smart contract
     /// </summary>
@@ -24,8 +24,8 @@ namespace src.Contract
         [Parameter("address", "_targetValidator", 1, false)]
         public string ValidatorAddress { get; set; }
     }
-    
-    
+
+
     /// <summary>
     /// Get function to retrieve the current node control contract address
     /// </summary>

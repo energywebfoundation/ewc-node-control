@@ -25,22 +25,22 @@ namespace src.Contract
         /// Instantiated contract handler
         /// </summary>
         private ContractHandler _contractHandler;
-        
+
         /// <summary>
         ///  The ethereum address of the controlled validator
         /// </summary>
         private readonly string _validatorAddress;
-        
+
         /// <summary>
         /// Handler for the on-chain UpdateEvent
         /// </summary>
         private Event<UpdateEventDto> _updateEventHandler;
-        
+
         /// <summary>
         /// Last checked block
         /// </summary>
         private HexBigInteger _lastBlock;
-        
+
         /// <summary>
         /// Instantiated web3 object
         /// </summary>
@@ -57,6 +57,10 @@ namespace src.Contract
         /// <param name="lookupContractAddress">Address of the address lookup smart contract</param>
         /// <param name="rpcEndpoint">HTTP URL to the JSON-RPC endpoint</param>
         /// <param name="validatorAddress">The ethereum address of the controlled validator</param>
+        /// <param name="logger">Logger implementation to use</param>
+        /// <param name="keyPw">Password to decrypt the key file</param>
+        /// <param name="keyJson">The validator key as encrypted JSON</param>
+        /// <param name="blockNumberFile">File to read and write the last checked block number</param>
         public ContractWrapper(string lookupContractAddress, string rpcEndpoint, string validatorAddress, ILogger logger,string keyPw,string keyJson, string blockNumberFile)
         {
             _validatorAddress = validatorAddress;
@@ -64,18 +68,18 @@ namespace src.Contract
             _blockNumberFile = blockNumberFile;
 
             _logger = logger;
-            
+
             // load the validator account
             //ManagedAccount acc = new ManagedAccount(validatorAddress,keyPw);
             Account acc = Account.LoadFromKeyStore(keyJson, keyPw);
-            
+
             // create a web 3 instance
-            
+
             _web3 = new Web3(acc, rpcEndpoint);
-            
+
             GetContract();
-            
-            
+
+
             // get block
             GetLastCheckedBlock();
 
@@ -88,7 +92,7 @@ namespace src.Contract
             // hook up to the contract and event
             ContractHandler lookupContractHandler = _web3.Eth.GetContractHandler(_lookupContractAddress);
             string ncContractAddress = lookupContractHandler
-                .QueryAsync<NodeControlContractFunction, string>(null, null).Result;
+                .QueryAsync<NodeControlContractFunction, string>().Result;
 
 
             if (string.IsNullOrWhiteSpace(ncContractAddress))
@@ -113,7 +117,7 @@ namespace src.Contract
                 if (File.Exists(_blockNumberFile))
                 {
                     string hexValueFromFile = File.ReadAllText(_blockNumberFile);
-                    if (!String.IsNullOrWhiteSpace(hexValueFromFile))
+                    if (!string.IsNullOrWhiteSpace(hexValueFromFile))
                     {
                         _lastBlock = new HexBigInteger(hexValueFromFile);
                     }
@@ -130,7 +134,7 @@ namespace src.Contract
                 _lastBlock = _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync().Result;
             }
         }
-        
+
         private void PersistLastCheckedBlock()
         {
             string blockNumberAsHex = _lastBlock.HexValue;
@@ -160,11 +164,11 @@ namespace src.Contract
         public async Task<bool> HasNewUpdate()
         {
             // get current block number
-            var curBlock = await _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+            HexBigInteger curBlock = await _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
 
             // Make sure correct contract is used
             GetContract();
-            
+
             // check block range for new events
             NewFilterInput filterInput = _updateEventHandler.CreateFilterInput(new BlockParameter(_lastBlock),new BlockParameter(curBlock));
             List<EventLog<UpdateEventDto>> outstandingEvents = await  _updateEventHandler.GetAllChanges(filterInput);
@@ -174,7 +178,7 @@ namespace src.Contract
             _lastBlock = curBlock;
             PersistLastCheckedBlock();
             return outstandingEvents.Any(x => x.Event.TargetValidator == _validatorAddress);
-        } 
+        }
 
         /// <inheritdoc />
         /// <summary>
@@ -209,16 +213,16 @@ namespace src.Contract
         public async Task ConfirmUpdate()
         {
 
-            var updateTxHandler = _web3.Eth.GetContractTransactionHandler<ConfirmUpdateFunction>();
-            var updateTx = new ConfirmUpdateFunction
+            IContractTransactionHandler<ConfirmUpdateFunction> updateTxHandler = _web3.Eth.GetContractTransactionHandler<ConfirmUpdateFunction>();
+            ConfirmUpdateFunction updateTx = new ConfirmUpdateFunction
             {
                 FromAddress = _validatorAddress,
                 Gas = new BigInteger(500000)
             };
 
-            var confirmResponse = await updateTxHandler.SendRequestAndWaitForReceiptAsync(_ncContractAddress, updateTx);
-            
-            
+            TransactionReceipt confirmResponse = await updateTxHandler.SendRequestAndWaitForReceiptAsync(_ncContractAddress, updateTx);
+
+
             //TransactionReceipt confirmResponse = await _contractHandler.SendRequestAndWaitForReceiptAsync(new ConfirmUpdateFunction
             //{
             //    FromAddress = _validatorAddress,
@@ -229,21 +233,21 @@ namespace src.Contract
             {
                 throw new ContractException("Unable to confirm update");
             }
-            
+
         }
-        
+
         /// <summary>
         /// Converts a byte array to a hex string
         /// </summary>
         /// <param name="bytes">byte array to convert</param>
         /// <returns>the hex string representation of the byte array</returns>
         private static string ConvertBytesToHexString(IEnumerable<byte> bytes) {
-            // Convert byte array to a string   
-            StringBuilder builder = new StringBuilder();  
+            // Convert byte array to a string
+            StringBuilder builder = new StringBuilder();
             foreach (byte t in bytes)
             {
                 builder.Append(t.ToString("x2"));
-            }  
+            }
             return builder.ToString();
         }
     }

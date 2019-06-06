@@ -18,12 +18,12 @@ namespace tests
             ruf.ValidatorAddress.Should().Be("0x00000");
 
         }
-        
+
         [Fact]
         public void UpdateStateDtoModelTests()
         {
-            var state = new ValidatorStateDto();
-            
+            ValidatorStateDto state = new ValidatorStateDto();
+
             UpdateStateDto ruf = new UpdateStateDto
             {
                 ValidatorState = state
@@ -32,7 +32,7 @@ namespace tests
             ruf.ValidatorState.Should().Be(state);
 
         }
-        
+
         [Fact]
         public void UpdateEventDtoModelTests()
         {
@@ -43,7 +43,7 @@ namespace tests
 
             ueDto.TargetValidator.Should().Be("0x00000");
         }
-        
+
         [Fact]
         public void ValidatorStateDtoModelTests()
         {

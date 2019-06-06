@@ -21,7 +21,7 @@ namespace src
             string value = (string) env[name];
             return string.IsNullOrWhiteSpace(value) ? defaultValue : value;
         }
-        
+
         /// <summary>
         /// Build the UpdateWatchOptions from the environment
         /// </summary>
@@ -32,20 +32,20 @@ namespace src
         {
             if (env == null)
             {
-                throw new ArgumentNullException(nameof(env),"Environment dictionary can't be null");    
+                throw new ArgumentNullException(nameof(env),"Environment dictionary can't be null");
             }
-            
-            string contractAddresss = GetConfig(env,"CONTRACT_ADDRESS",String.Empty); // "0x0000000000000000000000000000000000000001"
+
+            string contractAddress = GetConfig(env,"CONTRACT_ADDRESS",string.Empty); // "0x0000000000000000000000000000000000000001"
             string stackPath = GetConfig(env,"STACK_PATH","./demo-stack");
             string rpcEndpoint = GetConfig(env,"RPC_ENDPOINT","http://localhost:8545");
-            string validatorAddress = GetConfig(env,"VALIDATOR_ADDRESS",String.Empty); // "0x9935e9d4a208d13cd426d3bda7e6667faadb908d"
-            string blockPersistFile= GetConfig(env,"BLOCKFILE_PATH","blocknumber.txt"); 
-            string keyFile= GetConfig(env,"KEYFILE_PATH",String.Empty); 
-            
+            string validatorAddress = GetConfig(env,"VALIDATOR_ADDRESS",string.Empty); // "0x9935e9d4a208d13cd426d3bda7e6667faadb908d"
+            string blockPersistFile= GetConfig(env,"BLOCKFILE_PATH","blocknumber.txt");
+            string keyFile= GetConfig(env,"KEYFILE_PATH",string.Empty);
+
             return new UpdateWatchOptions
             {
                 RpcEndpoint = rpcEndpoint,
-                ContractAddress = contractAddresss,
+                ContractAddress = contractAddress,
                 ValidatorAddress = validatorAddress,
                 DockerStackPath = stackPath,
                 BlockNumberPersistFile = blockPersistFile,

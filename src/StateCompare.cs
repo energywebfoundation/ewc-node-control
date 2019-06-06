@@ -37,16 +37,16 @@ namespace src
             {
                 throw new ArgumentNullException(nameof(newState),"newState to compare can't be null");
             }
-            
+
             NodeState curState = _configProvider.ReadCurrentState();
             if (curState == null)
             {
                 throw new StateCompareException("Received state from configuration provider is null. Can't compare");
             }
-            
+
             // compare states and create according actions
             List<StateChangeAction> actions = new List<StateChangeAction>();
-            
+
             // check for parity update
             if (curState.DockerChecksum != newState.DockerChecksum && curState.DockerImage != newState.DockerImage)
             {
@@ -57,7 +57,7 @@ namespace src
                     PayloadHash = newState.DockerChecksum
                 });
             }
-            
+
             // Check for chain spec change
             if (curState.ChainspecChecksum != newState.ChainspecChecksum && curState.ChainspecUrl != newState.ChainspecUrl)
             {
@@ -68,7 +68,7 @@ namespace src
                     PayloadHash = newState.ChainspecChecksum
                 });
             }
-            
+
             // Check for signing change
             if (curState.IsSigning != newState.IsSigning)
             {
@@ -76,10 +76,10 @@ namespace src
                 {
                     Mode = UpdateMode.ToggleSigning,
                     Payload = newState.IsSigning.ToString(),
-                    PayloadHash = String.Empty
+                    PayloadHash = string.Empty
                 });
             }
-            
+
             return actions;
         }
     }
