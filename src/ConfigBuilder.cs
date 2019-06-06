@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.IO;
 using src.Models;
 
 namespace src
@@ -41,7 +40,7 @@ namespace src
             string rpcEndpoint = GetConfig(env,"RPC_ENDPOINT","http://localhost:8545");
             string validatorAddress = GetConfig(env,"VALIDATOR_ADDRESS",String.Empty); // "0x9935e9d4a208d13cd426d3bda7e6667faadb908d"
             string blockPersistFile= GetConfig(env,"BLOCKFILE_PATH","blocknumber.txt"); 
-            string KeyFile= GetConfig(env,"KEYFILE_PATH",String.Empty); 
+            string keyFile= GetConfig(env,"KEYFILE_PATH",String.Empty); 
             
             return new UpdateWatchOptions
             {
@@ -50,7 +49,7 @@ namespace src
                 ValidatorAddress = validatorAddress,
                 DockerStackPath = stackPath,
                 BlockNumberPersistFile = blockPersistFile,
-                ValidatorKeyFile = KeyFile
+                ValidatorKeyFile = keyFile
             };
         }
     }

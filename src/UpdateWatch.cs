@@ -5,10 +5,8 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using Docker.DotNet;
 using Docker.DotNet.Models;
 using Newtonsoft.Json;
-using src.Contract;
 using src.Interfaces;
 using src.Models;
 

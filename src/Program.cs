@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
-using Docker.DotNet.Models;
-using Nethereum.Contracts;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using src;
 using src.Contract;
-using src.Interfaces;
 using src.Models;
 
 namespace src

@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using src.Interfaces;
