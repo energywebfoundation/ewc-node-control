@@ -17,7 +17,7 @@ namespace tests
                 .And
                 .BeDerivedFrom<FunctionMessage>();
         }
-        
+
         [Fact]
         public void RetrieveUpdateFunctionTests()
         {
@@ -35,7 +35,7 @@ namespace tests
                         para.Order == 1 &&
                         !para.Parameter.Indexed);
         }
-        
+
         [Fact]
         public void UpdateStateDtoTests()
         {
@@ -50,7 +50,7 @@ namespace tests
                         para.Type == "tuple");
         }
 
-        
+
         [Fact]
         public void UpdateEventDtoTests()
         {
@@ -65,10 +65,10 @@ namespace tests
                         para.Type == "address" &&
                         para.Order == 1 &&
                         para.Parameter.Indexed);
-            
+
 
         }
-        
+
         [Fact]
         public void ValidatorStateDtoTests()
         {
@@ -80,7 +80,7 @@ namespace tests
                         para.Type == "bytes" &&
                         para.Order == 1 &&
                         !para.Parameter.Indexed);
-            
+
             typeof(ValidatorStateDto).Should()
                 .HaveProperty<string>("DockerName").Which
                 .Should().BeDecoratedWith<ParameterAttribute>(
@@ -89,7 +89,7 @@ namespace tests
                         para.Type == "string" &&
                         para.Order == 2 &&
                         !para.Parameter.Indexed);
-            
+
             typeof(ValidatorStateDto).Should()
                 .HaveProperty<byte[]>("ChainSpecSha").Which
                 .Should().BeDecoratedWith<ParameterAttribute>(
@@ -98,7 +98,7 @@ namespace tests
                         para.Type == "bytes" &&
                         para.Order == 3 &&
                         !para.Parameter.Indexed);
-            
+
             typeof(ValidatorStateDto).Should()
                 .HaveProperty<string>("ChainSpecUrl").Which
                 .Should().BeDecoratedWith<ParameterAttribute>(
@@ -107,7 +107,7 @@ namespace tests
                         para.Type == "string" &&
                         para.Order == 4 &&
                         !para.Parameter.Indexed);
-            
+
             typeof(ValidatorStateDto).Should()
                 .HaveProperty<bool>("IsSigning").Which
                 .Should().BeDecoratedWith<ParameterAttribute>(
@@ -116,7 +116,7 @@ namespace tests
                         para.Type == "bool" &&
                         para.Order == 5 &&
                         !para.Parameter.Indexed);
-            
+
             typeof(ValidatorStateDto).Should()
                 .HaveProperty<BigInteger>("UpdateIntroduced").Which
                 .Should().BeDecoratedWith<ParameterAttribute>(
@@ -125,7 +125,7 @@ namespace tests
                         para.Type == "uint" &&
                         para.Order == 6 &&
                         !para.Parameter.Indexed);
-            
+
             typeof(ValidatorStateDto).Should()
                 .HaveProperty<BigInteger>("UpdateConfirmed").Which
                 .Should().BeDecoratedWith<ParameterAttribute>(

@@ -24,7 +24,7 @@ namespace tests
                 _ = new ConfigurationFileHandler(path);
             });
         }
-        
+
         [Theory]
         [InlineData("/foobar")]
         [InlineData("./foobar")]
@@ -60,8 +60,8 @@ namespace tests
                     ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea"
                 }
             };
-            
-            // Config file with extra keypairs
+
+            // Config file with extra key pairs
             yield return new object[]
             {
                 new List<string>
@@ -90,8 +90,8 @@ namespace tests
                     ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea"
                 }
             };
-            
-            // Config file with extra keypairs and comment
+
+            // Config file with extra key pairs and comment
             yield return new object[]
             {
                 new List<string>
@@ -122,8 +122,8 @@ namespace tests
                     ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea"
                 }
             };
-            
-            // Config file with missing keypairs
+
+            // Config file with missing key pairs
             yield return new object[]
             {
                 new List<string>
@@ -175,7 +175,7 @@ namespace tests
                     "SSH_AUTH_SOCK=/run/user/1000/keyring/ssh",
                     "TERM=screen",
                     "CHAINSPEC_URL=https://example.com/chainspec.json",
-                    "CHAINSPEC_CHKSUM=b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
+                    "CHAINSPEC_CHKSUM=b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea"
 
                 },
                 new NodeState
@@ -200,11 +200,11 @@ namespace tests
                     "SSH_AUTH_SOCK=/run/user/1000/keyring/ssh",
                     "TERM=screen",
                     "CHAINSPEC_URL=https://example.com/chainspec.json",
-                    "CHAINSPEC_CHKSUM=b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
+                    "CHAINSPEC_CHKSUM=b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea"
 
-                },
+                }
             };
-            
+
              // Write new file with all info
             yield return new object[]
             {
@@ -224,7 +224,7 @@ namespace tests
                     "SSH_AUTH_SOCK=/run/user/1000/keyring/ssh",
                     "TERM=screen",
                     "CHAINSPEC_URL=https://example.com/chainspec.json",
-                    "CHAINSPEC_CHKSUM=b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
+                    "CHAINSPEC_CHKSUM=b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea"
 
                 },
                 new NodeState
@@ -251,12 +251,12 @@ namespace tests
                     "SSH_AUTH_SOCK=/run/user/1000/keyring/ssh",
                     "TERM=screen",
                     "CHAINSPEC_URL=https://example.com/chainspec-20190303.json",
-                    "CHAINSPEC_CHKSUM=7e40a9d4a3066f839882e0fc26acd9e2f08bdbd314b7319db7cae54cd4450ee9",
+                    "CHAINSPEC_CHKSUM=7e40a9d4a3066f839882e0fc26acd9e2f08bdbd314b7319db7cae54cd4450ee9"
 
-                },
+                }
             };
         }
-        
+
         [Theory]
         [MemberData(nameof(GenerateReadTestCases))]
         public void ShouldReadFromFile(List<string> fileLines, NodeState state)
@@ -264,17 +264,17 @@ namespace tests
             string tmpFilePAth = Path.GetTempFileName();
             File.WriteAllLines(tmpFilePAth,fileLines);
             ConfigurationFileHandler cfh = new ConfigurationFileHandler(tmpFilePAth);
-            var resultState = cfh.ReadCurrentState();
+            NodeState resultState = cfh.ReadCurrentState();
             resultState.Should().BeEquivalentTo(state);
         }
-        
+
         [Theory]
         [MemberData(nameof(GenerateWriteTestCases))]
         public void ShouldWriteToFile(List<string> inputFile, NodeState newState, List<string> expectedLines)
         {
             string tmpFilePAth = Path.GetTempFileName();
             File.WriteAllLines(tmpFilePAth,inputFile);
-            
+
             ConfigurationFileHandler cfh = new ConfigurationFileHandler(tmpFilePAth);
             cfh.WriteNewState(newState);
 
@@ -282,7 +282,7 @@ namespace tests
 
             resultingLines.Should().ContainInOrder(expectedLines);
         }
-        
+
         [Fact]
         public void ShouldThrowIfFileDissapears()
         {
@@ -303,16 +303,16 @@ namespace tests
                 "SSH_AUTH_SOCK=/run/user/1000/keyring/ssh",
                 "TERM=screen",
                 "CHAINSPEC_URL=https://example.com/chainspec-20190303.json",
-                "CHAINSPEC_CHKSUM=7e40a9d4a3066f839882e0fc26acd9e2f08bdbd314b7319db7cae54cd4450ee9",
+                "CHAINSPEC_CHKSUM=7e40a9d4a3066f839882e0fc26acd9e2f08bdbd314b7319db7cae54cd4450ee9"
 
             });
-            
+
             // instantiate with existing file to pass first file check
             ConfigurationFileHandler cfh = new ConfigurationFileHandler(tmpFilePAth);
-            
+
             // remove file
             File.Delete(tmpFilePAth);
-            
+
             // make sure it was removed
             if (File.Exists(tmpFilePAth))
             {
@@ -321,11 +321,11 @@ namespace tests
 
             // Should fail on a file write attempt
             Assert.Throws<FileNotFoundException>(() => { cfh.WriteNewState(new NodeState()); });
-            
+
             // Should fail on a file read attempt
             Assert.Throws<FileNotFoundException>(() => { _ = cfh.ReadCurrentState(); });
-            
+
         }
-        
+
     }
 }

@@ -12,7 +12,7 @@ namespace src
         void Log(string msg);
 
         /// <summary>
-        /// Logs an error 
+        /// Logs an error
         /// </summary>
         /// <param name="subject">Module that thrown the error</param>
         /// <param name="errorMessage">Error message</param>

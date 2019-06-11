@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using src.Models;
 using Xunit;
 
-namespace tests
+namespace tests.ModelTests
 {
     /// <summary>
     /// Test the Models for correct behaviour
@@ -24,31 +24,31 @@ namespace tests
             Assert.Equal(0, ens.UpdateIntroducedBlock);
             Assert.False(ens.IsSigning);
         }
-        
+
         /// <summary>
         /// Test that the model doesn't alter stored data
         /// </summary>
         [Theory]
         [InlineData("parity/parity:v2.3.3","0x12345678912345","https://google.com","0x12345678912345",true,256)]
-        public void ShouldGetSetProperly(string dImg, string dChksum, string cs, string csSum, bool isSigning, int block)
+        public void ShouldGetSetProperly(string dockerImage, string dockerChecksum, string chainspec, string chainspecChecksum, bool isSigning, int block)
         {
             NodeState ens = new NodeState
             {
                 IsSigning = isSigning,
-                DockerImage = dImg,
-                ChainspecUrl = cs,
-                DockerChecksum = dChksum,
-                ChainspecChecksum = csSum,
+                DockerImage = dockerImage,
+                ChainspecUrl = chainspec,
+                DockerChecksum = dockerChecksum,
+                ChainspecChecksum = chainspecChecksum,
                 UpdateIntroducedBlock = block
             };
-            
+
             Assert.Equal(isSigning, ens.IsSigning);
-            Assert.Equal(dImg, ens.DockerImage);
-            Assert.Equal(dChksum, ens.DockerChecksum);
-            Assert.Equal(cs, ens.ChainspecUrl);
-            Assert.Equal(csSum, ens.ChainspecChecksum);
+            Assert.Equal(dockerImage, ens.DockerImage);
+            Assert.Equal(dockerChecksum, ens.DockerChecksum);
+            Assert.Equal(chainspec, ens.ChainspecUrl);
+            Assert.Equal(chainspecChecksum, ens.ChainspecChecksum);
             Assert.Equal(block, ens.UpdateIntroducedBlock);
-            
+
         }
     }
 }

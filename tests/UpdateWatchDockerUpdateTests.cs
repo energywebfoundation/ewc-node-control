@@ -28,11 +28,11 @@ namespace tests
                 {
                     DockerImage  = "",
                     DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
-                      
+
                 },
                 "Payload or hash are empty"
             };
-            
+
             // Empty payload hash
             yield return new object[]
             {
@@ -49,7 +49,7 @@ namespace tests
                 },
                 "Payload or hash are empty"
             };
-            
+
             // node state mismatch on docker image
             yield return new object[]
             {
@@ -66,7 +66,7 @@ namespace tests
                 },
                 "Action vs. nodestate mismatch"
             };
-            
+
             // node state mismatch on docker image hash
             yield return new object[]
             {
@@ -83,7 +83,7 @@ namespace tests
                 },
                 "Action vs. nodestate mismatch"
             };
-            
+
             // bad action mode
             yield return new object[]
             {
@@ -131,28 +131,28 @@ namespace tests
             string expectedImage = "parity/parity:v2.3.4";
             string expectedHash = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514";
 
-            var changeAction = new StateChangeAction
+            StateChangeAction changeAction = new StateChangeAction
             {
                 Mode = UpdateMode.Docker,
                 Payload = "parity/parity:v2.3.4",
                 PayloadHash = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
             };
-            var nodeState = new NodeState
+            NodeState nodeState = new NodeState
             {
                 DockerImage = "parity/parity:v2.3.4",
                 DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
             };
-            
-            
+
+
             Mock<IDockerControl> mocDcc = new Mock<IDockerControl>(MockBehavior.Loose);
-            
-            // Setup image pull mock 
+
+            // Setup image pull mock
             mocDcc.Setup(mock => mock.PullImage(
                     It.Is<ImagesCreateParameters>(icp => icp.Tag == "v2.3.4" && icp.FromImage == "parity/parity"),
                     It.Is<AuthConfig>(obj => obj == null),
                     It.IsAny<Progress<JSONMessage>>()))
                 .Verifiable("Did not pull correct image");
-            
+
             // Setup inspect image mock
             mocDcc
                 .Setup(mock => mock.InspectImage(
@@ -168,9 +168,9 @@ namespace tests
             mocDcc
                 .Setup(mock => mock.ApplyChangesToStack("/some/path",false))
                 .Verifiable("Did not correctly apply the changes to the stack");
-            
+
             MockConfigProvider confProvider = new MockConfigProvider();
-            
+
             UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
             {
                 RpcEndpoint = "http://example.com",
@@ -186,17 +186,17 @@ namespace tests
             Action updateDocker = () => { uw.UpdateDocker(changeAction,nodeState); };
             updateDocker.Should()
                 .NotThrow();
-            
+
             // Verify the mocks
             mocDcc.Verify();
-            
+
             // make sure nothing else was called
             mocDcc.VerifyNoOtherCalls();
-            
+
             // verify the newly written state on the config provider
             confProvider.CurrentState.Should().BeEquivalentTo(nodeState);
         }
-        
+
         [Fact]
         public void ShoudThrowOnBadHash()
         {
@@ -204,28 +204,28 @@ namespace tests
             string expectedImage = "parity/parity:v2.3.4";
             string expectedHash = "bbbbcc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514";
 
-            var changeAction = new StateChangeAction
+            StateChangeAction changeAction = new StateChangeAction
             {
                 Mode = UpdateMode.Docker,
                 Payload = "parity/parity:v2.3.4",
                 PayloadHash = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
             };
-            var nodeState = new NodeState
+            NodeState nodeState = new NodeState
             {
                 DockerImage = "parity/parity:v2.3.4",
                 DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
             };
-            
-            
+
+
             Mock<IDockerControl> mocDcc = new Mock<IDockerControl>(MockBehavior.Loose);
-            
-            // Setup image pull mock 
+
+            // Setup image pull mock
             mocDcc.Setup(mock => mock.PullImage(
                     It.Is<ImagesCreateParameters>(icp => icp.Tag == "v2.3.4" && icp.FromImage == "parity/parity"),
                     It.Is<AuthConfig>(obj => obj == null),
                     It.IsAny<Progress<JSONMessage>>()))
                 .Verifiable("Did not pull correct image");
-            
+
             // Setup inspect image mock
             mocDcc
                 .Setup(mock => mock.InspectImage(
@@ -242,9 +242,9 @@ namespace tests
             mocDcc
                 .Setup(mock => mock.DeleteImage(expectedImage))
                 .Verifiable("Did not correctly delete the wrong image");
-            
+
             MockConfigProvider confProvider = new MockConfigProvider();
-            
+
             UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
             {
                 RpcEndpoint = "http://example.com",
@@ -261,47 +261,47 @@ namespace tests
             updateDocker.Should()
                 .Throw<UpdateVerificationException>()
                 .WithMessage("Docker image hashes don't match.");
-            
+
             // Verify the mocks
             mocDcc.Verify();
-            
+
             // make sure nothing else was called
             mocDcc.VerifyNoOtherCalls();
-            
+
             // verify no new state was written
             confProvider.CurrentState.Should().BeNull();
         }
-        
+
         [Fact]
         public void ShoudThrowOnUnableToPull()
         {
 
-            var changeAction = new StateChangeAction
+            StateChangeAction changeAction = new StateChangeAction
             {
                 Mode = UpdateMode.Docker,
                 Payload = "parity/parity:v2.3.4",
                 PayloadHash = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
             };
-            var nodeState = new NodeState
+            NodeState nodeState = new NodeState
             {
                 DockerImage = "parity/parity:v2.3.4",
                 DockerChecksum = "a783cc3d9b971ea268eb723eb8c653519f39abfa3d6819c1ee1f0292970cf514"
             };
-            
-            
+
+
             Mock<IDockerControl> mocDcc = new Mock<IDockerControl>(MockBehavior.Loose);
-            
-            // Setup image pull mock 
+
+            // Setup image pull mock
             mocDcc.Setup(mock => mock.PullImage(
                     It.IsAny<ImagesCreateParameters>(),
                     It.IsAny<AuthConfig>(),
                     It.IsAny<Progress<JSONMessage>>()))
                 .Throws<Exception>()
                 .Verifiable("Did not pull correct image");
-            
-            
+
+
             MockConfigProvider confProvider = new MockConfigProvider();
-            
+
             UpdateWatch uw = new UpdateWatch(new UpdateWatchOptions
             {
                 RpcEndpoint = "http://example.com",
@@ -318,16 +318,16 @@ namespace tests
             updateDocker.Should()
                 .Throw<UpdateVerificationException>()
                 .WithMessage("Unable to pull new image.");
-            
+
             // Verify the mocks
             mocDcc.Verify();
-            
+
             // make sure nothing else was called
             mocDcc.VerifyNoOtherCalls();
-            
+
             // verify no new state was written
             confProvider.CurrentState.Should().BeNull();
         }
-        
+
     }
 }

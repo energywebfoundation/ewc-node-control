@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using src.Models;
 using Xunit;
 
-namespace tests
+namespace tests.ModelTests
 {
     /// <summary>
     /// Test the Models for correct behaviour
@@ -21,7 +21,7 @@ namespace tests
             Assert.Equal(string.Empty, sca.PayloadHash);
             Assert.Equal(UpdateMode.Unknown, sca.Mode);
         }
-        
+
         /// <summary>
         /// Test that the model doesn't alter stored data
         /// </summary>
@@ -39,7 +39,7 @@ namespace tests
                 Payload = payload,
                 PayloadHash = hash
             };
-            
+
             Assert.Equal(payload, sca.Payload);
             Assert.Equal(hash, sca.PayloadHash);
             Assert.Equal(mode, sca.Mode);

@@ -1,5 +1,4 @@
 using System;
-using src.Models;
 
 namespace src
 {
@@ -18,7 +17,7 @@ namespace src
         {
             Console.WriteLine(msg);
         }
-        
+
         public void Error(string subject, string errorMessage)
         {
             Console.WriteLine($"[MSG | {subject}] {errorMessage}" );

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace src.Contract
 {
     /// <summary>
-    /// Exception that is thown when there is an issue during contract interaction
+    /// Exception that is thrown when there is an issue during contract interaction
     /// </summary>
     [Serializable]
     public class ContractException : Exception

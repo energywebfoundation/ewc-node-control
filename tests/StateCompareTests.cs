@@ -21,35 +21,35 @@ namespace tests
                 _ = new StateCompare(null);
             });
         }
-        
+
         [Fact]
         public void ShouldThrowWhenComparingNullState()
         {
             MockConfigProvider cp = new MockConfigProvider();
             StateCompare sc = new StateCompare(cp);
-            
+
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => { sc.ComputeActionsFromState(null); });
             Assert.Equal("newState",ex.ParamName);
         }
-        
+
         [Fact]
         public void ShouldThrowWhenNullStateFromConfigProvider()
         {
             MockConfigProvider cp = new MockConfigProvider {CurrentState = null};
             StateCompare sc = new StateCompare(cp);
-            
+
             StateCompareException ex = Assert.Throws<StateCompareException>(() =>
             {
                 sc.ComputeActionsFromState(new NodeState());
             });
-            
+
             Assert.Equal("Received state from configuration provider is null. Can't compare",ex.Message);
         }
-        
+
         [Fact]
         public void ShouldGenerateNoActionsOnSameState()
         {
-            
+
             MockConfigProvider cp = new MockConfigProvider {CurrentState = new NodeState
             {
                 IsSigning = true,
@@ -59,7 +59,7 @@ namespace tests
                 ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
                 UpdateIntroducedBlock = 1234567
             }};
-            
+
             // Recreate the same state so state object references are different
             NodeState newState = new NodeState
             {
@@ -70,7 +70,7 @@ namespace tests
                 ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
                 UpdateIntroducedBlock = 1234567
             };
-            
+
             StateCompare sc = new StateCompare(cp);
             List<StateChangeAction> actions = sc.ComputeActionsFromState(newState);
 
@@ -78,7 +78,7 @@ namespace tests
             actions.Should().BeEmpty();
 
         }
-        
+
         [Fact]
         public void ShouldGenerateNoActionsOnEqualState()
         {
@@ -92,9 +92,9 @@ namespace tests
                 ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
                 UpdateIntroducedBlock = 1234567
             };
-            
+
             MockConfigProvider cp = new MockConfigProvider {CurrentState = sharedState};
-            
+
             StateCompare sc = new StateCompare(cp);
             List<StateChangeAction> actions = sc.ComputeActionsFromState(sharedState);
 
@@ -102,11 +102,11 @@ namespace tests
             actions.Should().BeEmpty();
 
         }
-        
+
         [Fact]
         public void ShouldGenerateDockerAction()
         {
-            
+
             MockConfigProvider cp = new MockConfigProvider {CurrentState = new NodeState
             {
                 IsSigning = true,
@@ -116,7 +116,7 @@ namespace tests
                 ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
                 UpdateIntroducedBlock = 1234567
             }};
-            
+
             // Recreate the same state so state object references are different
             NodeState newState = new NodeState
             {
@@ -127,23 +127,23 @@ namespace tests
                 ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
                 UpdateIntroducedBlock = 1234567
             };
-            
+
             StateCompare sc = new StateCompare(cp);
             List<StateChangeAction> actions = sc.ComputeActionsFromState(newState);
 
             // Assert
             actions.Should().HaveCount(1);
-            actions.Should().ContainSingle(action => 
+            actions.Should().ContainSingle(action =>
                 action.Mode == UpdateMode.Docker &&
-                action.Payload == "parity/parity:v2.4.4" && 
+                action.Payload == "parity/parity:v2.4.4" &&
                 action.PayloadHash == "c30bcff5580cb5d9c4edb0a0c8794210e85a134c2f12ffd166735e7c26079211");
 
         }
-        
+
         [Fact]
         public void ShouldGenerateChainspecAction()
         {
-            
+
             MockConfigProvider cp = new MockConfigProvider {CurrentState = new NodeState
             {
                 IsSigning = true,
@@ -153,7 +153,7 @@ namespace tests
                 ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
                 UpdateIntroducedBlock = 1234567
             }};
-            
+
             // Recreate the same state so state object references are different
             NodeState newState = new NodeState
             {
@@ -164,23 +164,23 @@ namespace tests
                 ChainspecChecksum = "c30bcff5580cb5d9c4edb0a0c8794210e85a134c2f12ffd166735e7c26079211",
                 UpdateIntroducedBlock = 1234567
             };
-            
+
             StateCompare sc = new StateCompare(cp);
             List<StateChangeAction> actions = sc.ComputeActionsFromState(newState);
 
             // Assert
             actions.Should().HaveCount(1);
-            actions.Should().ContainSingle(action => 
+            actions.Should().ContainSingle(action =>
                 action.Mode == UpdateMode.ChainSpec &&
-                action.Payload == "https://www.example.com/chainspec-20190215.json" && 
+                action.Payload == "https://www.example.com/chainspec-20190215.json" &&
                 action.PayloadHash == "c30bcff5580cb5d9c4edb0a0c8794210e85a134c2f12ffd166735e7c26079211");
 
         }
-        
+
         [Fact]
         public void ShouldGenerateSigningAction()
         {
-            
+
             MockConfigProvider cp = new MockConfigProvider {CurrentState = new NodeState
             {
                 IsSigning = true,
@@ -190,7 +190,7 @@ namespace tests
                 ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
                 UpdateIntroducedBlock = 1234567
             }};
-            
+
             // Recreate the same state so state object references are different
             NodeState newState = new NodeState
             {
@@ -201,15 +201,15 @@ namespace tests
                 ChainspecChecksum = "b76377f4f130134f352e81c8929fb0c8ffca94da722f704d16d0873fc9e030ea",
                 UpdateIntroducedBlock = 1234567
             };
-            
+
             StateCompare sc = new StateCompare(cp);
             List<StateChangeAction> actions = sc.ComputeActionsFromState(newState);
 
             // Assert
             actions.Should().HaveCount(1);
-            actions.Should().ContainSingle(action => 
+            actions.Should().ContainSingle(action =>
                 action.Mode == UpdateMode.ToggleSigning &&
-                action.Payload == false.ToString() && 
+                action.Payload == false.ToString() &&
                 action.PayloadHash == string.Empty);
 
         }
@@ -253,7 +253,7 @@ namespace tests
                     }
                 }
             };
-            
+
             // Test docker, Chain and signing toggle
             yield return new object[]
             {
@@ -303,9 +303,9 @@ namespace tests
         [MemberData(nameof(GenerateTestCasesForActionCombinations))]
         public void ShouldGenerateActionCombinations(NodeState currentState, NodeState newState, List<StateChangeAction> expectedActions)
         {
-            
+
             MockConfigProvider cp = new MockConfigProvider {CurrentState = currentState};
-           
+
             StateCompare sc = new StateCompare(cp);
             List<StateChangeAction> actions = sc.ComputeActionsFromState(newState);
 
@@ -316,7 +316,7 @@ namespace tests
             {
                 actions.Should().ContainEquivalentOf(expAction);
             }
-            
+
         }
     }
 }

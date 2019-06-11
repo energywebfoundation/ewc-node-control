@@ -17,7 +17,7 @@ namespace src.Models
         /// Update the chain spec file
         /// </summary>
         ChainSpec = 2,
-        
+
         /// <summary>
         /// Enable/Disable signing of blocks
         /// </summary>

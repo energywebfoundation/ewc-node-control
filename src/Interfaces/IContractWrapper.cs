@@ -13,13 +13,13 @@ namespace src.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<bool> HasNewUpdate();
-        
+
         /// <summary>
         /// Asynchronously get the currently expected state from the smart contract
         /// </summary>
         /// <returns></returns>
         Task<NodeState> GetExpectedState();
-        
+
         /// <summary>
         /// Asynchronously send the update confirmation transaction to the smart contract
         /// </summary>

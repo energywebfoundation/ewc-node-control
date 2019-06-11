@@ -12,7 +12,7 @@ namespace src.Interfaces
         /// </summary>
         /// <returns>The current node state</returns>
         NodeState ReadCurrentState();
-        
+
         /// <summary>
         /// Write/Update the state in persistent storage
         /// </summary>
