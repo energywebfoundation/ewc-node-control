@@ -33,6 +33,8 @@ Nodecontrol can be configured using environment variables:
 - `STACK_PATH` - Path to the `docker-stack` directory on the host. name inside container has to match outside. See example compose section.
 - `RPC_ENDPOINT` - JSON-RPC http endpoint. Preferably the local parity.
 - `VALIDATOR_ADDRESS` - Public address of the validator nodecontrol runs on
+- `BLOCKFILE_PATH` - Path to a file which should keep the latest checked block number
+- `KEYFILE_PATH` - Path to the JSON keyfile for the `VALIDATOR_ADDRESS` account
 
 ## Example docker-compose section
 
@@ -50,6 +52,8 @@ nodecontrol:
       - STACK_PATH=$PWD
       - RPC_ENDPOINT=http://parity:8545
       - VALIDATOR_ADDRESS=${VALIDATOR_ADDRESS}
+      - BLOCKFILE_PATH=/lastblock.txt
+      - KEYFILE_PATH=/paritykey
 ```
 
 ## Build
